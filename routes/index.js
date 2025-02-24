@@ -81,4 +81,15 @@ router.get('/', (req, res) => {
   res.render('index');
 });
 
+// 任務總表頁面
+router.get('/task-list', async (req, res) => {
+  try {
+    const result = await sql.query`SELECT * FROM Tasks ORDER BY TaskDate ASC`;
+    const tasks = result.recordset;
+    res.render('task-list', { tasks });
+  } catch (err) {
+    res.status(500).send('Database error');
+  }
+});
+
 module.exports = router;
