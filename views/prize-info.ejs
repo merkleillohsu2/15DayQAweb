@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>得獎須知</title>
+  <style>
+    .tabs {
+      display: flex;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      margin-right: 5px;
+      border-radius: 5px;
+    }
+    .tab-content {
+      display: none;
+      margin-top: 20px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+  <script>
+    function showTabContent(tabId) {
+      var contents = document.querySelectorAll('.tab-content');
+      contents.forEach(function(content) {
+        content.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</head>
+<body>
+  <h1>得獎須知</h1>
+  <div class="tabs">
+    <div class="tab" onclick="showTabContent('important-info')">領獎重要事項</div>
+    <div class="tab" onclick="showTabContent('winner-list')">中獎名單</div>
+  </div>
+  <div id="important-info" class="tab-content active">
+    <h2>領獎重要事項</h2>
+    <p>這裡可以添加領獎重要事項的內容。</p>
+  </div>
+  <div id="winner-list" class="tab-content">
+    <h2>中獎名單</h2>
+    <p>這裡可以添加中獎名單的內容。</p>
+  </div>
+</body>
+</html>
