@@ -24,6 +24,9 @@
       text-decoration: none;
       border-radius: 5px;
     }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -33,5 +36,35 @@
     <a href="/task-today" class="button">今日任務</a>
     <a href="/task-list" class="button">任務總表</a>
   </div>
+  <p id="contactId" class="hidden"></p>
+
+  <script>
+    // 獲取 URL 中的 query 參數
+    function getQueryParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    const query = getQueryParameter('query');
+    if (query) {
+      // 發送解密請求
+      fetch(`/decrypt?urlquery=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          const contactId = data.decryptedData.User.ContactId;
+          document.getElementById('contactId').textContent = `ContactId: ${contactId}`;
+          document.getElementById('contactId').classList.remove('hidden');
+          
+          // 將解密後的數據存儲到 session storage
+          sessionStorage.setItem('ContactId', contactId);
+          sessionStorage.setItem('Query', query);
+        })
+        .catch(error => {
+          console.error('解密失敗:', error);
+        });
+    } else {
+      console.error('沒有找到 query 參數');
+    }
+  </script>
 </body>
 </html>
