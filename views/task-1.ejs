@@ -84,6 +84,9 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .hidden {
+            display: none;
+          }
     </style>
 </head>
 
@@ -134,7 +137,7 @@
         <div id="completionMessage"
             class="<%= task.TaskDate === currentDate ? (isCompleted ? 'hidden' : '') : 'hidden' %>">
             <p>恭喜你完成了選擇題任務！</p>
-            <form id="completeForm" action="/task/1/complete" method="POST">
+            <form id="completeForm">
                 <button type="submit"
                     class="<%= task.TaskDate === currentDate ? ( !isCompleted ? 'button' : 'hidden' ): 'hidden' %>"
                     id="completeButton">完成今日任務</button>
@@ -147,6 +150,30 @@
     </div>
 
     <script>
+        // 獲取 URL 中的 query 參數
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const query = getQueryParameter('query');
+
+        if (query && !sessionStorage.getItem('ContactId')) {
+            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
+            fetch(`/decrypt?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const contactId = data.ContactId;
+                    sessionStorage.setItem('ContactId', contactId);
+                    sessionStorage.setItem('Query', query);
+                    console.log('ContactId 和 Query 已存儲到 sessionStorage');
+                })
+                .catch(error => {
+                    console.error('解密失敗:', error);
+                });
+        } else {
+            console.log('ContactId 已經存在於 sessionStorage');
+        }
         function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
@@ -158,7 +185,7 @@
             feedbackElement.classList.remove('hidden');
             feedbackElement.textContent = answer === correctAnswer ? '回答正確！' : `回答錯誤。正確答案是：${correctAnswer}`;
             feedbackElement.style.color = answer === correctAnswer ? 'green' : 'red';
-            
+
             // 禁用 radio 按鈕
             form.querySelectorAll('input[type="radio"]').forEach(radio => {
                 radio.disabled = true;
@@ -187,6 +214,7 @@
             completeButton.classList.add('button:disabled');
             const currentDate = new Date().toISOString().split('T')[0];
             const taskDate = '<%= task.TaskDate %>';
+            const userId = sessionStorage.getItem('ContactId'); // 假設 UserId 儲存在 sessionStorage 中
             if (currentDate !== taskDate) {
                 alert('非今日任務');
             } else {
@@ -195,7 +223,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({
+                        UserId: userId, // 傳送 UserId
+                      }),
                 })
                     .then(response => response.json())
                     .then(data => {

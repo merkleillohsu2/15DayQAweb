@@ -1,1 +1,218 @@
-wfwefwe
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1天任務</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .correct-answer {
+            color: green;
+            font-weight: bold;
+        }
+
+        .incorrect-answer {
+            color: red;
+            font-weight: bold;
+        }
+
+        #completionMessage {
+            display: none;
+        }
+
+        #rewardMessage {
+            color: red;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>第1天任務：選擇題任務</h1>
+
+        <!-- 第一題 -->
+        <div id="question1" class="question">
+            <p>問題1：Node.js 是用於開發什麼類型的應用程式的？</p>
+            <form id="form1" class="quiz-form" data-correct="Web 應用程式">
+                <input type="radio" name="q1" value="Web 應用程式" required> Web 應用程式<br>
+                <input type="radio" name="q1" value="手機應用程式"> 手機應用程式<br>
+                <input type="radio" name="q1" value="桌面應用程式"> 桌面應用程式<br>
+                <button type="submit" class="button">提交答案</button>
+            </form>
+            <p id="q1-correct" class="hidden correct-answer">正確答案：Web 應用程式</p>
+            <p id="q1-feedback"></p>
+        </div>
+
+        <!-- 第二題 -->
+        <div id="question2" class="question hidden">
+            <p>問題2：Node.js 的主要特點是什麼？</p>
+            <form id="form2" class="quiz-form" data-correct="非同步 I/O">
+                <input type="radio" name="q2" value="同步 I/O" required> 同步 I/O<br>
+                <input type="radio" name="q2" value="非同步 I/O"> 非同步 I/O<br>
+                <input type="radio" name="q2" value="多執行緒"> 多執行緒<br>
+                <button type="submit" class="button">提交答案</button>
+            </form>
+            <p id="q2-correct" class="hidden correct-answer">正確答案：非同步 I/O</p>
+            <p id="q2-feedback"></p>
+        </div>
+
+        <!-- 第三題 -->
+        <div id="question3" class="question hidden">
+            <p>問題3：Node.js 使用哪種語言進行開發？</p>
+            <form id="form3" class="quiz-form" data-correct="JavaScript">
+                <input type="radio" name="q3" value="Python" required> Python<br>
+                <input type="radio" name="q3" value="Ruby"> Ruby<br>
+                <input type="radio" name="q3" value="JavaScript"> JavaScript<br>
+                <button type="submit" class="button">完成問答</button>
+            </form>
+            <p id="q3-correct" class="hidden correct-answer">正確答案：JavaScript</p>
+            <p id="q3-feedback"></p>
+        </div>
+
+        <!-- 完成信息 -->
+        <div id="completionMessage"
+            class="<%= task.TaskDate === currentDate ? (isCompleted ? 'hidden' : '') : 'hidden' %>">
+            <p>恭喜你完成了選擇題任務！</p>
+            <form id="completeForm" action="/task/2/complete" method="POST">
+                <button type="submit"
+                    class="<%= task.TaskDate === currentDate ? ( !isCompleted ? 'button' : 'hidden' ): 'hidden' %>"
+                    id="completeButton">完成今日任務</button>
+            </form>
+            <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
+        </div>
+        <p id="notTodayMessage" class="<%= task.TaskDate === currentDate ? 'hidden' : '' %>" style="color: red;">非今日任務
+        </p>
+        <div id="rewardMessage" class="hidden"></div>
+    </div>
+
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const correctAnswer = form.getAttribute('data-correct');
+            const answer = form.querySelector('input[type="radio"]:checked').value;
+            const feedbackId = form.nextElementSibling.id;
+            const feedbackElement = document.getElementById(feedbackId);
+
+            feedbackElement.classList.remove('hidden');
+            feedbackElement.textContent = answer === correctAnswer ? '回答正確！' : `回答錯誤。正確答案是：${correctAnswer}`;
+            feedbackElement.style.color = answer === correctAnswer ? 'green' : 'red';
+            
+            // 禁用 radio 按鈕
+            form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.disabled = true;
+            });
+
+            // 隱藏提交按鈕
+            form.querySelector('button[type="submit"]').classList.add('hidden');
+
+            if (form.id !== 'form3') {
+                form.parentElement.nextElementSibling.classList.remove('hidden');
+            } else {
+                document.getElementById('completionMessage').style.display = 'block';
+            }
+        }
+
+
+        document.querySelectorAll('.quiz-form').forEach(form => {
+            form.addEventListener('submit', handleFormSubmit);
+        });
+
+        document.getElementById('completeForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            // 使完成今日任務按鈕變灰且不可點選
+            const completeButton = document.getElementById('completeButton');
+            completeButton.disabled = true;
+            completeButton.classList.add('button:disabled');
+            const currentDate = new Date().toISOString().split('T')[0];
+            const taskDate = '<%= task.TaskDate %>';
+            if (currentDate !== taskDate) {
+                alert('非今日任務');
+            } else {
+                fetch('/task/2/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const rewardMessage = document.getElementById('rewardMessage');
+                        rewardMessage.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                        rewardMessage.classList.remove('hidden');
+                        setTimeout(() => {
+                            rewardMessage.classList.add('hidden');
+                            window.location.href = '/'; // 跳轉到首頁
+                        }, 5000);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

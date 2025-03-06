@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任務 12</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            /* 主軸居中 */
+            align-items: center;
+            /* 交叉軸居中 */
+            min-height: 100vh;
+            /* 確保內容垂直居中 */
+        }
+
+        .container {
+            max-width: 800px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            /* 讓子元素的定位依附於此 */
+        }
+
+        .task-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            margin: 0 auto;
+            display: block;
+            /* 確保圖片居中 */
+        }
+
+        #image-2 {
+            margin-bottom: 20px;
+            /* 與操作容器保持適當距離 */
+        }
+
+        .action-container {
+            position: absolute;
+            /* 絕對定位，依附於 .container */
+            top: 74%;
+            /* 與 #image-2 的頂部對齊 */
+            transform: translateY(-50%);
+            /* 垂直居中調整 */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            /* 垂直排列子元素 */
+            align-items: center;
+            /* 水平居中 */
+            gap: 10px;
+            /* 控制勾選框和按鈕的間距 */
+            z-index: 2;
+            /* 保持內容在圖片上方 */
+            width: 90%;
+        }
+
+        .arrow-img {
+            width: 8%;
+            /* 默認情況下箭頭圖片佔父容器寬度的 50% */
+            height: auto;
+            /* 保持圖片的寬高比例 */
+        }
+
+        @media (min-width: 768px) {
+
+            /* 平板或桌面視圖 */
+            .arrow-img {
+                width: 10%;
+                /* 在寬屏顯示時縮小箭頭圖片大小 */
+            }
+        }
+
+        @media (min-width: 1200px) {
+
+            /* 桌面大屏幕 */
+            .arrow-img {
+                width: 12%;
+                /* 在更大屏幕進一步縮小箭頭圖片 */
+            }
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            /* 勾選框和文字垂直對齊 */
+            gap: 10px;
+            /* 勾選框和文字之間的距離 */
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            /* 預設為手機顯示的大小 */
+            height: 20px;
+            accent-color: #f4b400;
+            /* 更改勾選框顏色 */
+        }
+
+        @media (min-width: 768px) {
+
+            /* 電腦視圖（平板或更大屏幕） */
+            .checkbox-container input[type="checkbox"] {
+                width: 30px;
+                /* 增加勾選框的寬度 */
+                height: 30px;
+                /* 增加勾選框的高度 */
+            }
+        }
+
+
+        .checkbox-container label {
+            font-size: 1.2rem;
+            /* 預設為手機顯示的大小 */
+            font-weight: bold;
+            color: #333;
+        }
+
+        @media (min-width: 768px) {
+
+            /* 當視窗寬度大於等於 768px（平板或電腦） */
+            .checkbox-container label {
+                font-size: 3rem;
+                /* 調整為電腦顯示的大小 */
+            }
+        }
+
+
+        .button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button img {
+            width: 100%;
+            /* 調整按鈕圖片寬度 */
+            height: auto;
+            /* 保持按比例縮放 */
+            display: block;
+            /* 確保按鈕圖片居中 */
+        }
+
+        #completionMessage {
+            display: none;
+        }
+
+        #rewardMessage {
+            color: red;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .read-more-img {
+            position: absolute;
+            bottom: 40px;
+            /* 向上移動，根據需求調整 */
+            left: 50%;
+            /* 水平居中 */
+            transform: translateX(-50%);
+            width: 60%;
+            /* 調整大小 */
+            height: auto;
+            cursor: pointer;
+            /* 設置為可點擊的樣式 */
+            z-index: 2;
+            /* 確保圖片在其他元素上方 */
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            /* 默認不顯示 */
+        }
+
+        .popup p {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .popup .close-popup {
+            background-color: #f4b400;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .popup.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="task-title">任務 12：圖文任務</div>
+
+        <!-- 圖片 1 -->
+        <img src="/images/D12-1.png" alt="任務圖片">
+
+        <!-- 圖片 2 -->
+        <img id="image-2" src="/images/D12-2.png" alt="任務圖片">
+
+        <!-- 新增 "更多圖片" -->
+        <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
+
+        <!-- 彈窗內容 -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>更多訊息</p>
+                <button class="close-popup">關閉</button>
+            </div>
+        </div>
+
+        <!-- 勾選框與按鈕，與 #image-2 對齊 -->
+        <div class="action-container">
+            <img class="arrow-img" src="/images/arrow.png" alt="箭頭圖片">
+            <div class="checkbox-container">
+                <input type="checkbox" id="taskCompletedCheckbox">
+                <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+            </div>
+            <button class="button" id="complete-task-btn">
+                <img src="<%= isCompleted ? '/images/CTA-done.png' : '/images/CTA- gain money.png' %>" alt="按鈕圖片">
+            </button>
+        </div>
+        <!-- 完成信息 -->
+        <div id="completionMessage"
+            class="<%= task.TaskDate === currentDate ? (isCompleted ? 'hidden' : '') : 'hidden' %>">
+            <p>恭喜你完成了選擇題任務！</p>
+            <form id="completeForm">
+                <button type="submit"
+                    class="<%= task.TaskDate === currentDate ? ( !isCompleted ? 'button' : 'hidden' ): 'hidden' %>"
+                    id="completeButton">完成今日任務</button>
+            </form>
+            <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
+        </div>
+        <p id="notTodayMessage" class="<%= task.TaskDate === currentDate ? 'hidden' : '' %>" style="color: red;">非今日任務
+        </p>
+        <div id="rewardMessage" class="hidden"></div>
+    </div>
+    <script>// 獲取 URL 中的 query 參數
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        const query = getQueryParameter('query');
+        if (query && !sessionStorage.getItem('ContactId')) {
+            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
+            fetch(`/decrypt?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const contactId = data.ContactId;
+                    sessionStorage.setItem('ContactId', contactId);
+                    sessionStorage.setItem('Query', query);
+                    console.log('ContactId 和 Query 已存儲到 sessionStorage');
+                })
+                .catch(error => {
+                    console.error('解密失敗:', error);
+                });
+        } else {
+            console.log('ContactId 已經存在於 sessionStorage');
+        }
+
+
+
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const readMoreImg = document.querySelector('.read-more-img');
+            const popup = document.getElementById('popup');
+            const closePopupButton = popup.querySelector('.close-popup');
+
+            // 點擊圖片顯示 Popup
+            readMoreImg.addEventListener('click', () => {
+                popup.classList.remove('hidden'); // 顯示彈窗
+            });
+
+            // 點擊關閉按鈕隱藏 Popup
+            closePopupButton.addEventListener('click', () => {
+                popup.classList.add('hidden'); // 隱藏彈窗
+            });
+
+            // 點擊彈窗外部區域也可以關閉
+            popup.addEventListener('click', (event) => {
+                if (event.target === popup) {
+                    popup.classList.add('hidden'); // 隱藏彈窗
+                }
+            });
+
+
+
+
+
+            const checkbox = document.getElementById('taskCompletedCheckbox');
+            const button = document.getElementById('complete-task-btn');
+            const buttonImg = button.querySelector('img'); // 獲取按鈕內的圖片
+
+            // 初始化按鈕的禁用狀態
+            button.disabled = true;
+            button.style.opacity = 0.5; // 按鈕半透明，表示不可用
+
+            // 監聽 checkbox 的勾選狀態
+            checkbox.addEventListener('change', () => {
+                updateButtonState();
+            });
+
+            // 檢查按鈕圖片和勾選框的狀態
+            function updateButtonState() {
+                const isCheckboxChecked = checkbox.checked;
+                const buttonImageSrc = buttonImg.getAttribute('src'); // 獲取圖片的路徑
+
+                // 檢查按鈕圖片是否為 /images/CTA-done.png
+                if (buttonImageSrc === '/images/CTA-done.png') {
+                    button.disabled = true; // 按鈕禁用
+                    button.style.opacity = 1; // 保持按鈕完全可見
+                } else if (isCheckboxChecked && buttonImageSrc === '/images/CTA- gain money.png') {
+                    button.disabled = false; // 啟用按鈕
+                    button.style.opacity = 1; // 按鈕恢復可見
+                } else {
+                    button.disabled = true; // 禁用按鈕
+                    button.style.opacity = 0.5; // 按鈕半透明
+                }
+            }
+
+            // 給按鈕添加點擊事件
+            button.addEventListener('click', () => {
+                if (!button.disabled) {
+                    const userId = sessionStorage.getItem('ContactId'); // 從 sessionStorage 中獲取 ContactId
+
+                    // 切換按鈕圖片為 /images/CTA-done.png
+                    buttonImg.setAttribute('src', '/images/CTA-done.png');
+
+                    // 發送任務完成請求
+                    fetch('/task/12/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            UserId: userId, // 傳送 UserId
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const rewardMessage = document.getElementById('rewardMessage');
+                            rewardMessage.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                            rewardMessage.classList.remove('hidden');
+                        })
+                        .catch(error => {
+                            console.error('提交失敗:', error);
+                        });
+                }
+            });
+
+            // 初始化按鈕狀態
+            updateButtonState();
+        });
+
+    </script>
+</body>
+
+</html>

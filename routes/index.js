@@ -7,6 +7,7 @@ const getCurrentDate = () => {
   const date = new Date();
   return date.toISOString().split('T')[0];
 };
+const app = express();
 
 // 根據當前日期跳轉到今日任務
 router.get('/task-today', async (req, res) => {
@@ -33,12 +34,28 @@ router.get('/task-today', async (req, res) => {
   }
 });
 
+
+function authenticateUser(req, res, next) {
+  const userId = req.session.ContactId ? req.session.ContactId : null;
+
+  if (!userId) {
+      return res.status(401).send('未授權的用戶，缺少 UserId');
+  }
+
+  req.userId = userId; // 將 userId 附加到請求對象，方便後續處理
+  next(); // 繼續執行下一個中間件或路由處理
+}
+
+
+
+
+
 // 每日任務頁面
 for (let day = 1; day <= 15; day++) {
-  router.get(`/task/${day}`, async (req, res) => {
+  router.get(`/task/${day}`, authenticateUser, async (req, res) => {
     const currentDate = getCurrentDate();
-    const userId = req.cookies.userId;
-
+    const userId = req.session.ContactId;
+    
     try {
       const taskResult = await sql.query`SELECT * FROM Tasks WHERE TaskID = ${day}`;
       if (taskResult.recordset.length === 0) {
@@ -50,7 +67,7 @@ for (let day = 1; day <= 15; day++) {
       const completionResult = await sql.query`SELECT * FROM UserTaskCompletion WHERE UserID = ${userId} AND TaskID = ${day} AND IsCompleted = 1`;
       const isCompleted = completionResult.recordset.length > 0;
       console.log(`Completion count: ${JSON.stringify(isCompleted)}`);
-
+      console.log(`Task: ${JSON.stringify(completionResult)}`);
       res.render(`task-${day}`, { task, currentDate, isCompleted });
     } catch (err) {
       res.status(500).send('Database error');
@@ -60,10 +77,14 @@ for (let day = 1; day <= 15; day++) {
   // 任務完成邏輯
   router.post(`/task/${day}/complete`, async (req, res) => {
     const currentDate = getCurrentDate();
-    const userId = req.cookies.userId;
+    const { UserId } = req.body; // 從請求中提取 UserId
+    console.log('Request Body:', req.body);
 
+    if (!UserId) {
+      return res.status(400).send('缺少 UserId');
+    }  
     try {
-      const userResult = await sql.query`SELECT * FROM Users WHERE UserID = ${userId}`;
+      const userResult = await sql.query`SELECT * FROM Users WHERE UserID = ${UserId}`;
       if (userResult.recordset.length === 0) {
         throw new Error('User not found');
       }
@@ -83,9 +104,10 @@ for (let day = 1; day <= 15; day++) {
       } catch (e) {
         tasksCompleted = [];
       }
-
+      console.log("teste")
       // 確認任務是否已經完成
-      const completionResult = await sql.query`SELECT * FROM UserTaskCompletion WHERE UserID = ${userId} AND TaskID = ${day} AND IsCompleted = 1`;
+      const completionResult = await sql.query`SELECT * FROM UserTaskCompletion WHERE UserID = ${UserId} AND TaskID = ${day} AND IsCompleted = 1`;
+      console.log(completionResult)
       if (completionResult.recordset.length > 0) {
         return res.status(400).send('任務已完成');
       }
@@ -94,14 +116,14 @@ for (let day = 1; day <= 15; day++) {
       const taskDate = task.TaskDate.toISOString().split('T')[0];
       if (taskDate === currentDate) {
         // 記錄任務完成
-        await sql.query`INSERT INTO UserTaskCompletion (UserID, TaskID, CompletionDate, IsCompleted) VALUES (${userId}, ${day}, ${currentDate}, ${1})`;
+        await sql.query`INSERT INTO UserTaskCompletion (UserID, TaskID, CompletionDate, IsCompleted) VALUES (${UserId}, ${day}, ${currentDate}, ${1})`;
 
         // 更新使用者的任務完成情況和獎勵
         tasksCompleted.push(day);
         const rewards = user.rewards + task.RewardAmount;
 
-        await sql.query`UPDATE Users SET tasksCompleted = ${JSON.stringify(tasksCompleted)}, rewards = ${rewards} WHERE UserID = ${userId}`;
-
+        await sql.query`UPDATE Users SET tasksCompleted = ${JSON.stringify(tasksCompleted)}, rewards = ${rewards} WHERE UserID = ${UserId}`;
+        console.log( task);
         // 返回成功消息和獎勵金
         return res.json({ message: '恭喜你完成任務', reward: task.RewardAmount });
       } else {

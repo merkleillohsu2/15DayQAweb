@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>活動首頁</title>
@@ -7,15 +8,18 @@
     .banner {
       width: 100%;
       height: 200px;
-      background-image: url('/images/banner.jpg'); /* 設定Banner圖片路徑 */
+      background-image: url('/images/banner.jpg');
+      /* 設定Banner圖片路徑 */
       background-size: cover;
       background-position: center;
     }
+
     .buttons {
       display: flex;
       justify-content: center;
       margin-top: 20px;
     }
+
     .button {
       margin: 0 10px;
       padding: 10px 20px;
@@ -24,28 +28,40 @@
       text-decoration: none;
       border-radius: 5px;
     }
+
     .hidden {
       display: none;
     }
   </style>
 </head>
+
 <body>
   <div class="banner"></div> <!-- Banner圖片 -->
+
   <div class="buttons">
-    <a href="/prize-info" class="button">得獎須知</a>
-    <a href="/task-today" class="button">今日任務</a>
-    <a href="/task-list" class="button">任務總表</a>
+    <a href="/prize-info" class="button" id="prize-info-btn">得獎須知</a>
+    <a href="/task-today" class="button" id="task-today-btn">今日任務</a>
+    <a href="/task-list" class="button" id="task-list-btn">任務總表</a>
+
   </div>
   <p id="contactId" class="hidden"></p>
 
   <script>
+    
+    // 獲取當前頁面的查詢參數
+    const queryParams = window.location.search;
+
+    // 動態更新按鈕的 href 屬性，讓它們包含當前的查詢參數
+    document.getElementById('prize-info-btn').href += queryParams;
+    document.getElementById('task-today-btn').href += queryParams;
+    document.getElementById('task-list-btn').href += queryParams;
     // 獲取 URL 中的 query 參數
     function getQueryParameter(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
-
     const query = getQueryParameter('query');
+
     if (query) {
       // 發送解密請求
       fetch(`/decrypt?urlquery=${encodeURIComponent(query)}`)
@@ -54,7 +70,7 @@
           const contactId = data.decryptedData.User.ContactId;
           document.getElementById('contactId').textContent = `ContactId: ${contactId}`;
           document.getElementById('contactId').classList.remove('hidden');
-          
+
           // 將解密後的數據存儲到 session storage
           sessionStorage.setItem('ContactId', contactId);
           sessionStorage.setItem('Query', query);
@@ -67,4 +83,5 @@
     }
   </script>
 </body>
+
 </html>
