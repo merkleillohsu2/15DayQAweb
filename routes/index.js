@@ -34,25 +34,10 @@ router.get('/task-today', async (req, res) => {
   }
 });
 
-
-function authenticateUser(req, res, next) {
-  const userId = req.session.ContactId ? req.session.ContactId : null;
-
-  if (!userId) {
-      return res.status(401).send('未授權的用戶，缺少 UserId');
-  }
-
-  req.userId = userId; // 將 userId 附加到請求對象，方便後續處理
-  next(); // 繼續執行下一個中間件或路由處理
-}
-
-
-
-
-
 // 每日任務頁面
 for (let day = 1; day <= 15; day++) {
-  router.get(`/task/${day}`, authenticateUser, async (req, res) => {
+  router.get(`/task/${day}`, async (req, res) => {
+    
     const currentDate = getCurrentDate();
     const userId = req.session.ContactId;
     

@@ -106,8 +106,6 @@ app.get('/decrypt', async (req, res) => {
       console.error('[ERROR] 會話未初始化，請確認 express-session 中間件已啟用');
       return res.status(500).send('Session not initialized, check middleware');
     }
-    req.session.ContactId = userId;
-    req.session.Query = urlquery;
     // 提供會話數據給響應
     res.locals.sessionData = { ContactId: userId, Query: urlquery };
 
