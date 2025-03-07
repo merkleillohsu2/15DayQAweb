@@ -50,7 +50,7 @@
         .action-container {
             position: absolute;
             /* 絕對定位，依附於 .container */
-            top: 74%;
+            top: 75%;
             /* 與 #image-2 的頂部對齊 */
             transform: translateY(-50%);
             /* 垂直居中調整 */
@@ -237,7 +237,7 @@
 
         <!-- 圖片 2 -->
         <img id="image-2" src="/images/D12-2.png" alt="任務圖片">
-
+        
         <!-- 新增 "更多圖片" -->
         <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
 
@@ -256,9 +256,23 @@
                 <input type="checkbox" id="taskCompletedCheckbox">
                 <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
             </div>
-            <button class="button" id="complete-task-btn">
-                <img src="<%= isCompleted ? '/images/CTA-done.png' : '/images/CTA- gain money.png' %>" alt="按鈕圖片">
-            </button>
+            <div>
+                <!-- 按鈕圖片條件渲染 -->
+                <% if (!isCompleted && task.TaskDate === currentDate) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/CTA- gain money.png" alt="按鈕圖片">
+                    </button>
+                <% } else if (isCompleted) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/CTA-done.png" alt="按鈕圖片">
+                    </button>
+                <% } else if (!isCompleted && task.TaskDate !== currentDate) { %>
+                    <!-- 非今日任務訊息 -->
+                    <p id="notTodayMessage" style="color: red;">非今日任務</p>
+                <% } %>
+            </div>
+            
+
         </div>
         <!-- 完成信息 -->
         <div id="completionMessage"
@@ -271,9 +285,9 @@
             </form>
             <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
         </div>
-        <p id="notTodayMessage" class="<%= task.TaskDate === currentDate ? 'hidden' : '' %>" style="color: red;">非今日任務
-        </p>
+
         <div id="rewardMessage" class="hidden"></div>
+
     </div>
     <script>// 獲取 URL 中的 query 參數
         function getQueryParameter(name) {
