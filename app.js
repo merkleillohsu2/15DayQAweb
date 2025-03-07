@@ -22,7 +22,6 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production', // 僅在生產環境中啟用 HTTPS
     httpOnly: true,       // 禁止前端 JS 訪問 Cookie，增強安全性
-    maxAge: 1000 * 60 * 60 * 24, // Session 有效時間：1 天
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 跨站請求支持
   }
 }));
