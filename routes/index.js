@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { sql } = require('../dbconfig');
+const { decryptString } = require('../userSetup'); // 導入 decryptString 函數
 
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
@@ -38,9 +39,38 @@ router.get('/task-today', async (req, res) => {
 for (let day = 1; day <= 15; day++) {
   router.get(`/task/${day}`, async (req, res) => {
     
+    // 檢查是否存在 ContactId
+    if (!req.session.ContactId) {
+        console.error('[INFO] Session 缺少 ContactId，執行 /decrypt 邏輯');
+
+        const urlquery = req.query.query; // 確保前端提供 query
+        if (!urlquery) {
+            return res.status(400).send('Missing query parameter for decryption');
+        }
+
+        try {
+            // 解密 URL，模擬 /decrypt 的處理邏輯
+            console.log('[INFO] 正在執行解密邏輯');
+            const decryptedData = decryptString(decodeURIComponent(urlquery));
+            const parsedData = JSON.parse(decryptedData);
+            const userId = parsedData.User.ContactId;
+
+            if (!userId) {
+                return res.status(400).send('ContactId not found in decrypted data');
+            }
+            
+            // 存儲到 session 中
+            req.session.ContactId = userId;
+            console.log('[INFO] ContactId 已成功存入 Session:', userId);
+        } catch (err) {
+            console.error('[ERROR] 解密失敗:', err.message);
+            return res.status(500).send('Failed to decrypt data');
+        }
+    }
+    console.log(`[INFO] 獲取 ContactId: ${req.session.ContactId}`);
     const currentDate = getCurrentDate();
     const userId = req.session.ContactId;
-    
+
     try {
       const taskResult = await sql.query`SELECT * FROM Tasks WHERE TaskID = ${day}`;
       if (taskResult.recordset.length === 0) {
@@ -67,7 +97,7 @@ for (let day = 1; day <= 15; day++) {
 
     if (!UserId) {
       return res.status(400).send('缺少 UserId');
-    }  
+    }
     try {
       const userResult = await sql.query`SELECT * FROM Users WHERE UserID = ${UserId}`;
       if (userResult.recordset.length === 0) {
@@ -108,7 +138,7 @@ for (let day = 1; day <= 15; day++) {
         const rewards = user.rewards + task.RewardAmount;
 
         await sql.query`UPDATE Users SET tasksCompleted = ${JSON.stringify(tasksCompleted)}, rewards = ${rewards} WHERE UserID = ${UserId}`;
-        console.log( task);
+        console.log(task);
         // 返回成功消息和獎勵金
         return res.json({ message: '恭喜你完成任務', reward: task.RewardAmount });
       } else {

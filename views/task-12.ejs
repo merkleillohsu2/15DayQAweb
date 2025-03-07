@@ -237,7 +237,7 @@
 
         <!-- 圖片 2 -->
         <img id="image-2" src="/images/D12-2.png" alt="任務圖片">
-        
+
         <!-- 新增 "更多圖片" -->
         <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
 
@@ -285,11 +285,12 @@
             </form>
             <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
         </div>
-
         <div id="rewardMessage" class="hidden"></div>
-
     </div>
     <script>// 獲取 URL 中的 query 參數
+        console.log('任務數據:', "<%= JSON.stringify(task) %>");
+        console.log('當前日期:', '<%= currentDate %>');
+        console.log('是否已完成:', "<%= isCompleted %>");
         function getQueryParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);

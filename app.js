@@ -16,11 +16,17 @@ connectDB();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-  secret: 'your-secret-key', // 使用您的密鑰
+  secret: 'your-secret-key', // 替換成一個安全的密鑰
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }, // 在開發環境下使用 HTTP
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // 僅在生產環境中啟用 HTTPS
+    httpOnly: true,       // 禁止前端 JS 訪問 Cookie，增強安全性
+    maxAge: 1000 * 60 * 60 * 24, // Session 有效時間：1 天
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 跨站請求支持
+  }
 }));
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -37,7 +43,13 @@ app.get('/decrypt', async (req, res) => {
     console.error('[ERROR] 缺少 query 參數，請求失敗');
     return res.status(400).send('Missing query parameter in request');
   }
-
+  if (!req.session) {
+    console.error('[ERROR] 會話未初始化，無法存儲 ContactId');
+    return res.status(500).send('Session not initialized. Check express-session configuration.');
+  }
+  //req.session.ContactId = userId;
+  console.log('[INFO] ContactId 已存儲於會話:', req.session.ContactId);
+  
 
   try {
     // 解密字符串
