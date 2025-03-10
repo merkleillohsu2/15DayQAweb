@@ -271,22 +271,10 @@
                             <p id="notTodayMessage" style="color: red;">非今日任務</p>
                             <% } %>
             </div>
-
-
-        </div>
-        <!-- 完成信息 -->
-        <div id="completionMessage"
-            class="<%= task.TaskDate === currentDate ? (isCompleted ? 'hidden' : '') : 'hidden' %>">
-            <p>恭喜你完成了選擇題任務！</p>
-            <form id="completeForm">
-                <button type="submit"
-                    class="<%= task.TaskDate === currentDate ? ( !isCompleted ? 'button' : 'hidden' ): 'hidden' %>"
-                    id="completeButton">完成今日任務</button>
-            </form>
-            <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
         </div>
         <div id="rewardMessage" class="hidden">
             <p>恭喜完成任務！</p>
+            <h3 id="rewardMessageh3"></h3>
             <button id="returnToParentHome">返回首頁
         </div>
     </div>
@@ -397,7 +385,8 @@
                         .then(response => response.json())
                         .then(data => {
                             const rewardMessage = document.getElementById('rewardMessage');
-                            rewardMessage.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                            const rewardMessagecontent = document.getElementById('rewardMessageh3');
+                            rewardMessagecontent.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
                             rewardMessage.classList.remove('hidden');
                         })
                         .catch(error => {
