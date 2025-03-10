@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const { config, connectDB, sql } = require('./dbconfig');
-const { decryptString } = require('./userSetup'); // 導入 decryptString 函數
 const { handleDecryption } = require('./handleDecryption'); // 導入 decryptString 函數
 
 const port = process.env.PORT || 3000;
@@ -18,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
   secret: 'your-secret-key', // 替換成一個安全的密鑰
-  resave: true,
+  resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production', // 僅在生產環境中啟用 HTTPS
@@ -27,14 +26,12 @@ app.use(session({
   }
 }));
 
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // 添加這個中間件
 
 const indexRouter = require('./routes/index');
-
 // 定義 /decrypt 路由
 app.get('/decrypt', async (req, res) => {
   const result = await handleDecryption(req, res);

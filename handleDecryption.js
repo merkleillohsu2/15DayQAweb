@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { decryptString } = require('./userSetup'); // 導入 decryptString 函數
-const { config, connectDB, sql } = require('./dbconfig');
+const { config, sql } = require('./dbconfig');
 
 require('dotenv').config();
 
@@ -78,5 +78,5 @@ const handleDecryption = async (req, res) => {
   }
 };
 
-// 將 decryptString 函數作為命名導出
+// 將 handleDecryption 函數作為命名導出
 module.exports = { handleDecryption };

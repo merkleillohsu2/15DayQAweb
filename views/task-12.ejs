@@ -258,20 +258,20 @@
             </div>
             <div>
                 <!-- 按鈕圖片條件渲染 -->
-                <% if (!isCompleted && task.TaskDate === currentDate) { %>
+                <% if (!isCompleted && task.TaskDate===currentDate) { %>
                     <button class="button" id="complete-task-btn">
                         <img src="/images/CTA- gain money.png" alt="按鈕圖片">
                     </button>
-                <% } else if (isCompleted) { %>
-                    <button class="button" id="complete-task-btn">
-                        <img src="/images/CTA-done.png" alt="按鈕圖片">
-                    </button>
-                <% } else if (!isCompleted && task.TaskDate !== currentDate) { %>
-                    <!-- 非今日任務訊息 -->
-                    <p id="notTodayMessage" style="color: red;">非今日任務</p>
-                <% } %>
+                    <% } else if (isCompleted) { %>
+                        <button class="button" id="complete-task-btn">
+                            <img src="/images/CTA-done.png" alt="按鈕圖片">
+                        </button>
+                        <% } else if (!isCompleted && task.TaskDate !==currentDate) { %>
+                            <!-- 非今日任務訊息 -->
+                            <p id="notTodayMessage" style="color: red;">非今日任務</p>
+                            <% } %>
             </div>
-            
+
 
         </div>
         <!-- 完成信息 -->
@@ -285,7 +285,10 @@
             </form>
             <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
         </div>
-        <div id="rewardMessage" class="hidden"></div>
+        <div id="rewardMessage" class="hidden">
+            <p>恭喜完成任務！</p>
+            <button id="returnToParentHome">返回首頁
+        </div>
     </div>
     <script>// 獲取 URL 中的 query 參數
         console.log('任務數據:', "<%= JSON.stringify(task) %>");
@@ -312,17 +315,15 @@
         } else {
             console.log('ContactId 已經存在於 sessionStorage');
         }
-
-
-
-
-
-
         document.addEventListener('DOMContentLoaded', () => {
             const readMoreImg = document.querySelector('.read-more-img');
             const popup = document.getElementById('popup');
             const closePopupButton = popup.querySelector('.close-popup');
-
+            // 返回首頁按鈕
+            document.getElementById('returnToParentHome').addEventListener('click', () => {
+                window.parent.postMessage('navigate-home', 'https://pmi--qa.sandbox.my.site.com/'); // 指定父頁域名
+            });
+            
             // 點擊圖片顯示 Popup
             readMoreImg.addEventListener('click', () => {
                 popup.classList.remove('hidden'); // 顯示彈窗
