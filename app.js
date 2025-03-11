@@ -33,7 +33,7 @@ app.use(express.json()); // 添加這個中間件
 
 const indexRouter = require('./routes/index');
 // 定義 /decrypt 路由
-app.get('/decrypt', async (req, res) => {
+/*app.get('/decrypt', async (req, res) => {
   const result = await handleDecryption(req, res);
 
   if (result.error) {
@@ -41,7 +41,7 @@ app.get('/decrypt', async (req, res) => {
   }
 
   res.status(200).json({ message: 'User setup completed', ContactId: result.ContactId });
-});
+});*/
 
 // 主路由
 app.use('/', indexRouter);
@@ -50,3 +50,9 @@ app.use('/', indexRouter);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+app.use((err, req, res, next) => {
+  console.error('全局錯誤處理:', err.stack);
+  res.status(500).render('error', { message: '伺服器發生錯誤，請稍後再試！' });
+});
+

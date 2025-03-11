@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>任務總表</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任務總表</title>
+    <link rel="stylesheet" href="/stylesheets/task-list.css">
 </head>
 <body>
-  <h1>任務總表</h1>
-  <!-- 這裡可以添加任務總表的內容 -->
+    <header>
+        <!-- 獎勵圖片區域 -->
+        <div class="reward-banner">
+            <% if (user.rewards >= 100) { %>
+                <img src="/images/reward-level-3.png" alt="最高等級獎勵">
+            <% } else if (user.rewards >= 50) { %>
+                <img src="/images/reward-level-2.png" alt="中等等級獎勵">
+            <% } else { %>
+                <img src="/images/reward-level-1.png" alt="初始獎勵">
+            <% } %>
+        </div>
+    </header>
+
+    <main>
+        <h1>任務總表</h1>
+
+        <!-- 任務按鈕區域 -->
+        <div class="task-list">
+          <% tasks.forEach((task) => { %>
+              <% const isToday = task.TaskDate === currentDate; %>
+              <% const isCompleted = user.tasksCompleted.includes(task.TaskID); %>
+              
+              <button 
+                  class="task-button 
+                         <%= isCompleted ? 'completed' : isToday ? 'today-task' : 'pending' %>"
+                  onclick="redirectToTask('<%= task.TaskID %>')"
+                  >
+                  <%= task.TaskName %> <!-- 按鈕名稱 -->
+                  <%= isToday ? '(今日任務)' : '' %>
+              </button>
+          <% }) %>
+      </div>
+      
+      <script>
+          function redirectToTask(taskId) {
+              // 獲取當前 URL 的查詢參數
+              const queryParams = new URLSearchParams(window.location.search);
+              // 生成目標 URL，保留查詢參數
+              const targetUrl = `/task/${taskId}?${queryParams.toString()}`;
+              // 重定向到新頁面
+              window.location.href = targetUrl;
+          }
+      </script>
+      
+      
+    </main>
+
+    <footer>
+        <p>&copy; 2025 任務系統</p>
+    </footer>
 </body>
 </html>

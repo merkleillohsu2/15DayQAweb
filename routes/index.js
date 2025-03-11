@@ -9,7 +9,35 @@ const getCurrentDate = () => {
   const date = new Date();
   return date.toISOString().split('T')[0];
 };
-const app = express();
+
+
+// 解密中間件
+const handleDecryptionMiddleware = async (req, res, next) => {
+  try {
+    const result = await handleDecryption(req, res);
+
+    if (result.error) {
+      console.error('解密失敗:', result.error);
+      // 渲染一個錯誤頁面，而不是直接返回 400 錯誤
+      return res.render('error', { message: '無法處理解密數據，請重試' });
+    }
+
+    // 保存解密結果到 res.locals，供後續路由使用
+    res.locals.contactId = result.ContactId;
+    res.locals.query = result.Query;
+
+    next(); // 繼續處理下一個路由
+
+  } catch (err) {
+    console.error('中間件錯誤:', err.message);
+    res.render('error', { message: '伺服器錯誤，請稍後再試' });
+  }
+};
+// 將中間件應用於該 router 的所有路由
+// router.use(handleDecryptionMiddleware);
+
+router.use(['/task-today', '/task/:day','/task-list'], handleDecryptionMiddleware);
+
 
 // 根據當前日期跳轉到今日任務
 router.get('/task-today', async (req, res) => {
@@ -39,16 +67,7 @@ router.get('/task-today', async (req, res) => {
 // 每日任務頁面
 for (let day = 1; day <= 15; day++) {
   router.get(`/task/${day}`, async (req, res) => {
-    
-    // 檢查是否存在 ContactId
-    if (!req.session.ContactId) {
-      console.log('[INFO] Session 缺少 ContactId，執行解密');
-      const result = await handleDecryption(req, res);
 
-      if (result.error) {
-          return res.status(400).send(result.error);
-      }
-  }
     console.log(`[INFO] 獲取 ContactId: ${req.session.ContactId}`);
     const currentDate = getCurrentDate();
     const userId = req.session.ContactId;
@@ -65,7 +84,11 @@ for (let day = 1; day <= 15; day++) {
       const isCompleted = completionResult.recordset.length > 0;
       console.log(`Completion count: ${JSON.stringify(isCompleted)}`);
       console.log(`Task: ${JSON.stringify(completionResult)}`);
-      res.render(`task-${day}`, { task, currentDate, isCompleted });
+      res.render(`task-${day}`, {
+        task, currentDate, isCompleted,
+        contactId: res.locals.contactId,
+        query: res.locals.query
+      });
     } catch (err) {
       res.status(500).send('Database error');
     }
@@ -77,6 +100,11 @@ for (let day = 1; day <= 15; day++) {
     const { UserId } = req.body; // 從請求中提取 UserId
     console.log('Request Body:', req.body);
 
+    if (!req.session.ContactId && res.locals.contactId) {
+      req.session.ContactId = res.locals.contactId;
+      console.log('[INFO] Session ContactId 初始化:', req.session.ContactId);
+    }
+    
     if (!UserId) {
       return res.status(400).send('缺少 UserId');
     }
@@ -101,7 +129,6 @@ for (let day = 1; day <= 15; day++) {
       } catch (e) {
         tasksCompleted = [];
       }
-      console.log("teste")
       // 確認任務是否已經完成
       const completionResult = await sql.query`SELECT * FROM UserTaskCompletion WHERE UserID = ${UserId} AND TaskID = ${day} AND IsCompleted = 1`;
       console.log(completionResult)
@@ -150,12 +177,27 @@ router.get('/prize-info', (req, res) => {
 // 任務總表頁面
 router.get('/task-list', async (req, res) => {
   try {
-    const result = await sql.query`SELECT * FROM Tasks ORDER BY TaskDate ASC`;
-    const tasks = result.recordset;
-    res.render('task-list', { tasks });
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      // 獲取任務數據，包括 TaskName
+      const taskResult = await sql.query`SELECT TaskID, TaskName, TaskDate FROM Tasks ORDER BY TaskDate ASC`;
+      const tasks = taskResult.recordset.map(task => ({
+          ...task,
+          DaysLeft: Math.ceil((new Date(task.TaskDate) - new Date(currentDate)) / (1000 * 60 * 60 * 24))
+      }));
+
+      // 獲取用戶數據
+      const userResult = await sql.query`SELECT * FROM Users WHERE UserID = ${req.session.ContactId}`;
+      const user = userResult.recordset[0];
+      user.tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
+
+      res.render('task-list', { tasks, user, currentDate });
   } catch (err) {
-    res.status(500).send('Database error');
+      console.error(err.message);
+      res.status(500).send('Database error');
   }
 });
+
+
 
 module.exports = router;

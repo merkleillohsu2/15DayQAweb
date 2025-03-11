@@ -289,17 +289,14 @@
         const query = getQueryParameter('query');
         if (query && !sessionStorage.getItem('ContactId')) {
             // 如果 sessionStorage 中不存在 ContactId，執行解密請求
-            fetch(`/decrypt?query=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const contactId = data.ContactId;
-                    sessionStorage.setItem('ContactId', contactId);
-                    sessionStorage.setItem('Query', query);
-                    console.log('ContactId 和 Query 已存儲到 sessionStorage');
-                })
-                .catch(error => {
-                    console.error('解密失敗:', error);
-                });
+            // 從後端渲染的變量獲取數據
+            const contactId = '<%= contactId %>';
+            const query = '<%= query %>';
+
+            // 存儲到 sessionStorage
+            sessionStorage.setItem('ContactId', contactId);
+            sessionStorage.setItem('Query', query);
+            console.log('ContactId 和 Query 已存儲到 sessionStorage');
         } else {
             console.log('ContactId 已經存在於 sessionStorage');
         }
@@ -311,7 +308,7 @@
             document.getElementById('returnToParentHome').addEventListener('click', () => {
                 window.parent.postMessage('navigate-home', 'https://pmi--qa.sandbox.my.site.com/'); // 指定父頁域名
             });
-            
+
             // 點擊圖片顯示 Popup
             readMoreImg.addEventListener('click', () => {
                 popup.classList.remove('hidden'); // 顯示彈窗
