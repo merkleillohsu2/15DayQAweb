@@ -1,8 +1,12 @@
 const crypto = require('crypto');
 const { decryptString } = require('./userSetup'); // 導入 decryptString 函數
 const { config, sql } = require('./dbconfig');
+const { DateTime } = require('luxon');
 
 require('dotenv').config();
+
+const USERS_TABLE = process.env.USERS_TABLE
+const REWARDS_TABLE = process.env.REWARDS_TABLE
 
 const handleDecryption = async (req, res) => {
   const urlquery = req.query.query;
@@ -24,7 +28,7 @@ const handleDecryption = async (req, res) => {
 
     const parsedData = JSON.parse(decryptedData);
     const userId = parsedData.User.ContactId;
-    const userName = parsedData.User.Name;
+    const userName = parsedData.User.LastName + ' ' + parsedData.User.FirstName;
 
     if (!parsedData || !parsedData.User || !parsedData.User.ContactId) {
       console.error('[ERROR] 無效的解密數據，缺少 User 或 ContactId');
@@ -45,56 +49,73 @@ const handleDecryption = async (req, res) => {
       console.error('[ERROR] 數據庫連接失敗:', err.message);
       return { error: 'Database connection failed', details: err.message };
     }
-    // 獲取當前時間作為 LastLoginTime
-    const lastLoginTime = new Date().toISOString();
+    // 獲取台灣時間
+    // 獲取台灣時間，並轉換為 UTC 時間
+    const lastLoginTime = DateTime.now().setZone('Asia/Taipei').toISO();
+    console.log(lastLoginTime);
 
-    // 檢查 UserId 是否已存在
-    const checkResult = await sql.query`
-        SELECT COUNT(*) as count 
-        FROM Users 
-        WHERE UserID = ${userId}
-      `;
-    if (checkResult.recordset[0].count > 0) {
+    // 單一查詢：檢查用戶是否存在並獲取獎勵狀態
+    const combinedQuery = `
+      SELECT 
+        u.UserID, 
+        u.LastLoginTime, 
+        r.surveyRewardGiven 
+      FROM ${USERS_TABLE} u
+      LEFT JOIN ${REWARDS_TABLE} r ON u.UserID = r.UserID
+      WHERE u.UserID = @userId;
+    `;
+    const pool = await sql.connect();
+    const result = await pool.request()
+      .input('userId', sql.VarChar(36), userId)
+      .query(combinedQuery);
+    const userRecord = result.recordset[0];
+    console.log('[INFO] 查詢結果:', userRecord);
+    if (userRecord) {
       console.log('[INFO] User 已存在，更新 LastLoginTime');
       // 更新 LastLoginTime
-      await sql.query`
-            UPDATE Users 
-            SET LastLoginTime = ${lastLoginTime} 
-            WHERE UserID = ${userId}
-          `;
+      const updateQuery = `
+       UPDATE ${USERS_TABLE}
+       SET LastLoginTime = @lastLoginTime
+       WHERE UserID = @userId
+     `;
+      await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
+        .query(updateQuery);
     } else {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
-      await sql.query`
-            INSERT INTO Users (UserID, UserName, LastLoginTime, tasksCompleted, rewards) 
-            VALUES (${userId}, ${userName}, ${lastLoginTime}, '[]', 0)
-          `;
+      const insertQuery = `
+        INSERT INTO ${USERS_TABLE} (UserID, UserName, LastLoginTime, tasksCompleted, rewards)
+        VALUES (@userId, @userName, @lastLoginTime, '[]', 0)
+      `;
+      await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .input('userName', sql.NVarChar(255), userName)
+        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
+        .query(insertQuery);
     }
-    try {
-      // 確認是否需要發放獎勵
-      const rewardCheck = await sql.query`
-                                          SELECT surveyRewardGiven 
-                                          FROM UserSurveyRewards 
-                                          WHERE UserID = ${userId};
-                                          `;
-      console.log('[INFO] 獎勵檢查結果:', rewardCheck.recordset);   
-      if (rewardCheck.recordset.length > 0 && !(rewardCheck.recordset[0].surveyRewardGiven)) {
-        // 發放獎勵
-        await sql.query`
-                          UPDATE Users 
-                          SET rewards = rewards + 10 
-                          WHERE UserID = ${userId};
-                      `;
-        await sql.query`
-                          UPDATE UserSurveyRewards 
-                          SET surveyRewardGiven = 1 
-                          WHERE UserID = ${userId};
-                      `;
-                      console.log('[INFO] 獎勵已發放');
-      }
-    } catch (err) {
-      console.error('[ERROR] 發放獎勵失敗:', err.message);
-      res.status(500).send('Failed to process reward.');
+    // 檢查是否需要發放獎勵
+    if (userRecord && userRecord.surveyRewardGiven === false) {
+      console.log('[INFO] 發放獎勵中...');
+      const updateRewardsQuery = `
+        UPDATE ${USERS_TABLE}
+        SET rewards = rewards + 10
+        WHERE UserID = @userId;
+      `;
+      await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .query(updateRewardsQuery);
+
+      const updateSurveyQuery = `
+        UPDATE ${REWARDS_TABLE}
+        SET surveyRewardGiven = 1
+        WHERE UserID = @userId;
+      `;
+      await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .query(updateSurveyQuery);
+      console.log('[INFO] 獎勵已發放');
     }
     return { success: true, ContactId: userId, Query: urlquery };
   } catch (err) {

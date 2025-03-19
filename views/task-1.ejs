@@ -4,244 +4,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第1天任務</title>
+    <title>任務倒數第15天</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .question {
-            margin-bottom: 20px;
-        }
-
-        .button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .correct-answer {
-            color: green;
-            font-weight: bold;
-        }
-
-        .incorrect-answer {
-            color: red;
-            font-weight: bold;
-        }
-
-        #completionMessage {
-            display: none;
-        }
-
-        #rewardMessage {
-            color: red;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .hidden {
-            display: none;
-          }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/task-1.css">
 </head>
-
 <body>
     <div class="container">
-        <h1>第1天任務：選擇題任務</h1>
+         <!-- 圖片 1 -->
+        <img src="/images/D15/750x1200-Day15.png" alt="任務圖片">
 
-        <!-- 第一題 -->
-        <div id="question1" class="question">
-            <p>問題1：Node.js 是用於開發什麼類型的應用程式的？</p>
-            <form id="form1" class="quiz-form" data-correct="Web 應用程式">
-                <input type="radio" name="q1" value="Web 應用程式" required> Web 應用程式<br>
-                <input type="radio" name="q1" value="手機應用程式"> 手機應用程式<br>
-                <input type="radio" name="q1" value="桌面應用程式"> 桌面應用程式<br>
-                <button type="submit" class="button">提交答案</button>
-            </form>
-            <p id="q1-correct" class="hidden correct-answer">正確答案：Web 應用程式</p>
-            <p id="q1-feedback"></p>
+        <!-- 新增 "更多圖片" -->
+        <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
+
+        <!-- 彈窗內容 -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>更多訊息</p>
+                <button class="close-popup">關閉</button>
+            </div>
         </div>
 
-        <!-- 第二題 -->
-        <div id="question2" class="question hidden">
-            <p>問題2：Node.js 的主要特點是什麼？</p>
-            <form id="form2" class="quiz-form" data-correct="非同步 I/O">
-                <input type="radio" name="q2" value="同步 I/O" required> 同步 I/O<br>
-                <input type="radio" name="q2" value="非同步 I/O"> 非同步 I/O<br>
-                <input type="radio" name="q2" value="多執行緒"> 多執行緒<br>
-                <button type="submit" class="button">提交答案</button>
-            </form>
-            <p id="q2-correct" class="hidden correct-answer">正確答案：非同步 I/O</p>
-            <p id="q2-feedback"></p>
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>更多訊息</p>
+                <button class="close-popup">關閉</button>
+            </div>
         </div>
 
-        <!-- 第三題 -->
-        <div id="question3" class="question hidden">
-            <p>問題3：Node.js 使用哪種語言進行開發？</p>
-            <form id="form3" class="quiz-form" data-correct="JavaScript">
-                <input type="radio" name="q3" value="Python" required> Python<br>
-                <input type="radio" name="q3" value="Ruby"> Ruby<br>
-                <input type="radio" name="q3" value="JavaScript"> JavaScript<br>
-                <button type="submit" class="button">完成問答</button>
-            </form>
-            <p id="q3-correct" class="hidden correct-answer">正確答案：JavaScript</p>
-            <p id="q3-feedback"></p>
+        <div class="action-container">
+            <div class="checkbox-container">
+                <input type="checkbox" id="taskCompletedCheckbox">
+                <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+            </div>
+            <div>
+                <% if (!isCompleted && task.TaskDate === currentDate) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/D15/750x1200-Day15-CTA_01.png" alt="按鈕圖片">
+                    </button>
+                <% } else if (isCompleted) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/D15/750x1200-Day15-CTA_02.png" alt="按鈕圖片">
+                    </button>
+                <% } else if (!isCompleted && task.TaskDate !== currentDate) { %>
+                    <p id="notTodayMessage" style="color: red;">非今日任務</p>
+                <% } %>
+            </div>
         </div>
-
-        <!-- 完成信息 -->
-        <div id="completionMessage"
-            class="<%= task.TaskDate === currentDate ? (isCompleted ? 'hidden' : '') : 'hidden' %>">
-            <p>恭喜你完成了選擇題任務！</p>
-            <form id="completeForm">
-                <button type="submit"
-                    class="<%= task.TaskDate === currentDate ? ( !isCompleted ? 'button' : 'hidden' ): 'hidden' %>"
-                    id="completeButton">完成今日任務</button>
-            </form>
-            <p id="taskCompletedMessage" class="<%= isCompleted ? '' : 'hidden' %>">任務已完成</p>
+        <div id="rewardMessage" class="hidden">
+            <p>恭喜完成任務！</p>
+            <h3 id="rewardMessageh3"></h3>
+            <button id="returnToParentHome">返回首頁</button>
         </div>
-        <p id="notTodayMessage" class="<%= task.TaskDate === currentDate ? 'hidden' : '' %>" style="color: red;">非今日任務
-        </p>
-        <div id="rewardMessage" class="hidden"></div>
     </div>
+    <div id="freezeLayer" class="hidden"></div>
 
     <script>
-        // 獲取 URL 中的 query 參數
+        console.log('任務數據:', "<%= JSON.stringify(task) %>");
+        console.log('當前日期:', '<%= currentDate %>');
+        console.log('是否已完成:', "<%= isCompleted %>");
+
         function getQueryParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
 
         const query = getQueryParameter('query');
-
         if (query && !sessionStorage.getItem('ContactId')) {
-            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
-            fetch(`/decrypt?query=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const contactId = data.ContactId;
-                    sessionStorage.setItem('ContactId', contactId);
-                    sessionStorage.setItem('Query', query);
-                    console.log('ContactId 和 Query 已存儲到 sessionStorage');
-                })
-                .catch(error => {
-                    console.error('解密失敗:', error);
-                });
+            const contactId = '<%= contactId %>';
+            const query = '<%= query %>';
+
+            sessionStorage.setItem('ContactId', contactId);
+            sessionStorage.setItem('Query', query);
+            console.log('ContactId 和 Query 已存儲到 sessionStorage');
         } else {
             console.log('ContactId 已經存在於 sessionStorage');
         }
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const correctAnswer = form.getAttribute('data-correct');
-            const answer = form.querySelector('input[type="radio"]:checked').value;
-            const feedbackId = form.nextElementSibling.id;
-            const feedbackElement = document.getElementById(feedbackId);
 
-            feedbackElement.classList.remove('hidden');
-            feedbackElement.textContent = answer === correctAnswer ? '回答正確！' : `回答錯誤。正確答案是：${correctAnswer}`;
-            feedbackElement.style.color = answer === correctAnswer ? 'green' : 'red';
+        document.addEventListener('DOMContentLoaded', () => {
+            const readMoreImg = document.querySelector('.read-more-img');
+            const popup = document.getElementById('popup');
+            const closePopupButton = popup.querySelector('.close-popup');
 
-            // 禁用 radio 按鈕
-            form.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.disabled = true;
+            document.getElementById('returnToParentHome').addEventListener('click', () => {
+                window.parent.postMessage('navigate-home', 'https://pmi--qa.sandbox.my.site.com/');
             });
 
-            // 隱藏提交按鈕
-            form.querySelector('button[type="submit"]').classList.add('hidden');
+             // 點擊圖片顯示 Popup
+             readMoreImg.addEventListener('click', () => {
+                popup.classList.remove('hidden'); // 顯示彈窗
+            });
 
-            if (form.id !== 'form3') {
-                form.parentElement.nextElementSibling.classList.remove('hidden');
-            } else {
-                document.getElementById('completionMessage').style.display = 'block';
+            closePopupButton.addEventListener('click', () => {
+                popup.classList.add('hidden');
+            });
+
+            popup.addEventListener('click', (event) => {
+                if (event.target === popup) {
+                    popup.classList.add('hidden');
+                }
+            });
+
+            const checkbox = document.getElementById('taskCompletedCheckbox');
+            const button = document.getElementById('complete-task-btn');
+            const buttonImg = button.querySelector('img');
+            const freezeLayer = document.getElementById('freezeLayer');
+
+            button.disabled = true;
+            button.style.opacity = 0.5;
+
+            checkbox.addEventListener('change', updateButtonState);
+
+            function updateButtonState() {
+                const isCheckboxChecked = checkbox.checked;
+                const buttonImageSrc = buttonImg.getAttribute('src');
+
+                if (buttonImageSrc === '/images/D15/750x1200-Day15-CTA_02.png') {
+                    button.disabled = true;
+                    button.style.opacity = 1;
+                } else if (isCheckboxChecked && buttonImageSrc === '/images/D15/750x1200-Day15-CTA_01.png') {
+                    button.disabled = false;
+                    button.style.opacity = 1;
+                } else {
+                    button.disabled = true;
+                    button.style.opacity = 0.5;
+                }
             }
-        }
 
+            button.addEventListener('click', () => {
+                if (!button.disabled) {
+                    const userId = sessionStorage.getItem('ContactId');
+                    button.disabled = true;
+                    buttonImg.setAttribute('src', '/images/D15/750x1200-Day15-CTA_02.png');
+                    freezeLayer.classList.add('active');
 
-        document.querySelectorAll('.quiz-form').forEach(form => {
-            form.addEventListener('submit', handleFormSubmit);
-        });
-
-        document.getElementById('completeForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            // 使完成今日任務按鈕變灰且不可點選
-            const completeButton = document.getElementById('completeButton');
-            completeButton.disabled = true;
-            completeButton.classList.add('button:disabled');
-            const currentDate = new Date().toISOString().split('T')[0];
-            const taskDate = '<%= task.TaskDate %>';
-            const userId = sessionStorage.getItem('ContactId'); // 假設 UserId 儲存在 sessionStorage 中
-            if (currentDate !== taskDate) {
-                alert('非今日任務');
-            } else {
-                fetch('/task/1/complete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        UserId: userId, // 傳送 UserId
-                      }),
-                })
+                    fetch('/task/1/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ UserId: userId }),
+                    })
                     .then(response => response.json())
                     .then(data => {
                         const rewardMessage = document.getElementById('rewardMessage');
-                        rewardMessage.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                        const rewardMessagecontent = document.getElementById('rewardMessageh3');
+                        rewardMessagecontent.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
                         rewardMessage.classList.remove('hidden');
-                        setTimeout(() => {
-                            rewardMessage.classList.add('hidden');
-                            window.location.href = '/'; // 跳轉到首頁
-                        }, 5000);
+                        freezeLayer.classList.remove('active');
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error('提交失敗:', error);
                     });
-            }
+                }
+            });
+
+            updateButtonState();
         });
     </script>
 </body>

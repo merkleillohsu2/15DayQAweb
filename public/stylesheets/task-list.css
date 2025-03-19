@@ -1,59 +1,88 @@
+/* 全局樣式重置 */
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    margin: 0; /* 移除整體外邊距 */
+    padding: 0; /* 移除整體內邊距 */
     background-color: #f5f5f5;
 }
 
+/* Header 樣式 */
 header {
     text-align: center;
-    margin: 20px 0;
+    margin: 0; /* 移除 margin 確保無縫隙 */
+    padding: 0; /* 移除內邊距確保與 main 無縫銜接 */
+    background-color: #ffffff; /* 可選背景色 */
+    border-bottom: 1px solid #ddd; /* 可選分隔線 */
+    margin-bottom: -2px; /* Removes the gap */
 }
 
+/* 獎勵橫幅中的圖片樣式 */
 .reward-banner img {
     max-width: 100%;
-    height: auto;
+    height: auto; /* 保持圖片比例 */
+    display: block; /* 避免圖片 inline-block 空間問題 */
 }
 
-main {
-    padding: 20px;
+/* 獎勵容器 */
+.reward-container {
+    position: relative;
+    display: block;
     text-align: center;
 }
 
+/* 獎勵圖片樣式 */
+.reward-image {
+    display: block;
+    width: 100%; /* 圖片填滿容器 */
+    height: auto; /* 保持圖片比例 */
+}
+
+/* 金額容器樣式 */
+.reward-amount {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-shadow: 0px 0px 5px black;
+    pointer-events: none;
+    display: flex;
+    align-items: center; /* 垂直對齊金額與金幣圖標 */
+    justify-content: center; /* 水平對齊金額與金幣圖標 */
+    gap: 8px; /* 圖標與金額之間間距 */
+}
+
+/* 金幣圖標樣式 */
+.coin-icon {
+    width: 24px; /* 金幣圖標大小 */
+    height: 24px;
+}
+
+/* Task list 容器 */
 .task-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
+    flex-direction: column; /* 按列堆疊 */
+    width: 100%; /* 充滿父容器 */
+    padding: 0; /* 移除內邊距 */
+    margin: 0; /* 移除外邊距 */
+    gap: 0; /* 確保每個任務按鈕之間無空隙 */
 }
 
+/* Task button 樣式 */
 .task-button {
-    width: 200px; /* 增加寬度 */
-    height: auto; /* 高度自適應文字內容 */
-    padding: 10px;
-    font-size: 14px; /* 文字大小適中 */
-    white-space: normal; /* 允許多行文字 */
-    text-align: center;
+    padding: 0; /* 移除按鈕內邊距 */
+    margin: 0; /* 移除按鈕外邊距 */
+    border: none; /* 移除按鈕邊框 */
+    width: 100%; /* 按鈕占滿父容器寬度 */
+    display: block; /* 確保按鈕充滿行 */
+    margin-bottom: -2px; /* Removes the gap */
 }
 
-
-.task-button:hover {
-    transform: scale(1.05);
-}
-
-.task-button.completed {
-    background-color: #4caf50; /* 已完成：綠色 */
-    color: white;
-    cursor: not-allowed;
-}
-
-.task-button.today-task {
-    background-color: #ffa500; /* 今日任務：橙色 */
-    color: white;
-}
-
-.task-button.pending {
-    background-color: #2196f3; /* 未完成：藍色 */
-    color: white;
+/* Task image 樣式 */
+.task-button img {
+    display: block; /* 避免 inline-block 間距問題 */
+    width: 100%; /* 圖片寬度充滿按鈕 */
+    height: auto; /* 保持圖片比例 */
 }

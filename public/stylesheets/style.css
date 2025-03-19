@@ -1,5 +1,5 @@
 html, body {
-    overflow: hidden; /* 隱藏滾動條 */
+  /*  overflow: hidden; /* 隱藏滾動條 */
     margin: 0; /* 移除任何邊距 */
     padding: 0; /* 移除任何內間距 */
     width: 100%;

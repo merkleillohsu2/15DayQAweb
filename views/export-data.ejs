@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>資料表操作</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #007bff;
+    }
+    .control-panel {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    select, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>資料表操作</h1>
+
+    <!-- 控制面板 -->
+    <div class="control-panel">
+      <!-- 資料表選擇 -->
+      <label for="table-select">選擇資料表：</label>
+      <select id="table-select">
+        <!-- 下拉選單選項 -->
+      </select>
+
+      <!-- 匯出按鈕 -->
+      <button id="export-table">匯出選定資料表</button>
+    </div>
+
+    <!-- 資料表預覽 -->
+    <table id="data-table" class="display" style="width:100%">
+      <thead>
+        <tr id="table-header">
+          <!-- 此處需要填入欄位標題 -->
+          <th>Column 1</th>
+          <th>Column 2</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- 此處需要填入數據行 -->
+        <tr>
+          <td>Row 1, Col 1</td>
+          <td>Row 1, Col 2</td>
+        </tr>
+      </tbody>
+    </table>    
+  </div>
+
+  <script>
+    // 初始化下拉選單
+    fetch('/export/get-tables') // 後端 API 獲取資料表清單
+      .then(response => response.json())
+      .then(data => {
+        const select = document.getElementById('table-select');
+        data.tables.forEach(table => {
+          const option = document.createElement('option');
+          option.value = table;
+          option.textContent = table;
+          select.appendChild(option);
+        });
+
+        // 預設載入第一個資料表
+        if (data.tables.length > 0) {
+          loadTablePreview(data.tables[0]);
+        }
+      })
+      .catch(error => console.error('載入資料表清單失敗:', error));
+
+    // 載入預覽資料
+    function loadTablePreview(tableName) {
+      console.log(`正在加載資料表: ${tableName}`);
+    
+      fetch(`/preview/preview-data?table=${encodeURIComponent(tableName)}`)
+        .then(response => {
+          console.log(`API 回應狀態碼: ${response.status}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('表格數據:', data);
+          $('#data-table').DataTable().destroy();
+          $('#table-header').empty();
+          $('#table-body').empty();
+    
+          data.columns.forEach(column => {
+            $('#table-header').append(`<th>${column}</th>`);
+          });
+    
+          data.rows.slice(0, 100).forEach(row => {
+            const rowHtml = row.map(value => `<td>${value}</td>`).join('');
+            $('#table-body').append(`<tr>${rowHtml}</tr>`);
+          });
+    
+          $('#data-table').DataTable({ pageLength: 100 });
+        })
+        .catch(error => console.error('載入表格資料失敗:', error));
+    }    
+    
+    // 下拉選單變更事件
+    document.getElementById('table-select').addEventListener('change', function() {
+      const selectedTable = this.value;
+      loadTablePreview(selectedTable);
+    });
+
+    // 匯出按鈕事件
+    document.getElementById('export-table').addEventListener('click', function() {
+      const selectedTable = document.getElementById('table-select').value;
+      window.location.href = `/export/export-table-csv?table=${encodeURIComponent(selectedTable)}`;
+    });
+  </script>
+</body>
+</html>

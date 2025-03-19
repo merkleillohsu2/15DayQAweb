@@ -11,35 +11,67 @@
     <header>
         <!-- 獎勵圖片區域 -->
         <div class="reward-banner">
-            <% if (user.rewards >= 100) { %>
-                <img src="/images/reward-level-3.png" alt="最高等級獎勵">
-            <% } else if (user.rewards >= 50) { %>
-                <img src="/images/reward-level-2.png" alt="中等等級獎勵">
-            <% } else { %>
-                <img src="/images/reward-level-1.png" alt="初始獎勵">
-            <% } %>
+            <% 
+                    // 計算獎勵百分比（已處理特定範圍）
+                    let rewardLevel = 0;
+                    
+                    if (user.rewards >= 75 && user.rewards <= 99) {
+                        rewardLevel = 75; // 75 到 99 對應獎勵 75
+                    } else if (user.rewards >= 100) {
+                        rewardLevel = 100; // 100 以上對應獎勵 100
+                    } else {
+                        rewardLevel = Math.ceil(user.rewards / 5) * 5; // 其他情況取最接近的 5% 值
+                    }
+                    
+                    // 設定圖片名稱
+                    const rewardImage = `pig-$${rewardLevel}.gif`;
+            %>
+            
+            <!-- 顯示對應的獎勵圖片 -->
+            <div class="reward-container">
+                <img src="/images/Reward/<%= rewardImage %>" alt="獎勵圖片" class="reward-image">
+                <span class="reward-amount">
+                    <img src="/images/Reward/coin_03.png" alt="金幣圖示" class="coin-icon">
+                    <%= user.rewards %> 元
+                </span>
+            </div>
+            
         </div>
     </header>
-
     <main>
-        <h1>任務總表</h1>
-
         <!-- 任務按鈕區域 -->
         <div class="task-list">
-          <% tasks.forEach((task) => { %>
-              <% const isToday = task.TaskDate === currentDate; %>
-              <% const isCompleted = user.tasksCompleted.includes(task.TaskID); %>
-              
-              <button 
-                  class="task-button 
-                         <%= isCompleted ? 'completed' : isToday ? 'today-task' : 'pending' %>"
-                  onclick="redirectToTask('<%= task.TaskID %>')"
-                  >
-                  <%= task.TaskName %> <!-- 按鈕名稱 -->
-                  <%= isToday ? '(今日任務)' : '' %>
-              </button>
-          <% }) %>
-      </div>
+            <% 
+                tasks.sort((a, b) => a.TaskID - b.TaskID);
+        
+                tasks.forEach((task) => {
+                    const formattedTaskDate = new Date(task.TaskDate).toISOString().slice(0, 10);
+                    const isToday = formattedTaskDate === currentDate;
+                    const isPast = new Date(task.TaskDate) < new Date(currentDate);
+                    const isFuture = new Date(task.TaskDate) > new Date(currentDate);
+        
+                    // 動態設置按鈕圖片
+                    const taskImage = isToday 
+                        ? `/images/Task-list/today/CTA-GO_D${task.TaskID}.gif`
+                        : isPast
+                        ? `/images/Task-list/Pass/CTA-過去_D${task.TaskID}.gif`
+                        : `/images/Task-list/unlock/CTA-未解鎖_D${task.TaskID}.gif`;
+        
+                    // 如果是未解鎖的任務，設置 disabled
+                    const isLocked = isFuture; // 未來任務為未解鎖
+            %>
+                <button 
+                    class="task-button <%= isLocked ? 'locked' : '' %>" 
+                    <%= isLocked ? 'disabled' : '' %> 
+                    onclick="<%= isLocked ? '' : `redirectToTask('${task.TaskID}')` %>"
+                >
+                    <img src="<%= taskImage %>" alt="任務圖片">
+                </button>
+            <% }); %>
+        </div>
+        
+        
+        
       
       <script>
           function redirectToTask(taskId) {

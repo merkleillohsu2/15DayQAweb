@@ -1,0 +1,265 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    padding: 20px;
+}
+
+.task-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+img {
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
+#image-2 {
+    margin-bottom: 20px;
+}
+
+.action-container {
+    position: absolute;
+    top: 88%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+    width: 90%;
+}
+
+.arrow-img {
+    width: 8%;
+    height: auto;
+}
+
+@media (min-width: 768px) {
+    .arrow-img {
+        width: 10%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .arrow-img {
+        width: 12%;
+    }
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #f4b400;
+}
+
+@media (min-width: 768px) {
+    .checkbox-container input[type="checkbox"] {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+.checkbox-container label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+@media (min-width: 768px) {
+    .checkbox-container label {
+        font-size: 3rem;
+    }
+}
+
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.button img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#completionMessage {
+    display: none;
+}
+
+#rewardMessage {
+    color: red;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
+
+.read-more-container {
+    top: 30%;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    text-align: center;
+    z-index: 2;
+}
+
+.read-more-p {
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .read-more-p {
+        font-size: 2rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .read-more-p {
+        font-size: 1.8rem;
+    }
+}
+
+.read-more-p {
+    font-size: 1.2rem;
+    color: white;
+    top: 94%;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    height: auto;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.read-more-img {
+    position: absolute;
+    top: 96%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.popup p {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.popup .close-popup {
+    background-color: #f4b400;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup.hidden {
+    display: none;
+}
+
+#freezeLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+#freezeLayer.active {
+    display: block;
+}
+
+.quiz {
+    position: relative;
+}
+
+.quiz img {
+    position: relative;
+    top: 0;
+}
+
+.quiz .answers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0; /* Remove margin to ensure overlap */
+    bottom: 2%;
+    z-index: 2;
+}
+
+.quiz .result {
+    position: static; /* 參與普通文檔流 */
+    margin-top: 10px; /* 與題目保持一些距離 */
+    margin-bottom: 10px; /* 與答案保持一些距離 */
+    width: 100%; /* 與 .quiz 一致 */
+    height: auto; /* 確保圖片比例不變 */
+    text-align: center; /* 確保對齊 */
+}
+
+
+

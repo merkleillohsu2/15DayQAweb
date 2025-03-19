@@ -30,8 +30,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // 添加這個中間件
-
+const exportRoutes = require('./routes/exportRoutes');
 const indexRouter = require('./routes/index');
+const previewRoutes = require('./routes/previewRoutes');
+const lotteryRoutes = require('./routes/lotteryRoutes');
+app.use('/lottery', lotteryRoutes); // 為抽獎功能設定基礎路徑 "/lottery"
+
 // 定義 /decrypt 路由
 /*app.get('/decrypt', async (req, res) => {
   const result = await handleDecryption(req, res);
@@ -42,6 +46,11 @@ const indexRouter = require('./routes/index');
 
   res.status(200).json({ message: 'User setup completed', ContactId: result.ContactId });
 });*/
+
+// Mount the route with a prefix (e.g., /preview)
+app.use('/preview', previewRoutes);
+// 匯出資料的路由
+app.use('/export', exportRoutes);
 
 // 主路由
 app.use('/', indexRouter);
