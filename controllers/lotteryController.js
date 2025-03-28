@@ -9,35 +9,66 @@ const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
 const CONFIGURATION_SETTINGS_TABLE = process.env.CONFIGURATION_SETTINGS_TABLE;
 const TIME_BASED_PROBABILITY_TABLE = process.env.TIME_BASED_PROBABILITY_TABLE;
 
+// 通用 SQL 執行函數
+async function executeQuery(query, inputs = {}) {
+  try {
+      const pool = await sql.connect();
+      const request = pool.request();
+      for (const [key, value] of Object.entries(inputs)) {
+          request.input(key, value.type, value.value);
+      }
+      const result = await request.query(query);
+      return result.recordset;
+  } catch (error) {
+      console.error('執行 SQL 失敗:', error.message);
+      throw error;
+  }
+}
+
+// 統一日期與時間處理
+function getFormattedDateTime() {
+  const today = new Date().toISOString().split('T')[0];
+  const taiwanTime = DateTime.now().setZone('Asia/Taipei').toFormat('HH:mm:ss');
+  return { today, taiwanTime };
+}
+
+// 返回格式化的 API 響應
+function createResponse(success, data, message) {
+  return { success, data, message };
+}
+
+
+
+
+
+
+
+
+
 // 獲取今日剩餘抽獎名額
 exports.getRemainingPrizes = async (req, res) => {
-  const today = new Date().toISOString().split('T')[0];
-  const query = `
-      SELECT COUNT(*) AS RemainingPrizes
-      FROM ${PRIZES_TABLE}
-      WHERE AvailableDate = @today AND IsClaimed = 0;
-  `;
   try {
-    // 使用新的連接配置執行查詢
-    const pool = await sql.connect();
-    const result = await pool.request()
-      .input('today', sql.Date, today)
-      .query(query);
-
-    const remainingPrizes = result.recordset[0].RemainingPrizes;
-    res.json({ remainingPrizes });
+      const { today } = getFormattedDateTime();
+      const query = `
+          SELECT COUNT(*) AS RemainingPrizes
+          FROM ${PRIZES_TABLE}
+          WHERE AvailableDate = @today AND IsClaimed = 0;
+      `;
+      const result = await executeQuery(query, { today: { type: sql.Date, value: today } });
+      const remainingPrizes = result[0]?.RemainingPrizes || 0;
+      res.json(createResponse(true, { remainingPrizes }, '成功獲取剩餘獎項數量'));
   } catch (error) {
-    console.error('獲取剩餘獎項失敗:', error.message);
-    res.status(500).json({ error: '無法獲取剩餘獎項數量' });
+      console.error('獲取剩餘獎項失敗:', error.message);
+      res.status(500).json(createResponse(false, null, '無法獲取剩餘獎項數量'));
   }
 };
 
+
+
 // 用戶參加抽獎
 exports.performLottery = async (req, res) => {
-  const { userId, taskId } = req.body; // 從請求中接收 userId 和 taskId
-  const lotteryEntryId = generateRandomId(); // 隨機生成 5 碼的 LotteryEntryId
-  const today = new Date().toISOString().split('T')[0];
-  const taiwanTime = DateTime.now().setZone('Asia/Taipei').toFormat('HH:mm:ss');
+  const { userId, taskIds } = req.body; // 從請求中接收 userId 和 taskId
+  const { today, taiwanTime } = getFormattedDateTime();
   console.log(`[INFO] 台灣時間轉換後: ${taiwanTime}`);
   const pool = await sql.connect();
   try {
@@ -113,7 +144,7 @@ exports.performLottery = async (req, res) => {
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.Int, taskId)
+        .input('taskId', sql.NVarChar, taskIds)
         .query(insertLotteryEntryQuery);
 
       return res.json({ success: false, message: '很遺憾，您未中獎！' });
@@ -131,7 +162,7 @@ exports.performLottery = async (req, res) => {
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.Int, taskId)
+        .input('taskId', sql.NVarChar, taskIds)
         .input('prizeId', sql.Int, prizeId)
         .query(insertLotteryEntryQuery);
 
@@ -158,7 +189,7 @@ exports.performLottery = async (req, res) => {
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.Int, taskId)
+        .input('taskId', sql.Int, taskIds)
         .query(insertLotteryEntryQuery);
 
       return res.json({
@@ -171,11 +202,6 @@ exports.performLottery = async (req, res) => {
     res.status(500).json({ success: false, message: '抽獎失敗，請稍後再試' });
   }
 };
-
-// 隨機生成 5 碼數字的函數
-function generateRandomId() {
-  return Math.floor(10000 + Math.random() * 90000).toString();
-}
 
 // 查詢用戶抽獎記錄
 exports.getUserLotteryRecords = async (req, res) => {

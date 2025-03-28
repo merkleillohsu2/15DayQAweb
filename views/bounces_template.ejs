@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-7 圖文任務</title>
+    <link rel="stylesheet" href="/stylesheets/task-7.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Task-7 活動</h1>
+        <!-- 任務內容 -->
+        <div class="task-content">
+            <h2>圖文任務</h2>
+            <p>請閱讀以下內容並完成任務：</p>
+            <div class="task-image">
+                <img src="https://via.placeholder.com/800x400" alt="圖文任務示例">
+            </div>
+            <p>本次任務是探索我們的平台功能，完成任務即可參加抽獎贏取 300 元禮券！</p>
+        </div>
+
+        <!-- 獎勵訊息 -->
+        <div id="rewardMessage" class="hidden">
+            <p>恭喜完成任務！</p>
+            <h3 id="rewardMessageh3"></h3>
+            <button id="returnToParentHome">返回首頁
+        </div>
+
+        <!-- 完成任務按鈕 -->
+        <button id="complete-task-btn">完成任務</button>
+
+        <!-- 抽獎按鈕 (完成任務後顯示) -->
+        <button id="draw-lottery-btn" class="hidden">參加抽獎</button>
+    </div>
+
+    <script>
+        console.log('任務數據:', "<%= JSON.stringify(task) %>");
+        console.log('當前日期:', '<%= currentDate %>');
+        console.log('是否已完成:', "<%= isCompleted %>");
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        const query = getQueryParameter('query');
+        if (query && !sessionStorage.getItem('ContactId')) {
+            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
+            // 從後端渲染的變量獲取數據
+            const contactId = '<%= contactId %>';
+            const query = '<%= query %>';
+
+            // 存儲到 sessionStorage
+            sessionStorage.setItem('ContactId', contactId);
+            sessionStorage.setItem('Query', query);
+            console.log('ContactId 和 Query 已存儲到 sessionStorage');
+        } else {
+            console.log('ContactId 已經存在於 sessionStorage');
+        }
+        const userId = sessionStorage.getItem('ContactId'); // 假設 UserId 儲存在 sessionStorage 中
+
+        // 完成任務按鈕事件
+        document.getElementById('complete-task-btn').addEventListener('click', function () {
+            fetch('/task/7/complete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    UserId: userId // 傳送 UserId
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === '恭喜你完成任務') {
+                        const rewardMessage = document.getElementById('rewardMessage');
+                        const rewardMessagecontent = document.getElementById('rewardMessageh3');
+                        rewardMessagecontent.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                        rewardMessage.classList.remove('hidden');
+    
+                        // 隱藏完成按鈕，顯示抽獎按鈕
+                        document.getElementById('complete-task-btn').classList.add('hidden');
+                        document.getElementById('draw-lottery-btn').classList.remove('hidden');
+                    } else {
+                        alert(data.error || '完成任務失敗，請稍後再試！');
+                    }
+                   
+                })
+                .catch(error => {
+                    console.error('完成任務出錯:', error);
+                });
+        });
+
+        // 抽獎按鈕事件
+        document.getElementById('draw-lottery-btn').addEventListener('click', function () {
+            fetch('/lottery/perform-lottery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId, // 傳送 UserId
+                    taskId: 7 // 傳送 TaskId
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`恭喜！您抽中了 ${data.prizeName} 價值 ${data.prizeValue} 元！`);
+                    } else {
+                        alert(data.message || '抽獎失敗，請稍後再試！');
+                    }
+                })
+                .catch(error => {
+                    console.error('參加抽獎出錯:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

@@ -59,7 +59,7 @@ img {
 /* 操作區域樣式 */
 .action-container {
     position: absolute;
-    top: 80%;
+    top: 93.5%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;

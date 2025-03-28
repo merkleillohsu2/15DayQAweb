@@ -15,8 +15,11 @@ const REWARDS_TABLE = process.env.REWARDS_TABLE;
 
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
-  const date = new Date();
-  return date.toISOString().split('T')[0];
+  const now = new Date();
+  const taiwanOffset = 8 * 60; // 台灣時區 UTC+8 的分鐘數
+  const localOffset = now.getTimezoneOffset(); // 當前時區的分鐘數
+  const taiwanTime = new Date(now.getTime() + (taiwanOffset - localOffset) * 60 * 1000);
+  return taiwanTime.toISOString().split('T')[0];
 };
 
 // 解密中間件
@@ -84,7 +87,7 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 for (let day = 1; day <= 15; day++) {
   router.get(`/task/${day}`, handleDecryptionMiddleware, async (req, res) => {
     console.log(`[INFO] 獲取 ContactId: ${req.session.ContactId}`);
-    const currentDate = getCurrentDate();
+    const currentDate = new Date().toISOString().split('T')[0];
     const userId = req.session.ContactId;
     console.log(`[INFO] 獲取 UserId: ${userId}`);
     try {
@@ -130,7 +133,7 @@ for (let day = 1; day <= 15; day++) {
 
   // 任務完成邏輯
   router.post(`/task/${day}/complete`, async (req, res) => {
-    const currentDate = getCurrentDate();
+    const currentDate = new Date().toISOString().split('T')[0];
     const { UserId } = req.body; // 從請求中提取 UserId
     console.log('Request Body:', req.body);
 
@@ -160,6 +163,31 @@ for (let day = 1; day <= 15; day++) {
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
       const tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
       console.log(tasksCompleted);
+
+      // 特殊邏輯處理：day = 15 時檢查所有任務是否完成
+      if (day === 15) {
+        const allTasksQuery = `
+            SELECT TaskID 
+            FROM ${TASKS_TABLE}
+        `;
+        const allTasksResult = await pool.request().query(allTasksQuery);
+        const allTasks = allTasksResult.recordset.map(task => task.TaskID);
+
+        // 檢查是否所有任務都已完成
+        const hasCompletedAllTasks = allTasks.every(taskId => tasksCompleted.includes(taskId));
+
+        if (!hasCompletedAllTasks) {
+            return res.status(400).send({
+                message: '您尚未完成所有任務，請確保完成後再來提交！',
+                remainingTasks: allTasks.filter(taskId => !tasksCompleted.includes(taskId)) // 返回未完成的任務 ID
+            });
+        }
+    }
+
+
+
+
+
       // 確認任務是否已經完成
       const completionQuery = `
                               SELECT * 

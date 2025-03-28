@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽獎</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/bounce.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 主圖 -->
+        <div class="image-wrapper">
+            <img src="/images/Lucky-Draw/750-UI_扭蛋.gif" alt="扭蛋圖片" class="main-image">
+
+            <!-- 行動區域 -->
+            <div class="action-container">
+                <button class="button <%= remainingPrizes === 0 || isMaxDrawsReached ? 'disabled' : '' %>"
+                    id="lotteryImage" <%=remainingPrizes===0 || isMaxDrawsReached ? 'disabled' : '' %>>
+                    <img src="/images/Lucky-Draw/Lucky-Draw-CTA.png" alt="抽獎按鈕圖片">
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 彈窗容器 -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <img id="popupImage" src="" alt="彈窗圖片">
+            <img id="closePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+        </div>
+    </div>
+    <div id="freezeLayer" class="hidden"></div>
+    <script>
+        console.log('任務數據:', "<%= remainingPrizes %>");
+        const freezeLayer = document.getElementById('freezeLayer');
+
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        const query = getQueryParameter('query');
+        if (query && !sessionStorage.getItem('ContactId')) {
+            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
+            // 從後端渲染的變量獲取數據
+            const contactId = '<%= contactId %>';
+            const query = '<%= query %>';
+
+            // 存儲到 sessionStorage
+            sessionStorage.setItem('ContactId', contactId);
+            sessionStorage.setItem('Query', query);
+            console.log('ContactId 和 Query 已存儲到 sessionStorage');
+        } else {
+            console.log('ContactId 已經存在於 sessionStorage');
+        }
+        // 抽獎功能
+        const lotteryImage = document.getElementById('lotteryImage');
+        lotteryImage?.addEventListener('click', () => {
+            
+
+            freezeLayer.classList.add('active');
+
+            if (lotteryImage.disabled) {
+                alert('今日抽獎次數已用完，請明天再來！');
+                return;
+            }
+            // 禁用按鈕
+            lotteryImage.disabled = true;
+            lotteryImage.classList.add('disabled'); // 添加樣式提示按鈕已禁用
+            const userId = sessionStorage.getItem('ContactId');
+            const taskIds = "<%= taskIds %>"; // 使用渲染的 taskId
+            const closePopup = document.getElementById('closePopup');
+            // 關閉彈窗
+            closePopup.addEventListener('click', () => {
+                popup.classList.add('hidden');
+            });
+            fetch('/lottery/perform-lottery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, taskIds })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    freezeLayer.classList.remove('active');
+                    if (data.success) {
+                        // 顯示得獎彈窗
+                        popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');
+                        popup.classList.remove('hidden');
+                    } else {
+                        // 顯示未中獎彈窗
+                        popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-2.png');
+                        popup.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('抽獎出錯:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

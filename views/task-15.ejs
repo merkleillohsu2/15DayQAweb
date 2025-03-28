@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任務倒數第13天</title>
+    <title>任務倒數第5天</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/task-3.css">
+    <link rel="stylesheet" href="/stylesheets/task-15.css">
     <script src="/scripts/common.js"></script>
 </head>
 
 <body>
     <div class="container">
         <!-- 主圖片 -->
-        <img src="/images/D13/750x1200-Day13.png" alt="任務圖片">
+        <img src="/images/D01/750x1200-Day1.png" alt="任務圖片">
 
         <!-- 彈窗內容 -->
         <div id="popup" class="popup hidden">
@@ -27,19 +27,19 @@
         <div class="action-container">
             <div class="checkbox-container">
                 <input type="checkbox" id="taskCompletedCheckbox">
-                <label style="color: white;" for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+                <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
             </div>
             <div>
                 <% if (!isCompleted && task.TaskDate===currentDate) { %>
                     <button class="button" id="complete-task-btn">
-                        <img src="/images/D13/750x1200-CTA_01.png" alt="提交按鈕">
+                        <img src="/images/D01/750x1200-CTA_01.png" alt="提交按鈕">
                     </button>
                     <% } else if (isCompleted) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D13/750x1200-CTA_02.png" alt="已完成按鈕">
+                            <img src="/images/D01/750x1200-CTA_02.png" alt="已完成按鈕">
                         </button>
                         <% } else { %>
-                            <p id="notTodayMessage" style="color: red;">非今日任務</p>
+                            <div class="button" id="complete-task-btn"></div>
                             <% } %>
             </div>
         </div>
@@ -58,7 +58,7 @@
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
-        // DOM 操作集中管理
+        // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
                 popup: document.getElementById('popup'),
@@ -73,9 +73,9 @@
             };
 
             const constants = {
-                taskCompletedSrc: '/images/D13/750x1200-CTA_02.png',
-                taskIncompleteSrc: '/images/D13/750x1200-CTA_01.png',
-                rewardApiEndpoint: '/task/3/complete',
+                taskCompletedSrc: '/images/D01/750x1200-CTA_02.png',
+                taskIncompleteSrc: '/images/D01/750x1200-CTA_01.png',
+                rewardApiEndpoint: '/task/15/complete',
             };
 
             // 更新按鈕狀態
@@ -92,7 +92,6 @@
                 elements.button.disabled = isCompleted || !isCheckboxChecked;
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
-
             // 彈窗邏輯
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
@@ -121,10 +120,9 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        throw new Error(`HTTP錯誤！狀態碼: ${response.status}`);
                     }
 
-                    const data = await response.json();
                     elements.rewardMessage.classList.remove('hidden');
                 } catch (error) {
                     console.error('提交失敗:', error);
@@ -137,6 +135,7 @@
             const initializeEvents = () => {
                 elements.checkbox.addEventListener('change', updateButtonState);
                 elements.button.addEventListener('click', completeTask);
+                setupPopupEvents();
                 elements.closeRewardButton.addEventListener('click', () => {
                     elements.rewardMessage.style.display = 'none';
                 });
@@ -144,7 +143,6 @@
 
             // 初始化
             updateButtonState();
-            setupPopupEvents();
             initializeEvents();
         });
     </script>

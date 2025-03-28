@@ -11,12 +11,9 @@ body {
 
 /* 容器樣式 */
 .container {
-    background: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative; /* 子元素定位依附於此 */
-    padding: 20px;
 }
 
 /* 標題樣式 */
@@ -30,7 +27,6 @@ body {
 img {
     max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
     margin: 0 auto;
-    display: block; /* 居中顯示圖片 */
 }
 
 /* 特殊圖片間距樣式 */
@@ -56,23 +52,80 @@ img {
     }
 }
 
-/* 操作區域樣式 */
+/* 圖片與行動區域的父容器 */
+.media-wrapper {
+    position: relative; /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */
+    width: 100%;
+    max-width: 90%;
+    margin: 0 auto; /* 居中對齊 */
+    text-align: center;
+}
+
+
+/* 圖片樣式 */
+.content-image {
+    width: 100%; /* 確保圖片適配容器 */
+    height: auto; /* 保持長寬比例 */
+    display: block;
+}
+
+/* 圖片與影片尺寸一致 */
+.media-wrapper img,
+.media-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* 行動區域樣式 */
 .action-container {
+    position: absolute; /* 絕對定位，疊加在圖片之上 */
+    top: 96%; /* 緊貼圖片底部 */
+    left: 50%; /* 水平居中對齊 */
+    transform: translateX(-50%); /* 修正偏移，確保居中 */
+    width: 100%; /* 行動區域寬度，根據需要調整 */
+}
+
+
+/* 禁用行動區域的樣式 */
+.disabled-container {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* 扭蛋相關樣式 */
+.gacha-wrapper {
     position: absolute;
-    top: 80%;
+    width: 100%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px; /* 控制子元素之間的距離 */
-    z-index: 2; /* 確保內容在背景圖片上方 */
-    width: 90%; /* 防止溢出 */
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.Gacha-img,
+.Gacha-Container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.Gacha-Container {
+    position: absolute; /* 絕對定位，疊加在圖片之上 */
+    top: 80%; /* 緊貼圖片底部 */
+    left: 50%; /* 水平居中對齊 */
+    transform: translateX(-50%); /* 修正偏移，確保居中 */
+    width: 100%; /* 行動區域寬度，根據需要調整 */
+}
+
+/* 隱藏元素 */
+.hidden {
+    display: none;
 }
 
 /* 勾選框樣式 */
 .checkbox-container {
-    display: flex;
     align-items: center; /* 垂直對齊 */
     gap: 10px;
 }
@@ -150,12 +203,10 @@ img {
 .popup.hidden {
     display: none;
 }
-
 /* 隱藏類別 */
 .hidden {
     display: none;
 }
-
 /* 冷凍層樣式 */
 #freezeLayer {
     position: fixed;
@@ -223,10 +274,46 @@ img {
 }
 
 
-/* 問答題結果樣式 */
+/* 父容器，確保圖片和影片大小一致 */
+.media-wrapper {
+    width: 100%; /* 父容器的寬度 */
+    margin: 0 auto; /* 水平居中 */
+    text-align: center; /* 內容居中 */
+}
+
+/* 圖片和影片樣式 */
+.media-wrapper img,
+.media-wrapper video {
+    width: 100%; /* 繼承父容器的寬度 */
+    height: auto; /* 自動保持比例 */
+    display: block; /* 居中顯示 */
+}
+
+/* 問答題樣式 */
+.quiz {
+    position: relative;
+}
+
+.quiz img {
+    position: relative;
+    top: 0;
+}
+
+.quiz .answers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    bottom: 2%;
+    z-index: 2;
+}
+
 .quiz .result {
     position: static;
-    margin: 10px 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
     width: 100%;
     height: auto;
     text-align: center;

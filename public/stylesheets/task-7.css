@@ -1,63 +1,301 @@
+/* 全局樣式 */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
     margin: 0;
-    padding: 20px;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center; /* 主軸居中 */
+    align-items: center; /* 交叉軸居中 */
+    min-height: 100vh; /* 垂直居中屏幕 */
 }
 
+/* 容器樣式 */
 .container {
-    max-width: 800px;
-    margin: auto;
-    background: #ffffff;
+    border-radius: 10px;
+    text-align: center;
+    position: relative; /* 子元素定位依附於此 */
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-h1,
-h2 {
-    text-align: center;
-    color: #007bff;
+/* 標題樣式 */
+.task-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.task-content {
-    margin-top: 20px;
+/* 通用圖片樣式 */
+img {
+    max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
+    margin: 0 auto;
+    display: block; /* 居中顯示圖片 */
 }
 
-.task-image {
-    text-align: center;
-    margin: 20px 0;
+/* 特殊圖片間距樣式 */
+#image-2 {
+    margin-bottom: 20px; /* 與其他元素分隔 */
 }
 
-.task-image img {
-    max-width: 100%;
-    border-radius: 10px;
+/* 箭頭圖片樣式 */
+.arrow-img {
+    width: 8%; /* 默認寬度 */
+    height: auto; /* 保持圖片比例 */
 }
 
-button {
-    display: block;
+@media (min-width: 768px) {
+    .arrow-img {
+        width: 10%; /* 平板大小 */
+    }
+}
+
+@media (min-width: 1200px) {
+    .arrow-img {
+        width: 12%; /* 桌面大屏幕 */
+    }
+}
+
+/* 圖片與行動區域的父容器 */
+.media-wrapper {
+    position: relative; /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */
     width: 100%;
-    padding: 15px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
+    max-width: 90%;
+    margin: 0 auto; /* 居中對齊 */
+    text-align: center;
 }
 
-button:hover {
-    background-color: #0056b3;
+
+/* 圖片樣式 */
+.content-image {
+    width: 100%; /* 確保圖片適配容器 */
+    height: auto; /* 保持長寬比例 */
+    display: block;
 }
 
+/* 圖片與影片尺寸一致 */
+.media-wrapper img,
+.media-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* 行動區域樣式 */
+.action-container {
+    position: absolute; /* 絕對定位，疊加在圖片之上 */
+    top: 87%; /* 緊貼圖片底部 */
+    left: 50%; /* 水平居中對齊 */
+    transform: translateX(-50%); /* 修正偏移，確保居中 */
+    width: 100%; /* 行動區域寬度，根據需要調整 */
+}
+
+
+/* 禁用行動區域的樣式 */
+.disabled-container {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* 扭蛋相關樣式 */
+.gacha-wrapper {
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.Gacha-img,
+.Gacha-Container img {
+    width: 80%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.Gacha-Container {
+    position: absolute; /* 絕對定位，疊加在圖片之上 */
+    top: 80%; /* 緊貼圖片底部 */
+    left: 50%; /* 水平居中對齊 */
+    transform: translateX(-50%); /* 修正偏移，確保居中 */
+    width: 100%; /* 行動區域寬度，根據需要調整 */
+}
+
+/* 隱藏元素 */
 .hidden {
     display: none;
 }
 
-#rewardMessage {
+/* 勾選框樣式 */
+.checkbox-container {
+    align-items: center; /* 垂直對齊 */
+    gap: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #f4b400; /* 更改勾選框顏色 */
+}
+
+@media (min-width: 768px) {
+    .checkbox-container input[type="checkbox"] {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+.checkbox-container label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+@media (min-width: 768px) {
+    .checkbox-container label {
+        font-size: 2rem; /* 更大螢幕字體保持一致，避免過度放大 */
+    }
+}
+
+/* 按鈕樣式 */
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.button img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 彈窗樣式 */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    width: 80%;
+    max-width: 400px; /* 限制寬度，避免跑版 */
     text-align: center;
-    margin-top: 15px;
+}
+
+.popup p {
+    margin: 10px 0;
     font-size: 16px;
-    color: green;
+    font-weight: bold;
+}
+
+.popup .close-popup {
+    background-color: #f4b400;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup.hidden {
+    display: none;
+}
+/* 隱藏類別 */
+.hidden {
+    display: none;
+}
+/* 冷凍層樣式 */
+#freezeLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+/* 冷凍層顯示時啟用 */
+#freezeLayer.active {
+    display: block;
+}
+
+/* 更多圖片樣式 */
+.read-more-img {
+    position: absolute;
+    bottom: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* 響應式處理 */
+@media (max-width: 767px) {
+    .read-more-img {
+        width: 90%; /* 手機檢視大小調整 */
+    }
+}
+
+/* 獎勵訊息樣式 */
+#rewardMessage {
+    color: red;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    width: 90%; /* Adjusted width */
+    max-width: 600px; /* Adjusted max-width */
+    padding: 20px; /* Added padding */
+}
+
+#rewardMessage .reward-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* 確保圖片完全展開並保持長寬比 */
+}
+
+#rewardMessage .close-button {
+    position: absolute;
+    top: 15%;
+    right: 8%;
+    cursor: pointer;
+    width: 50px; /* Adjusted size */
+    height: 50px; /* Adjusted size */
+}
+
+
+/* 父容器，確保圖片和影片大小一致 */
+.media-wrapper {
+    width: 100%; /* 父容器的寬度 */
+    margin: 0 auto; /* 水平居中 */
+    text-align: center; /* 內容居中 */
+}
+
+/* 圖片和影片樣式 */
+.media-wrapper img,
+.media-wrapper video {
+    width: 100%; /* 繼承父容器的寬度 */
+    height: auto; /* 自動保持比例 */
+    display: block; /* 居中顯示 */
+}
+
+/* 問答題結果樣式 */
+.quiz .result {
+    position: static;
+    margin: 10px 0;
+    width: 100%;
+    height: auto;
+    text-align: center;
 }

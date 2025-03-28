@@ -3,5 +3,5 @@ html, body {
     margin: 0; /* 移除任何邊距 */
     padding: 0; /* 移除任何內間距 */
     width: 100%;
-    height: 100%;
+    /*height: 100%;*/
 }

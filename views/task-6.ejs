@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任務倒數第10天</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/task-6.css">
+    <script src="/scripts/common.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 主圖片展示 -->
+        <img src="/images/D10/750x1200-Day10.png" alt="任務圖片">
+
+        <!-- 彈窗內容 -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>更多訊息</p>
+                <button class="close-popup">關閉</button>
+            </div>
+        </div>
+
+        <!-- 行動區域 -->
+        <div class="action-container">
+            <div class="checkbox-container">
+                <input type="checkbox" id="taskCompletedCheckbox">
+                <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+            </div>
+            <div>
+                <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/D10/750x1200-CTA_01.png" alt="提交按鈕">
+                    </button>
+                    <% } else if (isCompleted) { %>
+                        <button class="button" id="complete-task-btn">
+                            <img src="/images/D10/750x1200-CTA_02.png" alt="已完成按鈕">
+                        </button>
+                        <% } else { %>
+                            <div class="button" id="complete-task-btn"></div>
+                            <% } %>
+            </div>
+        </div>
+
+        <!-- 獎勵訊息 -->
+        <div id="rewardMessage" class="hidden">
+            <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
+            <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
+        </div>
+    </div>
+
+    <!-- 凍結層 -->
+    <div id="freezeLayer" class="hidden"></div>
+
+    <script>
+        // 初始化 sessionStorage
+        initializeSessionStorage('<%= contactId %>');
+
+        // 定義 DOM 元素和常量
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = {
+                popup: document.getElementById('popup'),
+                closePopupButton: document.querySelector('.close-popup'),
+                checkbox: document.getElementById('taskCompletedCheckbox'),
+                button: document.getElementById('complete-task-btn'),
+                buttonImg: document.querySelector('#complete-task-btn img'),
+                freezeLayer: document.getElementById('freezeLayer'),
+                rewardMessage: document.getElementById('rewardMessage'),
+                closeRewardButton: document.querySelector('#rewardMessage .close-button'),
+                rewardImg: document.querySelector('.reward-img'),
+            };
+
+            const constants = {
+                taskCompletedSrc: '/images/D10/750x1200-CTA_02.png',
+                taskIncompleteSrc: '/images/D10/750x1200-CTA_01.png',
+                rewardApiEndpoint: '/task/6/complete',
+            };
+
+            // 更新按鈕狀態
+            const updateButtonState = () => {
+                const isCheckboxChecked = elements.checkbox.checked;
+                let isCompleted;
+                // 檢查是否存在圖片
+                if (elements.buttonImg) {
+                    isCompleted = elements.buttonImg.getAttribute('src') === constants.taskCompletedSrc;
+                    console.log('按鈕是否已完成:', isCompleted);
+                } else {
+                    console.log('按鈕未包含圖片');
+                }
+                elements.button.disabled = isCompleted || !isCheckboxChecked;
+                elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
+            };
+
+            // 彈窗控制邏輯
+            const setupPopupEvents = () => {
+                elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
+                elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
+                elements.popup.addEventListener('click', (event) => {
+                    if (event.target === elements.popup) {
+                        elements.popup.classList.add('hidden');
+                    }
+                });
+            };
+
+            // 提交任務完成邏輯
+            const completeTask = async () => {
+                if (elements.button.disabled) return;
+
+                const userId = sessionStorage.getItem('ContactId');
+                elements.button.disabled = true;
+                elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
+                elements.freezeLayer.classList.add('active');
+
+                try {
+                    const response = await fetch(constants.rewardApiEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ UserId: userId }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
+                    }
+
+                    elements.rewardMessage.classList.remove('hidden'); // 僅在提交成功後顯示
+                } catch (error) {
+                    console.error('提交失敗:', error);
+                } finally {
+                    elements.freezeLayer.classList.remove('active');
+                }
+            };
+
+            // 初始化事件監聽
+            const initializeEvents = () => {
+                elements.checkbox.addEventListener('change', updateButtonState);
+                elements.button.addEventListener('click', completeTask);
+                elements.closeRewardButton.addEventListener('click', () => {
+                    elements.rewardMessage.classList.add('hidden'); // 隱藏獎勵訊息
+                });
+                setupPopupEvents();
+            };
+
+            // 初始化邏輯
+            updateButtonState();
+            initializeEvents();
+        });
+    </script>
+</body>
+
+</html>
