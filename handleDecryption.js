@@ -29,11 +29,12 @@ const handleDecryption = async (req, res) => {
     const parsedData = JSON.parse(decryptedData);
     const userId = parsedData.User.ContactId;
     const userName = parsedData.User.LastName + ' ' + parsedData.User.FirstName;
+    const phoneNumber = parsedData.User.Contact.MobilePhone; // 提取 MobilePhone
 
-    if (!parsedData || !parsedData.User || !parsedData.User.ContactId) {
-      console.error('[ERROR] 無效的解密數據，缺少 User 或 ContactId');
-      return { error: 'Invalid decrypted data: missing User or ContactId' };
-    }
+    if (!parsedData || !parsedData.User || !parsedData.User.ContactId || !phoneNumber) {
+      console.error('[ERROR] 無效的解密數據，缺少 User、ContactId 或 MobilePhone');
+      return { error: 'Invalid decrypted data: missing User, ContactId, or MobilePhone' };
+   }
     if (!userId) {
       console.error('[ERROR] 未找到 ContactId');
       return res.status(400).send('ContactId not found in decrypted data');
@@ -41,6 +42,8 @@ const handleDecryption = async (req, res) => {
     req.session.ContactId = userId;
 
     console.log('[INFO] UserId to store:', userId);
+    console.log('[INFO] PhoneNumber to store:', phoneNumber);
+
 
     // 連接數據庫
     try {
@@ -56,9 +59,10 @@ const handleDecryption = async (req, res) => {
 
     // 單一查詢：檢查用戶是否存在並獲取獎勵狀態
     const combinedQuery = `
-      SELECT 
+       SELECT 
         u.UserID, 
         u.LastLoginTime, 
+        u.PhoneNumber, 
         r.surveyRewardGiven 
       FROM ${USERS_TABLE} u
       LEFT JOIN ${REWARDS_TABLE} r ON u.UserID = r.UserID
@@ -71,30 +75,32 @@ const handleDecryption = async (req, res) => {
     const userRecord = result.recordset[0];
     console.log('[INFO] 查詢結果:', userRecord);
     if (userRecord) {
-      console.log('[INFO] User 已存在，更新 LastLoginTime');
-      // 更新 LastLoginTime
+      console.log('[INFO] User 已存在，更新 LastLoginTime 和 PhoneNumber');
+      // 更新 LastLoginTime 和 PhoneNumber
       const updateQuery = `
-       UPDATE ${USERS_TABLE}
-       SET LastLoginTime = @lastLoginTime
-       WHERE UserID = @userId
-     `;
-      await pool.request()
-        .input('userId', sql.VarChar(36), userId)
-        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
-        .query(updateQuery);
-    } else {
+      UPDATE ${USERS_TABLE}
+      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber
+      WHERE UserID = @userId;
+    `;
+    await pool.request()
+    .input('userId', sql.VarChar(36), userId)
+    .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
+    .input('phoneNumber', sql.NVarChar(15), phoneNumber)
+    .query(updateQuery);
+ } else {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
       const insertQuery = `
-        INSERT INTO ${USERS_TABLE} (UserID, UserName, LastLoginTime, tasksCompleted, rewards)
-        VALUES (@userId, @userName, @lastLoginTime, '[]', 0)
+        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, LastLoginTime, tasksCompleted, rewards)
+        VALUES (@userId, @userName, @phoneNumber, @lastLoginTime, '[]', 0);
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('userName', sql.NVarChar(255), userName)
+        .input('phoneNumber', sql.NVarChar(15), phoneNumber)
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .query(insertQuery);
-    }
+ }
     // 檢查是否需要發放獎勵
     if (userRecord && userRecord.surveyRewardGiven === false) {
       console.log('[INFO] 發放獎勵中...');

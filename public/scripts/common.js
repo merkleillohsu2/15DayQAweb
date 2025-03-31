@@ -6,7 +6,7 @@ const targetUrls = {
 
 // 通用功能：向父窗口發送消息
 function navigateToParent(message) {
-    const environment = window.location.host.includes('sandbox') ? 'sandbox' : 'production'; // 根據域名判斷環境
+    const environment = window.location.host.includes('15daytestweb') ? 'sandbox' : 'production'; // 根據域名判斷環境
     const targetUrl = targetUrls[environment];
 
     if (window.parent && targetUrl) {
