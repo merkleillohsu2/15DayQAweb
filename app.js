@@ -45,7 +45,10 @@ app.use((req, res, next) => {
   // 設置 CSP 標頭，允許來自 'self' 和指定來源的腳本
   next();
 });
-
+app.use((req, res, next) => {
+  res.removeHeader('X-Frame-Options'); // 移除 X-Frame-Options
+  next();
+});
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
