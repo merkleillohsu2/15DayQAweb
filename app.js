@@ -40,8 +40,9 @@ app.use((req, res, next) => {
   res.locals.nonce = crypto.randomBytes(16).toString('base64'); // 使用 crypto 生成唯一 nonce
   res.setHeader(
       'Content-Security-Policy',
-      `script-src 'self' 'nonce-${res.locals.nonce}'`
-  );
+      `script-src 'self' 'nonce-${res.locals.nonce}'; frame-src https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;`
+    );
+  // 設置 CSP 標頭，允許來自 'self' 和指定來源的腳本
   next();
 });
 
