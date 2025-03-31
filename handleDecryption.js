@@ -29,7 +29,8 @@ const handleDecryption = async (req, res) => {
     const parsedData = JSON.parse(decryptedData);
     const userId = parsedData.User.ContactId;
     const userName = parsedData.User.LastName + ' ' + parsedData.User.FirstName;
-    const phoneNumber = parsedData.User.Contact.MobilePhone; // 提取 MobilePhone
+    const phoneNumber = parsedData.User.Contact.Phone; // 提取 MobilePhone
+    const chain = parsedData.User.Contact.Account.DTE_Chain__c || null; // 提取 Chain 值
 
     if (!parsedData || !parsedData.User || !parsedData.User.ContactId || !phoneNumber) {
       console.error('[ERROR] 無效的解密數據，缺少 User、ContactId 或 MobilePhone');
@@ -79,25 +80,27 @@ const handleDecryption = async (req, res) => {
       // 更新 LastLoginTime 和 PhoneNumber
       const updateQuery = `
       UPDATE ${USERS_TABLE}
-      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber
+      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber , Chain = @chain
       WHERE UserID = @userId;
     `;
     await pool.request()
     .input('userId', sql.VarChar(36), userId)
     .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
     .input('phoneNumber', sql.NVarChar(15), phoneNumber)
+    .input('chain', sql.NVarChar(10), chain)
     .query(updateQuery);
  } else {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
       const insertQuery = `
-        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, LastLoginTime, tasksCompleted, rewards)
-        VALUES (@userId, @userName, @phoneNumber, @lastLoginTime, '[]', 0);
+        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, Chain, LastLoginTime, tasksCompleted, rewards)
+        VALUES (@userId, @userName, @phoneNumber, @chain, @lastLoginTime, '[]', 0);
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('userName', sql.NVarChar(255), userName)
         .input('phoneNumber', sql.NVarChar(15), phoneNumber)
+        .input('chain', sql.NVarChar(10), chain)
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .query(insertQuery);
  }

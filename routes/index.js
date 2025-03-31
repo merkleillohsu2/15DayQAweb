@@ -183,11 +183,6 @@ for (let day = 1; day <= 15; day++) {
             });
         }
     }
-
-
-
-
-
       // 確認任務是否已經完成
       const completionQuery = `
                               SELECT * 
