@@ -6,6 +6,7 @@ const { sql } = require('../dbconfig');
 
 require('dotenv').config();
 // 動態配置表名稱
+const USERS_TABLE = process.env.USERS_TABLE;
 const PRIZES_TABLE = process.env.PRIZES_TABLE;
 const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE;
 const TASKS_TABLE = process.env.TASKS_TABLE;
@@ -45,8 +46,6 @@ const handleDecryptionMiddleware = async (req, res, next) => {
     }
 };
 
-
-
 // 獲取今日剩餘抽獎名額
 router.get('/get-remaining-prizes', lotteryController.getRemainingPrizes);
 
@@ -71,11 +70,15 @@ router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
         const pool = await sql.connect();
         // 1. 獲取當天所有的任務
         const tasksQuery = `
-                                SELECT t.TaskID, utc.IsCompleted
-                                FROM ${TASKS_TABLE} t
-                                LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc ON t.TaskID = utc.TaskID AND utc.UserID = @userId
-                                WHERE t.TaskDate = @currentDate;
-                            `;
+                            SELECT t.TaskID, utc.IsCompleted
+                            FROM ${TASKS_TABLE} t
+                            LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc 
+                                ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+                            INNER JOIN ${USERS_TABLE} u
+                                ON u.UserID = @userId
+                            WHERE t.TaskDate = @currentDate
+                                AND t.Chain = u.Chain; -- 僅返回與用戶 Chain 匹配的任務
+                        `;
         const tasksResult = await pool.request()
             .input('userId', sql.VarChar(36), userId)
             .input('currentDate', sql.Date, currentDate)

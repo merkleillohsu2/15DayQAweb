@@ -11,12 +11,11 @@ body {
 
 /* 容器樣式 */
 .container {
-    background: #fff;
+    background: #CCFFFF;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative;
-    padding: 20px;
 }
 
 /* 任務標題樣式 */
@@ -41,7 +40,7 @@ img {
 /* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 97%;
+    top: 97.5%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -49,7 +48,7 @@ img {
     align-items: center;
     gap: 10px;
     z-index: 2;
-    width: 90%;
+    width: 100%;
 }
 
 /* 箭頭圖片樣式 */

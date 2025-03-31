@@ -14,7 +14,6 @@ body {
     border-radius: 10px;
     text-align: center;
     position: relative; /* 子元素定位依附於此 */
-    padding: 20px;
 }
 
 /* 標題樣式 */
@@ -53,12 +52,17 @@ img {
         width: 12%; /* 桌面大屏幕 */
     }
 }
+video::-webkit-media-controls-timeline {
+    display: none; /* 隱藏時間條 */
+}
 
+video::-moz-progressbar {
+    display: none; /* 隱藏進度條（適用於 Firefox） */
+}
 /* 圖片與行動區域的父容器 */
 .media-wrapper {
     position: relative; /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */
     width: 100%;
-    max-width: 90%;
     margin: 0 auto; /* 居中對齊 */
     text-align: center;
 }
@@ -115,7 +119,7 @@ img {
 
 .Gacha-Container {
     position: absolute; /* 絕對定位，疊加在圖片之上 */
-    top: 80%; /* 緊貼圖片底部 */
+    top: 75%; /* 緊貼圖片底部 */
     left: 50%; /* 水平居中對齊 */
     transform: translateX(-50%); /* 修正偏移，確保居中 */
     width: 100%; /* 行動區域寬度，根據需要調整 */
@@ -170,40 +174,39 @@ img {
     display: block;
 }
 
-/* 彈窗樣式 */
 .popup {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    width: 80%;
-    max-width: 400px; /* 限制寬度，避免跑版 */
-    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* 半透明背景 */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.popup p {
-    margin: 10px 0;
-    font-size: 16px;
-    font-weight: bold;
+.popup-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
-.popup .close-popup {
-    background-color: #f4b400;
-    color: #fff;
+.popup-content iframe {
+    width: 100%;
+    height: 100%;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
 }
 
-.popup.hidden {
-    display: none;
+.popup-content img.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    z-index: 1010; /* 確保按鈕位於彈窗內容之上 */
 }
 /* 隱藏類別 */
 .hidden {

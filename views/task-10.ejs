@@ -64,7 +64,13 @@
                 </div>
             </div>
         </div>
-
+        <!-- Bounce 頁面彈窗 -->
+        <div id="bouncePopup" class="popup hidden">
+            <div class="popup-content">
+                <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
+                <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+            </div>
+        </div>
 
 
         <!-- 獎勵訊息 -->
@@ -73,14 +79,6 @@
             <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
         </div>
 
-        <!-- 彈窗內容 -->
-        <div id="popup" class="popup hidden">
-            <div class="popup-content">
-                <img id="popupImage" src="" alt="PopUp 圖片">
-                <!-- 關閉按鈕 -->
-                <img id="closePopup" class="close-popup" src="/images/D06/X.png" alt="關閉按鈕">
-            </div>
-        </div>
 
     </div>
 
@@ -96,7 +94,7 @@
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
-                popup: document.getElementById('popup'),
+                bouncePopup: document.getElementById('bouncePopup'),
                 popupImage: document.getElementById('popupImage'),
                 closePopupButton: document.querySelector('.close-popup'),
                 checkbox: document.getElementById('taskCompletedCheckbox'),
@@ -140,22 +138,6 @@
                 }
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
-
-            // 彈窗邏輯
-            const setupPopupEvents = () => {
-                elements.closePopupButton.addEventListener('click', () => {
-                    elements.popup.classList.add('hidden');
-                    elements.popupImage.setAttribute('src', '');
-                });
-
-                elements.popup.addEventListener('click', (event) => {
-                    if (event.target === elements.popup) {
-                        elements.popup.classList.add('hidden');
-                        elements.popupImage.setAttribute('src', '');
-                    }
-                });
-            };
-
 
             // 點擊疊加圖片顯示彈窗
             const setupOverlayPopupEvents = () => {
@@ -219,7 +201,7 @@
                 const overlay5 = document.querySelector('.overlay-image.overlay-5');
                 const overlay4 = document.querySelector('.overlay-image.overlay-4');
                 const overlay6 = document.querySelector('.overlay-image.overlay-6');
-            
+
                 if (image === overlay3 || image === overlay5) {
                     const updatedSrc = '/images/D06/放大鏡-images/放大鏡_ov_03.png';
                     overlay3.setAttribute('src', updatedSrc);
@@ -268,17 +250,22 @@
                 elements.checkbox.addEventListener('change', updateButtonState);
                 elements.button.addEventListener('click', completeTask);
                 elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
-                elements.lotteryImage.addEventListener('click', () => {
+                const bouncePopup = document.getElementById('bouncePopup');
+                const bounceIframe = document.getElementById('bounceIframe');
+                const closeBouncePopup = document.getElementById('closeBouncePopup');
+                const lotteryImage = document.getElementById('lotteryImage'); // 點擊觸發的按鈕
 
-                    const Query = sessionStorage.getItem('Query'); // 從 sessionStorage 獲取參數
-                    const taskId = '<%= task.TaskID  %>'
-                    // 構造帶有參數的 URL
-                    const targetUrl = `/lottery/bounce?query=${encodeURIComponent(Query)}&taskId=${taskId}`;
-
-                    // 導向帶有參數的目標 URL
-                    window.location.href = targetUrl;
+                // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
+                lotteryImage.addEventListener('click', () => {
+                    const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                    bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                    bouncePopup.classList.remove('hidden'); // 顯示彈窗
                 });
-                setupPopupEvents();
+                // 關閉彈窗邏輯
+                closeBouncePopup.addEventListener('click', () => {
+                    bouncePopup.classList.add('hidden'); // 隱藏彈窗
+                    bounceIframe.setAttribute('src', ''); // 清空 iframe
+                });
                 setupOverlayPopupEvents();
             };
 

@@ -8,30 +8,6 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-7.css">
     <script src="/scripts/common.js"></script>
-    <style>
-        /* 禁用操作的樣式 */
-        .disabled-container {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        /* 確保媒體容器寬度一致 */
-        .media-wrapper {
-            width: 100%;
-            max-width: 90%;
-            /* 限制寬度，避免過寬 */
-            margin: 0 auto;
-            /* 居中 */
-            text-align: center;
-        }
-
-        .media-wrapper img,
-        .media-wrapper video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-    </style>
 </head>
 
 <body>
@@ -50,6 +26,7 @@
                 <div class="checkbox-container">
                     <input type="checkbox" id="taskCompletedCheckbox">
                     <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+                    <br /><br />
                 </div>
                 <div>
                     <% if (!isCompleted && task.TaskDate===currentDate) { %>
@@ -83,27 +60,24 @@
             <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
             <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
         </div>
-
-        <!-- 彈窗內容 -->
-        <div id="popup" class="popup hidden">
-            <div class="popup-content">
-                <p>更多訊息</p>
-                <button class="close-popup">關閉</button>
-            </div>
+    </div>
+    <!-- Bounce 頁面彈窗 -->
+    <div id="bouncePopup" class="popup hidden">
+        <div class="popup-content">
+            <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
+            <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
         </div>
     </div>
-
     <!-- 冷凍層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-     <script nonce="<%= nonce %>">
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
-                popup: document.getElementById('popup'),
                 closePopupButton: document.querySelector('.close-popup'),
                 checkbox: document.getElementById('taskCompletedCheckbox'),
                 button: document.getElementById('complete-task-btn'),
@@ -147,11 +121,7 @@
             // 彈窗邏輯
             const setupPopupEvents = () => {
                 elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
-                elements.popup.addEventListener('click', (event) => {
-                    if (event.target === elements.popup) {
-                        elements.popup.classList.add('hidden');
-                    }
-                });
+              
             };
 
             // 提交任務完成
@@ -196,10 +166,25 @@
             const initializeEvents = () => {
                 elements.checkbox.addEventListener('change', updateButtonState);
                 elements.button.addEventListener('click', completeTask);
-                elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
-                elements.lotteryImage.addEventListener('click', () => {
-                    window.location.href = '/lottery/bounce' + window.location.search;
+                elements.closeRewardButton.addEventListener('click', () =>  elements.rewardMessage.classList.add('hidden'));
+                const bouncePopup = document.getElementById('bouncePopup');
+                const bounceIframe = document.getElementById('bounceIframe');
+                const closeBouncePopup = document.getElementById('closeBouncePopup');
+                const lotteryImage = document.getElementById('lotteryImage'); // 點擊觸發的按鈕
+
+                // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
+                lotteryImage.addEventListener('click', () => {
+                    const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                    bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                    bouncePopup.classList.remove('hidden'); // 顯示彈窗
                 });
+
+                // 關閉彈窗邏輯
+                closeBouncePopup.addEventListener('click', () => {
+                    bouncePopup.classList.add('hidden'); // 隱藏彈窗
+                    bounceIframe.setAttribute('src', ''); // 清空 iframe
+                });
+
                 setupPopupEvents();
                 setupVideoEvents();
             };

@@ -16,7 +16,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative;
-    padding: 20px;
 }
 
 /* 任務標題樣式 */
@@ -49,7 +48,7 @@ img {
     align-items: center;
     gap: 10px;
     z-index: 2;
-    width: 90%;
+    width: 100%;
 }
 
 /* 箭頭圖片樣式 */
@@ -93,7 +92,7 @@ img {
 .checkbox-container label {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
 }
 
 @media (min-width: 768px) {
@@ -188,7 +187,7 @@ img {
 
 .read-more-img {
     position: absolute;
-    bottom: 2%;
+    bottom: 1.5%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;
