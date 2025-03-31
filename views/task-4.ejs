@@ -103,7 +103,9 @@
                                 <img src="/images/D12/750x1200-CTA_02.png" alt="按鈕圖片">
                             </button>
                             <% } else if (!isCompleted && task.TaskDate !==currentDate) { %>
-                                <p id="notTodayMessage" style="color: red;">非今日任務</p>
+                                <div class="button" id="complete-task-btn">
+                                    <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                </div>
                                 <% } %>
                 </div>
             </div>
@@ -117,7 +119,7 @@
     </div>
     <div id="freezeLayer" class="hidden"></div>
 
-    <script>
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage，存儲 ContactId 和 Query
         initializeSessionStorage('<%= contactId %>');
 
@@ -148,20 +150,25 @@
                 let isCompleted;
                 // 檢查是否存在圖片
                 if (elements.buttonImg) {
-                    isCompleted = elements.buttonImg.getAttribute('src') === constants.taskCompletedSrc;
+                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                    console.log('按鈕圖片:', buttonImgSrc);
+
+                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
+
                     console.log('按鈕是否已完成:', isCompleted);
+
                 } else {
                     console.log('按鈕未包含圖片');
                 }
-                elements.button.disabled = isCompleted || !isCheckboxChecked;
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
 
             // 彈窗相關事件
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.readMoreImg.addEventListener('click', () => elements.popup.classList.remove('hidden'));
-                elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
+                elements.readMoreImg.addEventListener('click', () => navigateToParent('prize-info'));
                 elements.popup.addEventListener('click', (event) => {
                     if (event.target === elements.popup) {
                         elements.popup.classList.add('hidden');
@@ -211,16 +218,29 @@
                         const initialAnswers = quiz.querySelectorAll('.answer:not([alt*="選擇"])');
                         const selectedAnswer = quiz.querySelector(`.answer[data-answer="${answer.dataset.answer}"][alt*="選擇"]`);
 
+                        // 檢查是否已經有選中的答案
+                        const alreadySelected = quiz.querySelector('.answer.selected');
+                        if (alreadySelected && alreadySelected !== selectedAnswer) {
+                            // 解除原來選中答案的禁用狀態
+                            alreadySelected.classList.remove('selected');
+                            alreadySelected.style.pointerEvents = 'auto'; // 重新啟用點擊
+                        }
+
+                        // 隱藏所有答案，並恢復初始狀態
                         answerGroup.forEach(img => {
                             img.style.display = 'none';
                             img.classList.remove('selected');
+                            img.style.pointerEvents = 'auto'; // 重置所有答案的點擊狀態
                         });
+                        // 顯示初始答案圖片
                         initialAnswers.forEach(img => img.style.display = 'block');
                         e.target.style.display = 'none';
 
+                        // 如果有選中的答案，禁用其點擊
                         if (selectedAnswer) {
                             selectedAnswer.classList.add('selected');
                             selectedAnswer.style.display = 'block';
+                            selectedAnswer.style.pointerEvents = 'none'; // 禁用點擊選中的答案
                         }
                     });
                 });

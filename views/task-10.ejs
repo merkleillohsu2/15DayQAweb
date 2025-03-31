@@ -8,29 +8,6 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-10.css">
     <script src="/scripts/common.js"></script>
-    <style>
-        /* 禁用操作的樣式 */
-        .disabled-container {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        /* 確保媒體容器寬度一致 */
-        .media-wrapper {
-            width: 100%;
-            max-width: 90%;
-            /* 限制寬度，避免過寬 */
-            margin: 0 auto;
-            /* 居中 */
-            text-align: center;
-        }
-
-        .media-wrapper>img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-    </style>
 </head>
 
 <body>
@@ -64,16 +41,17 @@
                     <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
                 </div>
                 <div>
-                    <% if (!isCompleted && task.TaskDate === currentDate) { %>
+                    <% if (!isCompleted && task.TaskDate===currentDate) { %>
                         <button class="button" id="complete-task-btn">
                             <img src="/images/D09/750x1200-CTA_01.png" alt="提交按鈕">
                         </button>
-                    <% } else if (isCompleted) { %>
-                        <button class="button" id="complete-task-btn">
-                            <img src="/images/D09/750x1200-CTA_02.png" alt="已完成按鈕">
-                        </button>
-                    <% } else { %>
+                        <% } else if (isCompleted) { %>
+                            <button class="button" id="complete-task-btn">
+                                <img src="/images/D09/750x1200-CTA_02.png" alt="已完成按鈕">
+                            </button>
+                            <% } else { %>
                                 <div class="button" id="complete-task-btn">
+                                    <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
                                 </div>
                                 <% } %>
                 </div>
@@ -109,12 +87,12 @@
     <!-- 冷凍層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-    <script>
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
-console.log('<%= isCompleted %>');
-console.log('<%= task.TaskDate  %>')
-console.log('<%= currentDate  %>')
+        console.log('<%= isCompleted %>');
+        console.log('<%= task.TaskDate  %>')
+        console.log('<%= currentDate  %>')
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
@@ -148,12 +126,18 @@ console.log('<%= currentDate  %>')
                 let isCompleted;
                 // 檢查是否存在圖片
                 if (elements.buttonImg) {
-                    isCompleted = elements.buttonImg.getAttribute('src') === constants.taskCompletedSrc;
+                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                    console.log('按鈕圖片:', buttonImgSrc);
+
+                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
+
                     console.log('按鈕是否已完成:', isCompleted);
+
                 } else {
                     console.log('按鈕未包含圖片');
                 }
-                elements.button.disabled = isCompleted || !isCheckboxChecked;
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
 
@@ -180,13 +164,10 @@ console.log('<%= currentDate  %>')
                         const popupSrc = image.getAttribute('data-popup');
                         elements.popupImage.setAttribute('src', popupSrc);
                         elements.popup.classList.remove('hidden');
-                        // 更新圖片
-                        updateOverlayImage(image, index);
-                        // 標示圖片為已點選過
-                        markAsClicked(image);
-                        // 檢查所有圖片是否已點選過
-                        checkAllImagesClicked();
-
+                        updateOverlayImage(image, index); // 更新當前圖片
+                        syncOverlayStyles(image);        // 同步相關圖片的更新
+                        markAsClicked(image);           // 標記點選狀態
+                        checkAllImagesClicked();        // 檢查點選完成狀態
                     });
                 });
             };
@@ -196,33 +177,28 @@ console.log('<%= currentDate  %>')
                 image.setAttribute('src', newSrc);
 
                 if (image.classList.contains('overlay-5') || image.classList.contains('overlay-6')) {
-                    const imageSrc = image.getAttribute('src');
-                    const updatedSrc = imageSrc.replace(/放大鏡_ov_05|放大鏡_ov_06/, (match) => {
-                        return match === "放大鏡_ov_05" ? "放大鏡_ov_03" : "放大鏡_ov_04";
-                    });
-
-                    if (updatedSrc !== imageSrc) {
-                        image.setAttribute('src', updatedSrc);
-                    }
+                    const updatedSrc = image.classList.contains('overlay-5') ? '/images/D06/放大鏡-images/放大鏡_ov_03.png' : '/images/D06/放大鏡-images/放大鏡_ov_04.png';
+                    image.setAttribute('src', updatedSrc);
                 }
             };
 
             // 標示圖片為已點選過
             const markAsClicked = (image) => {
-                // 給當前圖片添加 data-clicked 標記
-                image.setAttribute('data-clicked', 'true');
+                image.setAttribute('data-clicked', 'true'); // 標記當前圖片
 
-                // 如果點選的是 overlay-3 或 overlay-4，同時標記其他相同的放大鏡
-                if (image.classList.contains('overlay-3') || image.classList.contains('overlay-4')) {
-                    elements.overlayImages.forEach((otherImage) => {
-                        if (
-                            (image.classList.contains('overlay-3') && otherImage.classList.contains('overlay-3')) ||
-                            (image.classList.contains('overlay-4') && otherImage.classList.contains('overlay-4'))
-                        ) {
-                            otherImage.setAttribute('data-clicked', 'true');
-                        }
-                    });
-                }
+                // 確保相關圖片也同步標記為已點選
+                const overlayPairs = [
+                    [document.querySelector('.overlay-image.overlay-3'), document.querySelector('.overlay-image.overlay-5')],
+                    [document.querySelector('.overlay-image.overlay-4'), document.querySelector('.overlay-image.overlay-6')],
+                ];
+
+                overlayPairs.forEach(([overlayA, overlayB]) => {
+                    if (image === overlayA) {
+                        overlayB.setAttribute('data-clicked', 'true');
+                    } else if (image === overlayB) {
+                        overlayA.setAttribute('data-clicked', 'true');
+                    }
+                });
             };
 
             // 檢查所有圖片是否已點選過
@@ -234,6 +210,24 @@ console.log('<%= currentDate  %>')
                 // 如果所有圖片都已點選過，解除 action-container 的禁用狀態
                 if (allClicked) {
                     elements.actionContainer.classList.remove('disabled-container');
+                }
+            };
+
+            // 更新同步更新邏輯，加入 overlay-4 和 overlay-6 的邏輯
+            const syncOverlayStyles = (image) => {
+                const overlay3 = document.querySelector('.overlay-image.overlay-3');
+                const overlay5 = document.querySelector('.overlay-image.overlay-5');
+                const overlay4 = document.querySelector('.overlay-image.overlay-4');
+                const overlay6 = document.querySelector('.overlay-image.overlay-6');
+            
+                if (image === overlay3 || image === overlay5) {
+                    const updatedSrc = '/images/D06/放大鏡-images/放大鏡_ov_03.png';
+                    overlay3.setAttribute('src', updatedSrc);
+                    overlay5.setAttribute('src', updatedSrc);
+                } else if (image === overlay4 || image === overlay6) {
+                    const updatedSrc = '/images/D06/放大鏡-images/放大鏡_ov_04.png';
+                    overlay4.setAttribute('src', updatedSrc);
+                    overlay6.setAttribute('src', updatedSrc);
                 }
             };
 
@@ -280,7 +274,7 @@ console.log('<%= currentDate  %>')
                     const taskId = '<%= task.TaskID  %>'
                     // 構造帶有參數的 URL
                     const targetUrl = `/lottery/bounce?query=${encodeURIComponent(Query)}&taskId=${taskId}`;
-                
+
                     // 導向帶有參數的目標 URL
                     window.location.href = targetUrl;
                 });

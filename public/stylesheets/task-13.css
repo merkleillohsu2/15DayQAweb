@@ -25,6 +25,7 @@ body {
 
 /* 通用圖片樣式 */
 img {
+    display: block;
     max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
     margin: 0 auto;
 }

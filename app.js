@@ -6,12 +6,17 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const { config, connectDB, sql } = require('./dbconfig');
 const { handleDecryption } = require('./handleDecryption'); // 導入 decryptString 函數
+const helmet = require('helmet');
+const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
 
 // 連接數據庫
 connectDB();
+app.use(helmet());
+// 使用 helmet 增強安全性，防止一些常見的網絡攻擊
 
+app.use(express.json({ limit: '10kb' })); // 限制 JSON 請求大小為 10KB
 // 配置中間件
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -23,6 +28,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production', // 僅在生產環境中啟用 HTTPS
     httpOnly: true,       // 禁止前端 JS 訪問 Cookie，增強安全性
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 跨站請求支持
+    maxAge: 24 * 60 * 60 * 1000, // 設置 Session 24 小時後過期
   }
 }));
 
@@ -30,6 +36,26 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // 添加這個中間件
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64'); // 使用 crypto 生成唯一 nonce
+  res.setHeader(
+      'Content-Security-Policy',
+      `script-src 'self' 'nonce-${res.locals.nonce}'`
+  );
+  next();
+});
+
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 每 15 分鐘
+  max: 100, // 每個 IP 限制 100 次請求
+  message: '過多請求，請稍後再試',
+});
+
+app.use(limiter); // 使用速率限制中間件來防止暴力破解攻擊
+
+
 const exportRoutes = require('./routes/exportRoutes');
 const indexRouter = require('./routes/index');
 const previewRoutes = require('./routes/previewRoutes');
@@ -50,7 +76,12 @@ app.use('/lottery', lotteryRoutes); // 為抽獎功能設定基礎路徑 "/lotte
 // Mount the route with a prefix (e.g., /preview)
 app.use('/preview', previewRoutes);
 // 匯出資料的路由
-app.use('/export', exportRoutes);
+app.use('/export', exportRoutes,(req, res, next) => {
+  if (!req.query.filename || /[^a-zA-Z0-9_-]/.test(req.query.filename)) {
+    return res.status(400).send('不安全的文件名');
+  }
+  next();
+}); // 確保這個中間件在路由之前被調用
 
 // 主路由
 app.use('/', indexRouter);
@@ -61,7 +92,12 @@ app.listen(port, () => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('全局錯誤處理:', err.stack);
-  res.status(500).render('error', { message: '伺服器發生錯誤，請稍後再試！' });
+  console.error('全局錯誤:', {
+    message: err.message,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+  });
+  res.status(err.status || 500).render('error', { message: '伺服器發生錯誤，請稍後再試！' });
 });
 

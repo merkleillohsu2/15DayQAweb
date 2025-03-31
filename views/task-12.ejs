@@ -17,17 +17,17 @@
         <img src="/images/D04/750x1200-Day4_02.png" alt="任務圖片" id="img-02" class="clickable" loading="lazy">
 
         <!-- 隱藏的圖片 -->
-        <img src="/images/D04/750x1200-Day4_03.png" alt="任務圖片" id="img-03" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_04.png" alt="任務圖片" id="img-04" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_05.png" alt="任務圖片" id="img-05" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_06.png" alt="任務圖片" id="img-06" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_07.png" alt="任務圖片" id="img-07" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_08.png" alt="任務圖片" id="img-08" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_09.png" alt="任務圖片" id="img-09" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_10.png" alt="任務圖片" id="img-10" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_11.png" alt="任務圖片" id="img-11" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_12.png" alt="任務圖片" id="img-12" class="hidden clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_13.png" alt="任務圖片" id="img-13" class="hidden clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_03.png" alt="任務圖片" id="img-03" class="hidden" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_04.png" alt="任務圖片" id="img-04" class="clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_05.png" alt="任務圖片" id="img-05" class="hidden" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_06.png" alt="任務圖片" id="img-06" class=" clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_07.png" alt="任務圖片" id="img-07" class="hidden" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_08.png" alt="任務圖片" id="img-08" class=" clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_09.png" alt="任務圖片" id="img-09" class="hidden" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_10.png" alt="任務圖片" id="img-10" class=" clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_11.png" alt="任務圖片" id="img-11" class="hidden" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_12.png" alt="任務圖片" id="img-12" class=" clickable" loading="lazy">
+        <img src="/images/D04/750x1200-Day4_13.png" alt="任務圖片" id="img-13" class="hidden" loading="lazy">
 
         <!-- 更多訊息 -->
         <img class="read-more-img hidden" src="/images/D04/D4-CTA.png" alt="更多圖片">
@@ -56,7 +56,9 @@
                             <img src="/images/D04/750x1200-CTA_02.png" alt="已完成按鈕">
                         </button>
                         <% } else { %>
-                            <div class="button" id="complete-task-btn"></div>
+                            <div class="button" id="complete-task-btn">
+                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                            </div>
                             <% } %>
             </div>
         </div>
@@ -71,52 +73,20 @@
     <!-- 凍結層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-    <script>
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const imageMap = {
-                "img-02": ["img-03", "img-04"],
-                "img-04": ["img-05", "img-06"],
-                "img-06": ["img-07", "img-08"],
-                "img-08": ["img-09", "img-10"],
-                "img-10": ["img-11", "img-12"],
+                "img-02": ["img-03",],
+                "img-04": ["img-05",],
+                "img-06": ["img-07",],
+                "img-08": ["img-09",],
+                "img-10": ["img-11",],
                 "img-12": ["img-13"]
             };
-
-            // 為可點擊的圖片添加點擊事件
-            document.querySelectorAll('.clickable').forEach(img => {
-                const elements = {
-                    popup: document.getElementById('popup'),
-                    closePopupButton: document.querySelector('.close-popup'),
-                    readMoreImg: document.querySelector('.read-more-img'),
-                    checkbox: document.getElementById('taskCompletedCheckbox'),
-                    button: document.getElementById('complete-task-btn'),
-                    buttonImg: document.querySelector('#complete-task-btn img'),
-                    freezeLayer: document.getElementById('freezeLayer'),
-                    rewardMessage: document.getElementById('rewardMessage'),
-                    closeRewardButton: document.querySelector('#rewardMessage .close-button'),
-                    rewardImg: document.querySelector('.reward-img'),
-                    actionContainer: document.querySelector('.action-container')
-                };
-                img.addEventListener('click', () => {
-                    const nextImages = imageMap[img.id];
-                    if (img.id === "img-12") {
-                        elements.actionContainer.classList.remove('hidden');
-                        elements.readMoreImg.classList.remove('hidden');
-                    }
-                    if (nextImages) {
-                        nextImages.forEach(nextId => {
-                            const nextImg = document.getElementById(nextId);
-                            if (nextImg) {
-                                nextImg.classList.remove('hidden'); // 顯示圖片
-                            }
-                        });
-                    }
-                });
-            });
             const elements = {
                 popup: document.getElementById('popup'),
                 closePopupButton: document.querySelector('.close-popup'),
@@ -128,7 +98,37 @@
                 rewardMessage: document.getElementById('rewardMessage'),
                 closeRewardButton: document.querySelector('#rewardMessage .close-button'),
                 rewardImg: document.querySelector('.reward-img'),
+                actionContainer: document.querySelector('.action-container')
             };
+            // 為可點擊的圖片添加點擊事件
+            document.querySelectorAll('.clickable').forEach(img => {
+
+                img.addEventListener('click', () => {
+                    if (img.id === "img-12") {
+                        elements.actionContainer.classList.remove('hidden');
+                        elements.readMoreImg.classList.remove('hidden');
+                    }
+                    const nextImages = imageMap[img.id]; // 根據 imageMap 獲取下一組圖片
+                    if (nextImages) {
+                        nextImages.forEach(nextId => {
+                            const nextImg = document.getElementById(nextId);
+                            if (nextImg) {
+                                // 切換 hidden 樣式，實現開合效果
+                                if (nextImg.classList.contains('hidden')) {
+                                    nextImg.classList.remove('hidden'); // 顯示圖片
+                                } else {
+                                    if (img.id === "img-12") {
+                                        elements.actionContainer.classList.add('hidden');
+                                        elements.readMoreImg.classList.add('hidden');
+                                    }
+                                    nextImg.classList.add('hidden'); // 隱藏圖片
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
 
             const constants = {
                 taskCompletedSrc: '/images/D04/750x1200-CTA_02.png',
@@ -142,12 +142,18 @@
                 let isCompleted;
                 // 檢查是否存在圖片
                 if (elements.buttonImg) {
-                    isCompleted = elements.buttonImg.getAttribute('src') === constants.taskCompletedSrc;
+                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                    console.log('按鈕圖片:', buttonImgSrc);
+
+                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
+
                     console.log('按鈕是否已完成:', isCompleted);
+
                 } else {
                     console.log('按鈕未包含圖片');
                 }
-                elements.button.disabled = isCompleted || !isCheckboxChecked;
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
 

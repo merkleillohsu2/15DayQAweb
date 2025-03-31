@@ -39,7 +39,9 @@
                             <img src="/images/D01/750x1200-CTA_02.png" alt="已完成按鈕">
                         </button>
                         <% } else { %>
-                            <div class="button" id="complete-task-btn"></div>
+                            <div class="button" id="complete-task-btn">
+                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                            </div>
                             <% } %>
             </div>
         </div>
@@ -54,7 +56,7 @@
     <!-- 凍結層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-    <script>
+     <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
@@ -84,12 +86,18 @@
                 let isCompleted;
                 // 檢查是否存在圖片
                 if (elements.buttonImg) {
-                    isCompleted = elements.buttonImg.getAttribute('src') === constants.taskCompletedSrc;
+                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                    console.log('按鈕圖片:', buttonImgSrc);
+
+                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
+
                     console.log('按鈕是否已完成:', isCompleted);
+
                 } else {
                     console.log('按鈕未包含圖片');
                 }
-                elements.button.disabled = isCompleted || !isCheckboxChecked;
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
             // 彈窗邏輯

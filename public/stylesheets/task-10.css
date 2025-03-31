@@ -372,3 +372,25 @@ img {
         width: 15%; /* 在小螢幕上調整疊加圖片大小 */
     }
 }
+
+ /* 禁用操作的樣式 */
+ .disabled-container {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* 確保媒體容器寬度一致 */
+.media-wrapper {
+    width: 100%;
+    max-width: 90%;
+    /* 限制寬度，避免過寬 */
+    margin: 0 auto;
+    /* 居中 */
+    text-align: center;
+}
+
+.media-wrapper>img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
