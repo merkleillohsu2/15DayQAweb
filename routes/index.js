@@ -96,6 +96,39 @@ for (let day = 1; day <= 15; day++) {
       console.log(`[INFO] 獲取任務: ${JSON.stringify(task)}`);
       console.log(`[INFO] 獲取任務日期: ${JSON.stringify(task.TaskDate)}`);
 
+
+      // 新增邏輯：檢查 User 的 Chain 與 Task 的 Chain 是否匹配
+      const chainQuery = `
+        SELECT Chain 
+        FROM ${USERS_TABLE}
+        WHERE UserID = @userId;
+        `;
+      const pool = await sql.connect();
+      const userChainResult = await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .query(chainQuery);
+
+      if (!userChainResult.recordset.length) {
+        console.error('[ERROR] 用戶未找到，無法比對 Chain');
+        return res.render('error', {
+          message: '用戶不存在',
+        });
+      }
+
+      const userChain = userChainResult.recordset[0].Chain;
+      const taskChain = task.Chain; // 假設任務資料中包含 Chain 欄位
+      console.log(`[INFO] User Chain: ${userChain}, Task Chain: ${taskChain}`);
+
+      if (userChain !== taskChain) {
+        console.warn(`[WARNING] User 的 Chain 與 Task 的 Chain 不匹配`);
+        return res.render('error', {
+          message: '您無權訪問此任務',
+        });
+      }
+
+
+
+
       // 新增邏輯：檢查活動是否尚未開始
       if (currentDate < task.TaskDate) {
         return res.render('error', {
@@ -110,7 +143,6 @@ for (let day = 1; day <= 15; day++) {
        FROM ${USER_TASK_COMPLETION_TABLE}
        WHERE UserID = @userId AND TaskID = @taskId AND IsCompleted = 1
      `;
-      const pool = await sql.connect();
       const completionResult = await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('taskId', sql.Int, day)
@@ -152,7 +184,7 @@ for (let day = 1; day <= 15; day++) {
       const userResult = await pool.request()
         .input('userId', sql.VarChar(36), UserId)
         .query(userQuery);
-        console.log('wwww',userResult);
+      console.log('wwww', userResult);
       if (userResult.recordset.length === 0) {
         return res.status(404).send({ error: '用戶未找到' });
       }
@@ -177,12 +209,12 @@ for (let day = 1; day <= 15; day++) {
         const hasCompletedAllTasks = allTasks.every(taskId => tasksCompleted.includes(taskId));
 
         if (!hasCompletedAllTasks) {
-            return res.status(400).send({
-                message: '您尚未完成所有任務，請確保完成後再來提交！',
-                remainingTasks: allTasks.filter(taskId => !tasksCompleted.includes(taskId)) // 返回未完成的任務 ID
-            });
+          return res.status(400).send({
+            message: '您尚未完成所有任務，請確保完成後再來提交！',
+            remainingTasks: allTasks.filter(taskId => !tasksCompleted.includes(taskId)) // 返回未完成的任務 ID
+          });
         }
-    }
+      }
       // 確認任務是否已經完成
       const completionQuery = `
                               SELECT * 
