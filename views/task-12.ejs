@@ -102,31 +102,38 @@
             };
             // 為可點擊的圖片添加點擊事件
             document.querySelectorAll('.clickable').forEach(img => {
-
-                img.addEventListener('click', () => {
-                    if (img.id === "img-12") {
-                        elements.actionContainer.classList.remove('hidden');
-                        elements.readMoreImg.classList.remove('hidden');
-                    }
-                    const nextImages = imageMap[img.id]; // 根據 imageMap 獲取下一組圖片
-                    if (nextImages) {
-                        nextImages.forEach(nextId => {
-                            const nextImg = document.getElementById(nextId);
-                            if (nextImg) {
-                                // 切換 hidden 樣式，實現開合效果
-                                if (nextImg.classList.contains('hidden')) {
-                                    nextImg.classList.remove('hidden'); // 顯示圖片
-                                } else {
-                                    if (img.id === "img-12") {
-                                        elements.actionContainer.classList.add('hidden');
-                                        elements.readMoreImg.classList.add('hidden');
-                                    }
-                                    nextImg.classList.add('hidden'); // 隱藏圖片
+                const stateMap = new Map();
+            
+                document.querySelectorAll('.clickable').forEach(img => {
+                    const stateMap = new Map();
+                
+                    img.addEventListener('click', () => {
+                        const nextImages = imageMap[img.id];
+                        if (nextImages) {
+                            const updatedStates = nextImages.map(nextId => {
+                                const nextImg = document.getElementById(nextId);
+                                if (nextImg) {
+                                    const isVisible = stateMap.get(nextId) || false;
+                                    stateMap.set(nextId, !isVisible);
+                                    return { nextImg, isVisible };
                                 }
+                            });
+                
+                            updatedStates.forEach(({ nextImg, isVisible }) => {
+                                nextImg.classList.toggle('hidden', isVisible);
+                            });
+                
+                            // img-12 的特例處理
+                            if (img.id === "img-12") {
+                                const shouldHide = updatedStates.some(({ isVisible }) => isVisible);
+                                elements.actionContainer.classList.toggle('hidden', shouldHide);
+                                elements.readMoreImg.classList.toggle('hidden', shouldHide);
                             }
-                        });
-                    }
+                        }
+                    });
                 });
+           
+            
             });
 
 

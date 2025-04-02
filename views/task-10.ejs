@@ -65,13 +65,20 @@
             </div>
         </div>
         <!-- Bounce 頁面彈窗 -->
-        <div id="bouncePopup" class="popup hidden">
+        <div id="bouncePopup" class="bouncePopup hidden">
             <div class="popup-content">
                 <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
                 <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
             </div>
         </div>
 
+        <!-- 彈窗內容 -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+            <img id="close-popup" class="close-popup" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
+            <img id="popupImage" src="" alt="放大鏡圖片" class="popup-image">
+        </div>
+        </div>
 
         <!-- 獎勵訊息 -->
         <div id="rewardMessage" class="hidden">
@@ -95,8 +102,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
                 bouncePopup: document.getElementById('bouncePopup'),
+                popup: document.getElementById('popup'),
                 popupImage: document.getElementById('popupImage'),
-                closePopupButton: document.querySelector('.close-popup'),
+                closePopupButton: document.getElementById('close-popup'),
                 checkbox: document.getElementById('taskCompletedCheckbox'),
                 button: document.getElementById('complete-task-btn'),
                 buttonImg: document.querySelector('#complete-task-btn img'),
@@ -250,6 +258,10 @@
                 elements.checkbox.addEventListener('change', updateButtonState);
                 elements.button.addEventListener('click', completeTask);
                 elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
+                elements.closePopupButton.addEventListener('click', () => {
+                    elements.popup.classList.add('hidden');
+                    elements.popupImage.setAttribute('src', '');
+                });
                 const bouncePopup = document.getElementById('bouncePopup');
                 const bounceIframe = document.getElementById('bounceIframe');
                 const closeBouncePopup = document.getElementById('closeBouncePopup');
@@ -266,6 +278,7 @@
                     bouncePopup.classList.add('hidden'); // 隱藏彈窗
                     bounceIframe.setAttribute('src', ''); // 清空 iframe
                 });
+
                 setupOverlayPopupEvents();
             };
 

@@ -8,6 +8,37 @@ require('dotenv').config();
 const USERS_TABLE = process.env.USERS_TABLE
 const REWARDS_TABLE = process.env.REWARDS_TABLE
 
+const getTransformedName = (lastName, firstName) => {
+  // 判斷是否為英文名字（簡單判斷英文字母開頭）
+  const isEnglishName = /^[A-Za-z]/.test(lastName);
+
+  if (isEnglishName) {
+    // 英文名字：保留首字母，其餘替換為 X
+    const transformedLastName = lastName.charAt(0) + 'x'.repeat(lastName.length - 1);
+    const transformedFirstName = firstName.charAt(0) + 'x'.repeat(firstName.length - 1);
+    return `${transformedLastName} ${transformedFirstName}`;
+  } else {
+    // 中文名字：替換第二個字為 X
+    const userName = lastName + firstName;
+    return userName.replace(/(\S)(\S)(\S+)/, '$1X$3');
+  }
+};
+
+// 處理電話號碼轉換的邏輯
+const transformPhoneNumber = (phone) => {
+  if (phone.startsWith("+886")) {
+    // 將 "+886" 替換為 "0"
+    const localPhone = phone.replace("+886", "0");
+    // 切割電話號碼
+    const prefix = localPhone.slice(0, 2); // 前 4 位
+    const suffix = localPhone.slice(-3); // 後 3 位
+    // 拼接隱藏的電話號碼
+    return `${prefix}XXXXXX${suffix}`;
+  }
+  // 若非 "+886" 開頭，直接返回原始電話號碼
+  return phone;
+};
+
 const handleDecryption = async (req, res) => {
   const urlquery = req.query.query;
 
@@ -28,8 +59,9 @@ const handleDecryption = async (req, res) => {
 
     const parsedData = JSON.parse(decryptedData);
     const userId = parsedData.User.ContactId;
-    const userName = parsedData.User.LastName + ' ' + parsedData.User.FirstName;
-    const phoneNumber = parsedData.User.Contact.Phone; // 提取 MobilePhone
+    const userName = getTransformedName(parsedData.User.LastName, parsedData.User.FirstName);
+    const phoneNumber = transformPhoneNumber(parsedData.User.Contact.Phone); // 提取 MobilePhone
+    console.log('[INFO] 處理後的電話號碼:', phoneNumber);
     const chain = parsedData.User.Contact.Account.DTE_Chain__c || null; // 提取 Chain 值
 
     if (!parsedData || !parsedData.User || !parsedData.User.ContactId || !phoneNumber) {

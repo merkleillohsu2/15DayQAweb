@@ -71,6 +71,9 @@ const exportRoutes = require('./routes/exportRoutes');
 const indexRouter = require('./routes/index');
 const previewRoutes = require('./routes/previewRoutes');
 const lotteryRoutes = require('./routes/lotteryRoutes');
+const prizesRoutes = require('./routes/prizes');
+
+
 app.use('/lottery', lotteryRoutes); // 為抽獎功能設定基礎路徑 "/lottery"
 
 // 定義 /decrypt 路由
@@ -86,6 +89,11 @@ app.use('/lottery', lotteryRoutes); // 為抽獎功能設定基礎路徑 "/lotte
 
 // Mount the route with a prefix (e.g., /preview)
 app.use('/preview', previewRoutes);
+
+// 獲取獎品的路由
+app.use('/prizes', prizesRoutes);
+
+
 // 匯出資料的路由
 app.use('/export', exportRoutes,(req, res, next) => {
   if (!req.query.filename || /[^a-zA-Z0-9_-]/.test(req.query.filename)) {

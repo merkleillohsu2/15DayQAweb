@@ -1,164 +1,436 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>活動條款得獎公告</title>
   <style>
+    /* 基本樣式 */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       background-color: #f4f4f4;
+      font-size: 18px;
+      /* 全局字體默認大小 */
+      line-height: 1.8;
+      /* 提升行距 */
+      color: black;
+      /* 默認文字顏色設為黑色 */
     }
+
     .container {
-      max-width: 800px;
+      max-width: 100%;
       margin: auto;
-      padding: 20px;
-      background: #fff;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
     }
+
     h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
+      font-size: 26px;
+      /* 增大標題字體 */
+      margin: 15px 0;
       text-align: center;
-      color: #007bff;
+      color: black;
+      /* 標題文字設為黑色 */
     }
+
+    /* 調整文字列表樣式 */
+    ol {
+      margin-left: 20px;
+      /* 左邊界 */
+      padding-left: 0;
+    }
+
+    ul {
+      margin-left: 20px;
+      /* 左邊界 */
+      padding-left: 0;
+    }
+
+    strong {
+      font-weight: bold;
+      color: #007bff;
+      /* 增加藍色以突出重要文字 */
+    }
+
+    /* 標題文字樣式 */
+    h2 {
+      margin-top: 20px;
+      font-size: 22px;
+      /* 增大子標題字體大小 */
+      color: black;
+      /* 子標題文字顏色保持黑色 */
+      text-align: left;
+      /* 子標題居左對齊 */
+      border-bottom: 2px solid #f4f4f4;
+      /* 添加下方分隔線 */
+      padding-bottom: 10px;
+    }
+
+    /* Tabs 樣式 */
     .tabs {
       display: flex;
-      justify-content: center;
-      cursor: pointer;
-      margin-top: 20px;
+      flex-direction: column;
+      /* 小螢幕垂直排列 */
+      align-items: center;
     }
+
     .tab {
-      padding: 10px 20px;
+      flex-direction: row;
+      width: 90%;
+      padding: 12px;
+      /* 增大內間距 */
       background-color: #007bff;
       color: white;
-      margin-right: 5px;
-      border-radius: 5px;
+      border-radius:15px 15px 0px 0px;
       transition: background-color 0.3s;
+      text-align: center;
+      margin-bottom: 10px;
+      /* 增大間距 */
+      font-size: 2rem;
+      /* 增大選項卡字體 */
     }
+
     .tab:hover {
       background-color: #0056b3;
     }
+
+    .tab.active {
+      background-color: #0056b3;
+    }
+
+    /* Tab-content 樣式 */
     .tab-content {
       display: none;
-      margin-top: 20px;
-      font-size: 18px;
-      line-height: 1.6;
+      font-size: 2rem;
+      /* 增大內容字體 */
+      line-height: 1.8;
+      /* 行距更舒適 */
+      padding: 15px;
+      /* 增大內間距 */
     }
+
     .tab-content.active {
       display: block;
     }
+
+    /* 自定義背景色 */
+    #winner-list {
+      background-color: #00ABB3;
+      color: black;
+      /* 內容文字為黑色 */
+    }
+
+    #important-info {
+      background-color: #44546A;
+      color: black;
+      /* 內容文字為黑色 */
+    }
+
+    /* 內容區塊樣式 */
+    #important-info-content {
+      background-color: white;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 95%;
+      /* 限制最大寬度，避免文字過於延伸 */
+      border-radius: 8px;
+      /* 增加圓角，讓外觀更柔和 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      /* 添加陰影效果 */
+    }
+
+    /* 為活動條款按鈕 */
+    #important-info .button {
+      background-color: #556075;
+    }
+
+    #important-info .button:hover {
+      background-color: #3A4352;
+    }
+
+    /* 按鈕樣式 */
     .button {
-      padding: 12px 20px;
-      background-color: #007bff;
-      color: white;
+      padding: 15px;
+      /* 增大按鈕內間距 */
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
+      /* 增大按鈕字體 */
       text-decoration: none;
       display: inline-block;
-      margin-top: 20px;
+      margin: 15px auto;
+      /* 增大與其他內容的間距 */
+      width: 90%;
+      /* 按鈕寬度適應小螢幕 */
+      color: white;
+      /* 按鈕文字顏色為白色 */
+      background-color: #008C91;
+      /* 得獎公告按鈕色 */
     }
+
     .button:hover {
-      background-color: #0056b3;
+      background-color: #006F73;
+      /* 按鈕 hover 顏色 */
+    }
+
+    /* 為得獎公告按鈕 */
+    #winner-list .button {
+      background-color: #008C91;
+    }
+
+    #winner-list .button:hover {
+      background-color: #006F73;
+    }
+
+    ul {
+      background-color: white; /* 設定背景為白色 */
+      padding: 10px;          /* 增加內部間距 */
+      border-radius: 8px;     /* 增加圓角 */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+    }
+    li {
+      margin-bottom: 5px;     /* 每個列表項之間添加間距 */
+    }
+
+
+    /* 響應式調整 */
+    @media (min-width: 768px) {
+      .tabs {
+        flex-direction: row;
+        /* 螢幕較大時，橫向排列 */
+      }
+
+      .tab {
+        flex: 1;
+        /* 平均分布 */
+        margin-bottom: 0;
+        /* 移除垂直間距 */
+        margin-right: 5px;
+        /* 加強橫向間距 */
+        font-size: 5rem;
+      }
+
+      .tab:last-child {
+        margin-right: 0;
+        /* 最後一個移除右側間距 */
+      }
+
+      h1 {
+        font-size: 5rem;
+        /* 桌面版更大的標題文字 */
+      }
+
+      h2 {
+        font-size: 4rem;
+        /* 桌面版更大的子標題文字 */
+      }
+
+      .tab-content {
+        font-size: 4rem;
+        /* 桌面版更大的文字 */
+        padding: 20px;
+      }
+
+      .button {
+        font-size: 20px;
+        /* 桌面版更大的按鈕文字 */
+      }
     }
   </style>
   <script>
     function showTabContent(tabId) {
+      var tabs = document.querySelectorAll('.tab');
       var contents = document.querySelectorAll('.tab-content');
-      contents.forEach(function(content) {
-        content.classList.remove('active');
-      });
+
+      tabs.forEach(tab => tab.classList.remove('active'));
+      contents.forEach(content => content.classList.remove('active'));
+
       document.getElementById(tabId).classList.add('active');
+      document.querySelector(`.tab[onclick="showTabContent('${tabId}')"]`).classList.add('active');
     }
     // 初始展示第一個tab
-    document.addEventListener('DOMContentLoaded', function() {
-      showTabContent('important-info');
+    document.addEventListener('DOMContentLoaded', function () {
+      showTabContent('winner-list');
     });
   </script>
 </head>
+
 <body>
   <div class="container">
-    <h1>得獎須知</h1>
     <div class="tabs">
-      <div class="tab" onclick="showTabContent('important-info')">領獎重要事項</div>
-      <div class="tab" onclick="showTabContent('winner-list')">中獎名單</div>
+      <div class="tab active" style="background-color: #00ABB3;" onclick="showTabContent('winner-list')">得獎公告</div>
+      <div class="tab" style="background-color: #44546A; " onclick="showTabContent('important-info')">活動條款</div>
     </div>
-    <div id="important-info" class="tab-content active">
-      <h2>抽獎規則與條件 Rules and Conditions</h2>
-    
-      <!-- 主標題 1 -->
-      <h3>指定日馬上抽  Immediate Draw on Specified Dates</h3>
-      <ol>
-        <li>抽獎資格 Eligibility：
-          <ul>
-            <li>本活動僅限通路夥伴參加。一個員工ID在每個指定日期僅能參加一次。</li>
-            <li>This event is only open to channel partners. Per STAR employee ID is granted one participation to single lucky draw day.</li>
-          </ul>
-        </li>
-        <li>抽獎機制 & 獎品類型  Lottery Mechanism & Prize Types：
-          <ul>
-            <li>系統將於三個指定日期(X月X日， X月X日，X月X日)，針對完成當日任務的通路夥伴進行抽獎，每日抽出價值NTD新台幣300元一卡通的獎項300名，每日中獎僅限一次，三次抽獎共計最多抽出900名得獎名額。</li>
-            <li>The system will conduct a lottery on three specified dates (X month X day, X month X day, X month X day) for channel partners who complete the tasks on the day. Each day, 300 winners will be drawn to receive a EasyCard worth NTD 300. Each person can win only once per day, with a total of 900 winners across the three draws.</li>
-          </ul>
-        </li>
-        <li>
-          得獎者名單公布 Winner Announcement ：
-          <ul>
-            <li>得獎者名單預計將於隔天下午三點於神隊友公告。</li>
-            <li>The list of winners will be announced at 3 PM on the next day on the  DTE platform.</li>
-          </ul>
-        </li>
-        <li>獎品發放方式 Prize Distribution ：
-          <ul>
-            <li>菲利普莫里斯專員將到店舖發放獎勵給得獎者簽收。</li>
-            <li>Philip Morris representatives will visit the stores to distribute the prizes to the winners for signing</li>
-            <li>針對宜花東、外島或處於管制出入區域的店舖等，菲利普莫里斯將寄送簽收單並附上已包含郵資與回寄之資訊的信封到得獎者所在店舖，得獎者需於指定日期內回填後並寄到指定地址，待菲利普莫里斯確認報稅資訊正確之後，將以雙掛號寄發NTD $新台幣300元一卡通至店舖給予得獎者。</li>
-            <li>For stores in Yilan, Hualien, Taitung, offshore islands, or restricted areas, Philip Morris will send a receipt form along with a prepaid return envelope to the winning stores. Winners must fill out and return the form by the specified date. After Philip Morris confirms the tax information is correct, the NTD 300 EasyCard will be sent to the store by registered mail.</li>
-         
-          </ul>
-        </li>
-      </ol>
-    
-      <!-- 主標題 2 -->
-      <h3>2. 領獎時間</h3>
-      <ol>
-        <li>得獎者須於得獎公告後 30 日內完成領獎。</li>
-        <li>
-          如因個人原因無法領獎：
-          <ul>
-            <li>請於公告後 15 日內聯繫主辦方。</li>
-            <li>主辦方將根據具體情況決定後續安排。</li>
-          </ul>
-        </li>
-        <li>逾期未完成領獎者，將視為放棄中獎資格。</li>
-      </ol>
-    
-      <!-- 主標題 3 -->
-      <h3>3. 其他注意事項</h3>
-      <ol>
-        <li>
-          活動主辦方保留修改活動規則及條款的權利：
-          <ul>
-            <li>任何修改將通過官方平台發布公告。</li>
-            <li>參加者需持續關注活動更新以免錯過重要通知。</li>
-          </ul>
-        </li>
-        <li>如發現參加者有不當行為（如作弊、偽造資料等），將立即取消中獎資格。</li>
-        <li>所有獎項不得轉讓、兌換現金或折抵其他商品。</li>
-      </ol>
-    </div>
-    
-    
-    
-    <div id="winner-list" class="tab-content">
+
+    <div id="winner-list" class="tab-content active">
       <h2>得獎公告</h2>
-      <p>這裡可以添加中獎名單的內容。</p>
+        <!-- 得獎資料將通過 JavaScript 動態插入 -->
+    <p>正在加載得獎名單...</p>
+
     </div>
-    <a href="/" class="button">返回主頁</a>
+    <div id="important-info" class="tab-content ">
+      <div id="important-info-conent">
+        <h2>指定日馬上抽</h2>
+        <ol>
+          <li>
+            <strong>抽獎資格：</strong>
+            <ul>
+              <li>本活動僅限通路夥伴參加。一個員工ID在每個指定日期僅能參加一次。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>抽獎機制 & 獎品類型：</strong>
+            <ul>
+              <li>系統將於三個指定日期 (X月X日，X月X日，X月X日)，針對完成當日任務的通路夥伴進行抽獎。</li>
+              <li>每日抽出價值新台幣300元一卡通的獎項，每日中獎僅限一次，三次抽獎最多抽出900名得獎名額。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>得獎者名單公布：</strong>
+            <ul>
+              <li>得獎者名單預計將於隔天下午三點於神隊友公告。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎品發放方式：</strong>
+            <ul>
+              <li>菲利普莫里斯專員將到店舖發放獎勵給得獎者簽收。</li>
+              <li>宜花東、外島或管制區域店舖將寄送簽收單並附郵資信封，需回填後寄回指定地址，確認報稅資訊後以雙掛號寄發新台幣300元一卡通至店舖。</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h2>天天賺獎勵金 + 全勤加碼獎勵金</h2>
+        <ol>
+          <li>
+            <strong>參加資格：</strong>
+            <ul>
+              <li>本活動僅限通路夥伴參加。一個員工ID僅能參加一次。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎勵機制 & 獎品類型：</strong>
+            <ul>
+              <li>每日登入並完成當天任務即得價值新台幣5元LINE POINT，15天活動最高可獲得75元LINE POINT。</li>
+              <li>連續15天完成任務可額外獲得價值新台幣25元LINE POINT好禮即享券。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎勵發放方式：</strong>
+            <ul>
+              <li>菲利普莫里斯將透過Edenred系統發放，LINE POINT兌換期限自發行日起算至三個月底，有效期限為最後一次獲得點數當天起算180天內，逾期失效不予補償。</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h2>第一階段問卷 (活動期間：X月X日 至 X月X日)</h2>
+        <ol>
+          <li>
+            <strong>參加資格：</strong>
+            <ul>
+              <li>本活動僅限通路夥伴參加。一個員工ID僅能參加一次。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎勵機制 & 獎品類型：</strong>
+            <ul>
+              <li>參與並完成第一階段問卷，並於X月X日期間完成「IQOS ILUMA加熱啟動」活動任務，即得價值新台幣10元LINE POINT好禮即享券。</li>
+              <li>LINE POINT可於「我的任務獎勵金」頁面中查詢。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎勵發放方式：</strong>
+            <ul>
+              <li>菲利普莫里斯將透過Edenred系統發放，兌換期限為自發行日起至三個月底，有效期限為180天內，逾期失效不予補償。</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h2>第二階段問卷 (活動期間：X月X日 至 X月X日)</h2>
+        <ol>
+          <li>
+            <strong>參加資格：</strong>
+            <ul>
+              <li>本活動僅限通路夥伴參加。一個員工ID僅能參加一次。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>抽獎機制 & 獎品類型：</strong>
+            <ul>
+              <li>完成第二階段問卷後參加抽獎 (抽獎日為X月X日)，抽出價值新台幣300元一卡通50名，員工ID中獎僅限一次。</li>
+              <li>若抽獎結束後仍有剩餘獎項，將不進行補抽。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>得獎者名單公布：</strong>
+            <ul>
+              <li>得獎者名單將於抽獎隔天下午三點公布於神隊友公告。</li>
+            </ul>
+          </li>
+          <li>
+            <strong>獎品發放方式：</strong>
+            <ul>
+              <li>菲利普莫里斯專員到店舖發放獎品。</li>
+              <li>宜花東或管制區域店舖將以郵寄方式處理，並寄送到指定地址，完成流程後以雙掛號寄發至店舖。</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h2>所得稅申報說明</h2>
+        <ul>
+          <li>若獎項累計超過價值新台幣1,000元，得獎者需提供身份證影本並依稅法申報。</li>
+          <li>若得獎者非境內居住，需預繳20%稅金方可領取獎項。</li>
+          <li>若無法配合申報流程，視同自願放棄中獎資格，獎項不再補發。</li>
+        </ul>
+
+        <h2>活動權利</h2>
+        <ul>
+          <li>菲利普莫里斯保留隨時修改、取消或暫停活動的權利。</li>
+          <li>參加活動需為通路夥伴，若不符資格或仿冒行為，除取消獎金外，應自負法律責任。</li>
+          <li>獎勵不可折現、變更其他贈品或轉讓他人，若遇不可抗力因素，菲利普莫里斯保留更換等值贈品的權利。</li>
+        </ul>
+      </div>
+    </div>
   </div>
+  <script>
+    async function fetchAllPrizes() {
+      try {
+        const response = await fetch('/prizes/all'); // 調用後端 API
+        const data = await response.json();
+  
+        if (response.ok) {
+          // 動態生成 HTML 內容
+          const resultsContainer = document.getElementById('winner-list');
+          const prizesByDate = data.prizesByDate;
+  
+          resultsContainer.innerHTML = Object.keys(prizesByDate).map(date => `
+            <div>
+              <h3>${date} 加碼抽$300 共 ${prizesByDate[date].length} 名</h3>
+              <ul>
+                ${prizesByDate[date].map(winner => `
+                  <li>${winner.UserName} - ${winner.PhoneNumber}</li>
+                `).join('')}
+              </ul>
+            </div>
+            <hr>
+          `).join('');
+        } else {
+          document.getElementById('winner-list').innerHTML = `<p>${data.message}</p>`;
+        }
+      } catch (error) {
+        console.error('Error fetching prizes:', error);
+        document.getElementById('winner-list').innerHTML = '<p>加載失敗，請稍後重試。</p>';
+      }
+    }
+  
+    // 初次調用 API 加載得獎公告
+    fetchAllPrizes();
+  
+  </script>
 </body>
+
 </html>

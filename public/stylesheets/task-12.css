@@ -16,7 +16,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative; /* 子元素定位依附於此 */
-    padding: 20px;
 }
 
 /* 標題樣式 */
@@ -59,7 +58,7 @@ img {
 /* 操作區域樣式 */
 .action-container {
     position: absolute;
-    top: 94.5%;
+    bottom: 2.5%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -176,7 +175,7 @@ img {
 /* 更多圖片樣式 */
 .read-more-img {
     position: absolute;
-    bottom: 2%;
+    bottom: 1.5%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;
