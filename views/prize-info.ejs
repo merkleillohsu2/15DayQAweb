@@ -1,270 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>活動條款得獎公告</title>
-  <style>
-    /* 基本樣式 */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      font-size: 18px;
-      /* 全局字體默認大小 */
-      line-height: 1.8;
-      /* 提升行距 */
-      color: black;
-      /* 默認文字顏色設為黑色 */
-    }
-
-    .container {
-      max-width: 100%;
-      margin: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    h1 {
-      font-size: 26px;
-      /* 增大標題字體 */
-      margin: 15px 0;
-      text-align: center;
-      color: black;
-      /* 標題文字設為黑色 */
-    }
-
-    /* 調整文字列表樣式 */
-    ol {
-      margin-left: 20px;
-      /* 左邊界 */
-      padding-left: 0;
-    }
-
-    ul {
-      margin-left: 20px;
-      /* 左邊界 */
-      padding-left: 0;
-    }
-
-    strong {
-      font-weight: bold;
-      color: #007bff;
-      /* 增加藍色以突出重要文字 */
-    }
-
-    /* 標題文字樣式 */
-    h2 {
-      margin-top: 20px;
-      font-size: 22px;
-      /* 增大子標題字體大小 */
-      color: black;
-      /* 子標題文字顏色保持黑色 */
-      text-align: left;
-      /* 子標題居左對齊 */
-      border-bottom: 2px solid #f4f4f4;
-      /* 添加下方分隔線 */
-      padding-bottom: 10px;
-    }
-
-    /* Tabs 樣式 */
-    .tabs {
-      display: flex;
-      flex-direction: column;
-      /* 小螢幕垂直排列 */
-      align-items: center;
-    }
-
-    .tab {
-      flex-direction: row;
-      width: 90%;
-      padding: 12px;
-      /* 增大內間距 */
-      background-color: #007bff;
-      color: white;
-      border-radius:15px 15px 0px 0px;
-      transition: background-color 0.3s;
-      text-align: center;
-      margin-bottom: 10px;
-      /* 增大間距 */
-      font-size: 2rem;
-      /* 增大選項卡字體 */
-    }
-
-    .tab:hover {
-      background-color: #0056b3;
-    }
-
-    .tab.active {
-      background-color: #0056b3;
-    }
-
-    /* Tab-content 樣式 */
-    .tab-content {
-      display: none;
-      font-size: 2rem;
-      /* 增大內容字體 */
-      line-height: 1.8;
-      /* 行距更舒適 */
-      padding: 15px;
-      /* 增大內間距 */
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* 自定義背景色 */
-    #winner-list {
-      background-color: #00ABB3;
-      color: black;
-      /* 內容文字為黑色 */
-    }
-
-    #important-info {
-      background-color: #44546A;
-      color: black;
-      /* 內容文字為黑色 */
-    }
-
-    /* 內容區塊樣式 */
-    #important-info-content {
-      background-color: white;
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 95%;
-      /* 限制最大寬度，避免文字過於延伸 */
-      border-radius: 8px;
-      /* 增加圓角，讓外觀更柔和 */
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      /* 添加陰影效果 */
-    }
-
-    /* 為活動條款按鈕 */
-    #important-info .button {
-      background-color: #556075;
-    }
-
-    #important-info .button:hover {
-      background-color: #3A4352;
-    }
-
-    /* 按鈕樣式 */
-    .button {
-      padding: 15px;
-      /* 增大按鈕內間距 */
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 18px;
-      /* 增大按鈕字體 */
-      text-decoration: none;
-      display: inline-block;
-      margin: 15px auto;
-      /* 增大與其他內容的間距 */
-      width: 90%;
-      /* 按鈕寬度適應小螢幕 */
-      color: white;
-      /* 按鈕文字顏色為白色 */
-      background-color: #008C91;
-      /* 得獎公告按鈕色 */
-    }
-
-    .button:hover {
-      background-color: #006F73;
-      /* 按鈕 hover 顏色 */
-    }
-
-    /* 為得獎公告按鈕 */
-    #winner-list .button {
-      background-color: #008C91;
-    }
-
-    #winner-list .button:hover {
-      background-color: #006F73;
-    }
-
-    ul {
-      background-color: white; /* 設定背景為白色 */
-      padding: 10px;          /* 增加內部間距 */
-      border-radius: 8px;     /* 增加圓角 */
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
-    }
-    li {
-      margin-bottom: 5px;     /* 每個列表項之間添加間距 */
-    }
-
-
-    /* 響應式調整 */
-    @media (min-width: 768px) {
-      .tabs {
-        flex-direction: row;
-        /* 螢幕較大時，橫向排列 */
-      }
-
-      .tab {
-        flex: 1;
-        /* 平均分布 */
-        margin-bottom: 0;
-        /* 移除垂直間距 */
-        margin-right: 5px;
-        /* 加強橫向間距 */
-        font-size: 5rem;
-      }
-
-      .tab:last-child {
-        margin-right: 0;
-        /* 最後一個移除右側間距 */
-      }
-
-      h1 {
-        font-size: 5rem;
-        /* 桌面版更大的標題文字 */
-      }
-
-      h2 {
-        font-size: 4rem;
-        /* 桌面版更大的子標題文字 */
-      }
-
-      .tab-content {
-        font-size: 4rem;
-        /* 桌面版更大的文字 */
-        padding: 20px;
-      }
-
-      .button {
-        font-size: 20px;
-        /* 桌面版更大的按鈕文字 */
-      }
-    }
-  </style>
-  <script>
-    function showTabContent(tabId) {
-      var tabs = document.querySelectorAll('.tab');
-      var contents = document.querySelectorAll('.tab-content');
-
-      tabs.forEach(tab => tab.classList.remove('active'));
-      contents.forEach(content => content.classList.remove('active'));
-
-      document.getElementById(tabId).classList.add('active');
-      document.querySelector(`.tab[onclick="showTabContent('${tabId}')"]`).classList.add('active');
-    }
-    // 初始展示第一個tab
-    document.addEventListener('DOMContentLoaded', function () {
-      showTabContent('winner-list');
-    });
-  </script>
+  <link rel="stylesheet" href="/stylesheets/prize-info.css">
+  <script src="/scripts/common.js"></script>
 </head>
-
 <body>
   <div class="container">
     <div class="tabs">
-      <div class="tab active" style="background-color: #00ABB3;" onclick="showTabContent('winner-list')">得獎公告</div>
-      <div class="tab" style="background-color: #44546A; " onclick="showTabContent('important-info')">活動條款</div>
+      <div id="winner-list-tab" class="tab active" onclick="showTabContent('winner-list')">得獎公告</div>
+      <div id="important-info-tab" class="tab" onclick="showTabContent('important-info')">活動條款</div>
     </div>
+    
 
     <div id="winner-list" class="tab-content active">
       <h2>得獎公告</h2>
@@ -397,6 +145,17 @@
     </div>
   </div>
   <script>
+    function showTabContent(tabId) {
+      var tabs = document.querySelectorAll('.tab');
+      var contents = document.querySelectorAll('.tab-content');
+
+      tabs.forEach(tab => tab.classList.remove('active'));
+      contents.forEach(content => content.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`.tab[onclick="showTabContent('${tabId}')"]`).classList.add('active');
+    }
+   
     async function fetchAllPrizes() {
       try {
         const response = await fetch('/prizes/all'); // 調用後端 API
@@ -426,7 +185,10 @@
         document.getElementById('winner-list').innerHTML = '<p>加載失敗，請稍後重試。</p>';
       }
     }
-  
+   // 初始展示第一個tab
+   document.addEventListener('DOMContentLoaded', function () {
+    showTabContent('winner-list');
+  });
     // 初次調用 API 加載得獎公告
     fetchAllPrizes();
   
