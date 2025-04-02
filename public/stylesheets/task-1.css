@@ -58,6 +58,11 @@ img {
     width: 100%;
 }
 
+@media (max-width: 768px) {
+    .action-container {
+        font-size: 1.5rem; /* 在小螢幕上保持不變 */
+    }
+}
 .arrow-img {
     width: 8%;
     /* 默認情況下箭頭圖片佔父容器寬度的 50% */
@@ -111,21 +116,7 @@ img {
 }
 
 
-.checkbox-container label {
-    font-size: 1.2rem;
-    /* 預設為手機顯示的大小 */
-    font-weight: bold;
-    color: #333;
-}
 
-@media (min-width: 768px) {
-
-    /* 當視窗寬度大於等於 768px（平板或電腦） */
-    .checkbox-container label {
-        font-size: 3rem;
-        /* 調整為電腦顯示的大小 */
-    }
-}
 
 
 .button {

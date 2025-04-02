@@ -82,22 +82,14 @@ img {
     accent-color: #f4b400;
 }
 
-@media (min-width: 768px) {
-    .checkbox-container input[type="checkbox"] {
-        width: 30px;
-        height: 30px;
-    }
-}
-
 .checkbox-container label {
-    font-size: 1.2rem;
-    font-weight: bold;
     color: #ffffff;
 }
 
 @media (min-width: 768px) {
-    .checkbox-container label {
-        font-size: 3rem;
+    .checkbox-container input[type="checkbox"] {
+        width: 30px;
+        height: 30px;
     }
 }
 
@@ -195,6 +187,15 @@ img {
     z-index: 2;
     width: 50%;
 }
+
+
+@media (max-width: 768px) {
+    .read-more-img  {
+        width: 60%;
+    }
+    
+}
+
 
 /* 彈窗樣式 */
 .popup {

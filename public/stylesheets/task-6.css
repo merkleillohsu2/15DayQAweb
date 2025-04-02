@@ -76,6 +76,10 @@ img {
     gap: 10px;
 }
 
+.checkbox-container label {
+    color: #ffffff;
+}
+
 .checkbox-container input[type="checkbox"] {
     width: 20px;
     height: 20px;
@@ -86,18 +90,6 @@ img {
     .checkbox-container input[type="checkbox"] {
         width: 30px;
         height: 30px;
-    }
-}
-
-.checkbox-container label {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-}
-
-@media (min-width: 768px) {
-    .checkbox-container label {
-        font-size: 2rem; /* 更大螢幕字體保持一致，避免過度放大 */
     }
 }
 

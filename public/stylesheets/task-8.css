@@ -110,24 +110,6 @@ img {
     }
 }
 
-
-.checkbox-container label {
-    font-size: 1.2rem;
-    /* 預設為手機顯示的大小 */
-    font-weight: bold;
-    color: #333;
-}
-
-@media (min-width: 768px) {
-
-    /* 當視窗寬度大於等於 768px（平板或電腦） */
-    .checkbox-container label{
-        font-size: 3rem;
-        /* 調整為電腦顯示的大小 */
-    }
-}
-
-
 .button {
     background: none;
     border: none;

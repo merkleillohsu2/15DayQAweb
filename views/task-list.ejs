@@ -71,11 +71,9 @@
             <% }); %>
         </div>
         
-        
-        
-      
       <script>
           function redirectToTask(taskId) {
+            navigateToParent(`task-${taskId}`)
               // 獲取當前 URL 的查詢參數
               const queryParams = new URLSearchParams(window.location.search);
               // 生成目標 URL，保留查詢參數

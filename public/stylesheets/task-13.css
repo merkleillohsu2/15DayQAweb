@@ -144,18 +144,6 @@ img {
     }
 }
 
-.checkbox-container label {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-}
-
-@media (min-width: 768px) {
-    .checkbox-container label {
-        font-size: 2rem; /* 更大螢幕字體保持一致，避免過度放大 */
-    }
-}
-
 /* 按鈕樣式 */
 .button {
     background: none;
