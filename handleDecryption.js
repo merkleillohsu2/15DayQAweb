@@ -60,14 +60,18 @@ const handleDecryption = async (req, res) => {
     const parsedData = JSON.parse(decryptedData);
     const userId = parsedData.User.ContactId;
     const userName = getTransformedName(parsedData.User.LastName, parsedData.User.FirstName);
-    const phoneNumber = transformPhoneNumber(parsedData.User.Contact.Phone); // 提取 MobilePhone
+    // 判斷 MobilePhone 是否為空值，若是則使用 Phone
+    const phoneNumber = parsedData.User.Contact.MobilePhone
+      ? transformPhoneNumber(parsedData.User.Contact.MobilePhone)
+      : transformPhoneNumber(parsedData.User.Contact.Phone);
+
     console.log('[INFO] 處理後的電話號碼:', phoneNumber);
     const chain = parsedData.User.Contact.Account.DTE_Chain__c || null; // 提取 Chain 值
 
     if (!parsedData || !parsedData.User || !parsedData.User.ContactId || !phoneNumber) {
       console.error('[ERROR] 無效的解密數據，缺少 User、ContactId 或 MobilePhone');
       return { error: 'Invalid decrypted data: missing User, ContactId, or MobilePhone' };
-   }
+    }
     if (!userId) {
       console.error('[ERROR] 未找到 ContactId');
       return res.status(400).send('ContactId not found in decrypted data');
@@ -115,13 +119,13 @@ const handleDecryption = async (req, res) => {
       SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber , Chain = @chain
       WHERE UserID = @userId;
     `;
-    await pool.request()
-    .input('userId', sql.VarChar(36), userId)
-    .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
-    .input('phoneNumber', sql.NVarChar(15), phoneNumber)
-    .input('chain', sql.NVarChar(10), chain)
-    .query(updateQuery);
- } else {
+      await pool.request()
+        .input('userId', sql.VarChar(36), userId)
+        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
+        .input('phoneNumber', sql.NVarChar(15), phoneNumber)
+        .input('chain', sql.NVarChar(10), chain)
+        .query(updateQuery);
+    } else {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
       const insertQuery = `
@@ -135,7 +139,7 @@ const handleDecryption = async (req, res) => {
         .input('chain', sql.NVarChar(10), chain)
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .query(insertQuery);
- }
+    }
     // 檢查是否需要發放獎勵
     if (userRecord && userRecord.surveyRewardGiven === false) {
       console.log('[INFO] 發放獎勵中...');
