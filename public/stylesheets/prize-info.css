@@ -10,7 +10,6 @@ body {
 }
 
 .container {
-  max-width: 95%; /* 限制寬度讓內容更集中 */
   margin: auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -45,7 +44,7 @@ h2 {
 
 .tab {
   flex: 1;
-  margin: 0 5px;
+  margin: 0 1%;
   padding: 12px;
   text-align: center;
   font-size: 1.2rem;
@@ -86,9 +85,9 @@ h2 {
 
 /* #winner-list 主題樣式 */
 #winner-list {
+  margin:0 1%;
   background-color: #00ABB3;
   padding: 20px;
-  border-radius: 8px;
   color: black; /* 主題內文字顏色 */
 }
 
@@ -112,9 +111,9 @@ h2 {
 
 /* #important-info 主題樣式 */
 #important-info {
+  margin:0 1%;
   background-color: #44546A;
-  padding: 60px;
-  border-radius: 8px;
+  padding: 30px;
   color: white; /* 主題內文字為白色 */
 }
 
