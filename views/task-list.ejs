@@ -50,13 +50,15 @@
                     const isToday = formattedTaskDate === currentDate;
                     const isPast = new Date(task.TaskDate) < new Date(currentDate);
                     const isFuture = new Date(task.TaskDate) > new Date(currentDate);
-        
+                    // 計算倒序的 TaskID
+                    const reverseTaskId = 16 - task.TaskID; // 假設任務總數為 15
+                
                     // 動態設置按鈕圖片
                     const taskImage = isToday 
-                        ? `/images/Task-list/today/CTA-GO_D${task.TaskID}.gif`
+                        ? `/images/Task-list/today/CTA-GO_D${reverseTaskId}.gif`
                         : isPast
-                        ? `/images/Task-list/Pass/CTA-過去_D${task.TaskID}.gif`
-                        : `/images/Task-list/unlock/CTA-未解鎖_D${task.TaskID}.gif`;
+                        ? `/images/Task-list/Pass/CTA-過去_D${reverseTaskId}.gif`
+                        : `/images/Task-list/unlock/CTA-未解鎖_D${reverseTaskId}.gif`;
         
                     // 如果是未解鎖的任務，設置 disabled
                     const isLocked = isFuture; // 未來任務為未解鎖
