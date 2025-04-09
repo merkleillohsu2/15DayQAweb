@@ -184,7 +184,6 @@ for (let day = 1; day <= 15; day++) {
       const userResult = await pool.request()
         .input('userId', sql.VarChar(36), UserId)
         .query(userQuery);
-      console.log('wwww', userResult);
       if (userResult.recordset.length === 0) {
         return res.status(404).send({ error: '用戶未找到' });
       }
@@ -194,27 +193,15 @@ for (let day = 1; day <= 15; day++) {
 
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
       const tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
-      console.log(tasksCompleted);
+      console.log('Tasks completed by user:', { UserId, tasksCompleted });
 
-      // 特殊邏輯處理：day = 15 時檢查所有任務是否完成
-      if (day === 15) {
-        const allTasksQuery = `
-            SELECT TaskID 
-            FROM ${TASKS_TABLE}
-        `;
-        const allTasksResult = await pool.request().query(allTasksQuery);
-        const allTasks = allTasksResult.recordset.map(task => task.TaskID);
 
-        // 檢查是否所有任務都已完成
-        const hasCompletedAllTasks = allTasks.every(taskId => tasksCompleted.includes(taskId));
-
-        if (!hasCompletedAllTasks) {
-          return res.status(400).send({
-            message: '您尚未完成所有任務，請確保完成後再來提交！',
-            remainingTasks: allTasks.filter(taskId => !tasksCompleted.includes(taskId)) // 返回未完成的任務 ID
-          });
-        }
+      // 獲取 FlexAllCompleteExtraAmount 配置值
+      const bonusReward = await getSettingValue(pool, 'FlexAllCompleteExtraAmount');
+      if (!Number.isInteger(bonusReward)) {
+        console.warn('FlexAllCompleteExtraAmount 配置值無效，使用默認值 0');
       }
+      
       // 確認任務是否已經完成
       const completionQuery = `
                               SELECT * 
@@ -258,6 +245,47 @@ for (let day = 1; day <= 15; day++) {
           .input('tasksCompleted', sql.NVarChar, JSON.stringify(tasksCompleted))
           .input('rewards', sql.Int, rewards)
           .query(updateUserQuery); console.log(task);
+        // 特殊邏輯處理：day = 15 時檢查所有任務是否完成
+        if (day === 15) {
+          const allTasksQuery = `
+            SELECT TaskID 
+            FROM ${TASKS_TABLE} t
+            JOIN ${USERS_TABLE} u ON t.Chain = u.Chain
+            WHERE u.UserID = @userId
+
+        `;
+          const allTasksResult = await pool.request()
+            .input('userId', sql.VarChar(36), UserId) // 傳入 userId 作為查詢參數
+            .query(allTasksQuery);
+
+          const allTasks = allTasksResult.recordset.map(task => task.TaskID);
+
+          // 檢查是否所有任務都已完成
+          const hasCompletedAllTasks = allTasks.every(taskId => tasksCompleted.includes(taskId));
+
+          if (hasCompletedAllTasks) {
+            // 所有任務完成，額外派送獎勵金
+            const newRewards = user.rewards + task.RewardAmount + bonusReward;
+
+            // 更新用戶的獎勵總額
+            const updateUserQuery = `
+            UPDATE ${USERS_TABLE}
+            SET rewards = @rewards
+            WHERE UserID = @userId
+          `;
+            await pool.request()
+              .input('userId', sql.VarChar(36), UserId)
+              .input('rewards', sql.Int, newRewards)
+              .query(updateUserQuery);
+
+            // 返回完成所有任務的成功消息
+            return res.json({
+              message: '恭喜您完成所有任務！您已獲得額外獎勵金。',
+              bonusReward,
+              totalRewards: newRewards
+            });
+          }
+        }
         // 返回成功消息和獎勵金
         return res.json({ message: '恭喜你完成任務', reward: task.RewardAmount });
       } else {
@@ -269,6 +297,21 @@ for (let day = 1; day <= 15; day++) {
     }
   });
 }
+
+
+async function getSettingValue(pool, settingKey) {
+  const query = `
+    SELECT SettingValue
+    FROM ConfigurationSettings
+    WHERE SettingKey = @settingKey
+  `;
+  const result = await pool.request()
+    .input('settingKey', sql.VarChar(100), settingKey)
+    .query(query);
+
+  return result.recordset.length > 0 ? parseInt(result.recordset[0].SettingValue, 10) : null;
+}
+
 
 // 通用函數：獲取任務
 async function getTask(day) {

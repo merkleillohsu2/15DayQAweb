@@ -62,15 +62,17 @@ const handleDecryption = async (req, res) => {
     const userName = getTransformedName(parsedData.User.LastName, parsedData.User.FirstName);
     // 判斷 MobilePhone 是否為空值，若是則使用 Phone
     const phoneNumber = parsedData.User.Contact.MobilePhone
-      ? transformPhoneNumber(parsedData.User.Contact.MobilePhone)
-      : transformPhoneNumber(parsedData.User.Contact.Phone);
+    ? transformPhoneNumber(parsedData.User.Contact.MobilePhone)
+    : (parsedData.User.Contact.Phone
+        ? transformPhoneNumber(parsedData.User.Contact.Phone)
+        : null); // 如果兩者都不存在，返回 null
 
     console.log('[INFO] 處理後的電話號碼:', phoneNumber);
     const chain = parsedData.User.Contact.Account.DTE_Chain__c || null; // 提取 Chain 值
 
-    if (!parsedData || !parsedData.User || !parsedData.User.ContactId || !phoneNumber) {
-      console.error('[ERROR] 無效的解密數據，缺少 User、ContactId 或 MobilePhone');
-      return { error: 'Invalid decrypted data: missing User, ContactId, or MobilePhone' };
+    if (!parsedData || !parsedData.User || !parsedData.User.ContactId) {
+      console.error('[ERROR] 無效的解密數據，缺少 User、ContactId');
+      return { error: 'Invalid decrypted data: missing User, ContactId' };
     }
     if (!userId) {
       console.error('[ERROR] 未找到 ContactId');

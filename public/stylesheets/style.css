@@ -1,5 +1,4 @@
 html, body {
-    overflow: hidden; /* 隱藏滾動條 */
     margin: 0; /* 移除任何邊距 */
     padding: 0; /* 移除任何內間距 */
     width: 100%;
@@ -16,7 +15,6 @@ html, body {
 }
 
 @media (min-width: 768px) {
-
   /* 當視窗寬度大於等於 768px（平板或電腦） */
   .checkbox-container label {
       font-size: 3rem;
