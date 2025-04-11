@@ -29,8 +29,7 @@
         <img src="/images/D04/750x1200-Day4_12.png" alt="任務圖片" id="img-12" class=" clickable" loading="lazy">
         <img src="/images/D04/750x1200-Day4_13.png" alt="任務圖片" id="img-13" class="hidden" loading="lazy">
 
-        <!-- 更多訊息 -->
-        <img class="read-more-img hidden" src="/images/D04/D4-CTA.png" alt="更多圖片">
+
 
         <!-- 彈窗內容 -->
         <div id="popup" class="popup hidden">
@@ -41,28 +40,33 @@
         </div>
 
         <!-- 行動區域 -->
-        <div class="action-container hidden">
-            <div class="checkbox-container">
-                <input type="checkbox" id="taskCompletedCheckbox">
-                <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
-            </div>
-            <div>
-                <% if (!isCompleted && task.TaskDate===currentDate) { %>
-                    <button class="button" id="complete-task-btn">
-                        <img src="/images/D04/750x1200-CTA_01.png" alt="提交按鈕">
-                    </button>
-                    <% } else if (isCompleted) { %>
+        <div class="relative-container">
+            <img src="/images/D04/750x1200-Day4_14.png" alt="任務圖片" id="img-14" loading="lazy">
+            <!-- 更多訊息 -->
+            <img class="read-more-img" src="/images/D04/D4-CTA.png" alt="更多圖片">
+            <div class="action-container disabled" style="pointerEvents: none; opacity: 0.5;">
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="taskCompletedCheckbox">
+                    <label for="taskCompletedCheckbox">我已完成【今日任務內容】</label>
+                </div>
+                <div>
+                    <% if (!isCompleted && task.TaskDate===currentDate) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D04/750x1200-CTA_02.png" alt="已完成按鈕">
+                            <img src="/images/D04/750x1200-CTA_01.png" alt="提交按鈕">
                         </button>
-                        <% } else { %>
-                            <div class="button" id="complete-task-btn">
-                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
-                            </div>
-                            <% } %>
+                        <% } else if (isCompleted) { %>
+                            <button class="button" id="complete-task-btn">
+                                <img src="/images/D04/750x1200-CTA_02.png" alt="已完成按鈕">
+                            </button>
+                            <% } else { %>
+                                <div class="button" id="complete-task-btn">
+                                    <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                </div>
+                                <% } %>
+                </div>
             </div>
         </div>
-
         <!-- 獎勵訊息 -->
         <div id="rewardMessage" class="hidden">
             <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
@@ -100,13 +104,15 @@
                 rewardImg: document.querySelector('.reward-img'),
                 actionContainer: document.querySelector('.action-container')
             };
+            const requiredImages = ["img-02", "img-04", "img-06", "img-08", "img-10", "img-12"]; // 必須點擊的圖片 ID
+            const clickedImages = new Set(); // 用於記錄已點擊的圖片 ID
             // 為可點擊的圖片添加點擊事件
             document.querySelectorAll('.clickable').forEach(img => {
                 const stateMap = new Map();
-            
+
                 document.querySelectorAll('.clickable').forEach(img => {
                     const stateMap = new Map();
-                
+
                     img.addEventListener('click', () => {
                         const nextImages = imageMap[img.id];
                         if (nextImages) {
@@ -118,22 +124,30 @@
                                     return { nextImg, isVisible };
                                 }
                             });
-                
+
                             updatedStates.forEach(({ nextImg, isVisible }) => {
                                 nextImg.classList.toggle('hidden', isVisible);
                             });
-                
+                            clickedImages.add(img.id); // 記錄點擊過的圖片 ID
+                            console.log(`已點擊: ${Array.from(clickedImages).join(", ")}`);
+
                             // img-12 的特例處理
                             if (img.id === "img-12") {
                                 const shouldHide = updatedStates.some(({ isVisible }) => isVisible);
-                                elements.actionContainer.classList.toggle('hidden', shouldHide);
-                                elements.readMoreImg.classList.toggle('hidden', shouldHide);
                             }
+                            // 檢查是否所有圖片都已點擊
+                            if (requiredImages.every(id => clickedImages.has(id))) {
+                                console.log('所有圖片已點擊，啟用 action-container');
+                                elements.actionContainer.classList.remove('disabled');
+                                elements.actionContainer.style.pointerEvents = 'auto'; // 啟用交互
+                                elements.actionContainer.style.opacity = 1; // 恢復正常狀態
+                            }
+
                         }
                     });
                 });
-           
-            
+
+
             });
 
 
