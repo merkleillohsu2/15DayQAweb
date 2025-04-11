@@ -72,7 +72,7 @@ const indexRouter = require('./routes/index');
 const previewRoutes = require('./routes/previewRoutes');
 const lotteryRoutes = require('./routes/lotteryRoutes');
 const prizesRoutes = require('./routes/prizes');
-
+const surveyRewardsRoutes = require('./routes/surveyRewardsRoutes'); // 導入 surveyRewardsRoutes
 
 app.use('/lottery', lotteryRoutes); // 為抽獎功能設定基礎路徑 "/lottery"
 
@@ -93,6 +93,7 @@ app.use('/preview', previewRoutes);
 // 獲取獎品的路由
 app.use('/prizes', prizesRoutes);
 
+app.use('/UploadSurveyReward', surveyRewardsRoutes);
 
 // 匯出資料的路由
 app.use('/export', exportRoutes,(req, res, next) => {

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匯入 UserSurveyRewards</title>
+    <style>
+        /* 全局樣式 */
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            color: #00ccff;
+            text-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        label {
+            font-size: 1.2rem;
+            color: #00ccff;
+            text-shadow: 0 0 8px #00ccff;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #00ccff;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: #00ccff;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #0086b3;
+            box-shadow: 0 0 8px #00ccff;
+        }
+
+        button {
+            background: linear-gradient(90deg, #00ccff, #0086b3);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00ccff;
+        }
+
+        button:active {
+            background: #006b99;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            text-align: center;
+        }
+
+        #result p {
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <script>
+        async function uploadCSV(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('請先選擇一個 CSV 檔案');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('csvFile', file);
+
+            try {
+                const response = await fetch('/UploadSurveyReward/upload-survey-rewards', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <p style="color: #00ccff;">匯入完成</p>
+                        <p>總筆數: ${result.totalImported}</p>
+                        <p>新增筆數: ${result.newAdded}</p>
+                        <p>未動作筆數: ${result.unchanged}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">匯入失敗: ${result.error}</p>`;
+                }
+            } catch (error) {
+                console.error('匯入過程中出現錯誤:', error);
+                alert('上傳發生錯誤，請稍後再試');
+            }
+        }
+    </script>
+</head>
+<body>
+    <form id="csvForm" onsubmit="uploadCSV(event)">
+        <h1>匯入 UserSurveyRewards</h1>
+        <label for="csvFile">選擇 CSV 檔案:</label>
+        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+        <button type="submit">匯入</button>
+        <div id="result"></div>
+    </form>
+</body>
+</html>

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/bounce.css">
 </head>
+
 <body>
     <div class="container">
         <!-- 主圖 -->
@@ -16,8 +17,8 @@
 
             <!-- 行動區域 -->
             <div class="action-container">
-                <button class="button <%= remainingPrizes === 0 || isMaxDrawsReached ? 'disabled' : '' %>"
-                    id="lotteryImage" <%=remainingPrizes===0 || isMaxDrawsReached ? 'disabled' : '' %>>
+                <button class="button <%= isMaxDrawsReached ? 'disabled' : '' %>" id="lotteryImage" <%=isMaxDrawsReached
+                    ? 'disabled' : '' %>>
                     <img src="/images/Lucky-Draw/Lucky-Draw-CTA.png" alt="抽獎按鈕圖片">
                 </button>
             </div>
@@ -56,7 +57,7 @@
         // 抽獎功能
         const lotteryImage = document.getElementById('lotteryImage');
         lotteryImage?.addEventListener('click', () => {
-            
+
 
             freezeLayer.classList.add('active');
 
@@ -82,6 +83,10 @@
                 .then(response => response.json())
                 .then(data => {
                     freezeLayer.classList.remove('active');
+                    // 通過 window.parent 訪問父頁面的 DOM
+                    const gachaImage = window.parent.document.querySelector('#lotteryImage');
+                    gachaImage?.classList.add('disabled'); // 添加禁用樣式
+                    gachaImage?.setAttribute('disabled', 'true'); // 禁用按鈕
                     if (data.success) {
                         // 顯示得獎彈窗
                         popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');

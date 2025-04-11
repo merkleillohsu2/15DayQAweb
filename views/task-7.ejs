@@ -45,7 +45,11 @@
                 </div>
             </div>
             <!-- 扭蛋相關 -->
-            <div class="gacha-wrapper hidden">
+            <% if (isCompleted && !hasDrawnLottery) { %>
+                <div class="gacha-wrapper">
+              <% } else { %>
+                <div class="gacha-wrapper hidden">
+              <% } %>
                 <img class="Gacha-img" src="/images/D09/扭蛋.png" alt="扭蛋圖片">
                 <div class="Gacha-Container">
                     <img src="/images/D09/扭蛋-CTA_02.png" alt="扭蛋圖片" id="lotteryImage">
@@ -119,10 +123,10 @@
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
             // 彈窗邏輯
-            const setupPopupEvents = () => {
+            /*const setupPopupEvents = () => {
                 elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
               
-            };
+            };*/
 
             // 提交任務完成
             const completeTask = async () => {

@@ -11,7 +11,7 @@ const TASKS_TABLE = process.env.TASKS_TABLE;
 const USERS_TABLE = process.env.USERS_TABLE;
 const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE;
 const REWARDS_TABLE = process.env.REWARDS_TABLE;
-
+const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
 
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
@@ -91,43 +91,21 @@ for (let day = 1; day <= 15; day++) {
     const userId = req.session.ContactId;
     console.log(`[INFO] 獲取 UserId: ${userId}`);
     try {
-      console.log(`[INFO] 獲取任務: ${day}`);
       const task = await getTask(day);  // 獲取任務
       console.log(`[INFO] 獲取任務: ${JSON.stringify(task)}`);
-      console.log(`[INFO] 獲取任務日期: ${JSON.stringify(task.TaskDate)}`);
 
+      const pool = await sql.connect();
 
       // 新增邏輯：檢查 User 的 Chain 與 Task 的 Chain 是否匹配
-      const chainQuery = `
-        SELECT Chain 
-        FROM ${USERS_TABLE}
-        WHERE UserID = @userId;
-        `;
-      const pool = await sql.connect();
-      const userChainResult = await pool.request()
-        .input('userId', sql.VarChar(36), userId)
-        .query(chainQuery);
-
-      if (!userChainResult.recordset.length) {
-        console.error('[ERROR] 用戶未找到，無法比對 Chain');
-        return res.render('error', {
-          message: '用戶不存在',
-        });
+      // 獲取用戶 Chain 並比對
+      const userChain = await getUserChain(pool, userId);
+      if (!userChain) {
+        return res.render('error', { message: '用戶不存在，請重新登入後重試' });
       }
 
-      const userChain = userChainResult.recordset[0].Chain;
-      const taskChain = task.Chain; // 假設任務資料中包含 Chain 欄位
-      console.log(`[INFO] User Chain: ${userChain}, Task Chain: ${taskChain}`);
-
-      if (userChain !== taskChain) {
-        console.warn(`[WARNING] User 的 Chain 與 Task 的 Chain 不匹配`);
-        return res.render('error', {
-          message: '您無權訪問此任務',
-        });
+      if (userChain !== task.Chain) {
+        return res.render('error', { message: '您無權訪問此任務，請聯繫支持人員' });
       }
-
-
-
 
       // 新增邏輯：檢查活動是否尚未開始
       if (currentDate < task.TaskDate) {
@@ -137,25 +115,21 @@ for (let day = 1; day <= 15; day++) {
           taskDate: task.TaskDate
         });
       }
-      // 檢查任務是否已完成
-      const query = `
-       SELECT * 
-       FROM ${USER_TASK_COMPLETION_TABLE}
-       WHERE UserID = @userId AND TaskID = @taskId AND IsCompleted = 1
-     `;
-      const completionResult = await pool.request()
-        .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.Int, day)
-        .query(query);
 
-      const isCompleted = completionResult.recordset.length > 0;
-      console.log(`Completion count: ${JSON.stringify(completionResult.recordset.length)}`);
+      // 檢查任務是否完成
+      const isCompleted = await isTaskCompleted(pool, userId, day);
+
+      // 檢查是否已抽過獎
+      const hasDrawnLottery = await GethasDrawnLottery(pool, userId, currentDate);
+      console.log(`[INFO] 使用者當天是否已抽過獎: ${hasDrawnLottery}`);
       console.log(`IsCompleted: ${JSON.stringify(isCompleted)}`);
-      console.log(`Task: ${JSON.stringify(completionResult)}`);
       res.render(`task-${day}`, {
-        task, currentDate, isCompleted,
+        task,
+        currentDate,
+        isCompleted,
+        hasDrawnLottery, // 傳遞到頁面
         contactId: res.locals.contactId,
-        query: res.locals.query
+        query: res.locals.query,
       });
     } catch (err) {
       console.error('[ERROR] Failed to load task:', err.message);
@@ -167,12 +141,12 @@ for (let day = 1; day <= 15; day++) {
   router.post(`/task/${day}/complete`, async (req, res) => {
     const currentDate = new Date().toISOString().split('T')[0];
     const { UserId } = req.body; // 從請求中提取 UserId
-    console.log('Request Body:', req.body);
 
     if (!UserId) {
       return res.status(400).send('缺少 UserId');
     }
     try {
+      const pool = await sql.connect();
       const task = await getTask(day);  // 獲取任務
       // 獲取用戶資料
       const userQuery = `
@@ -180,7 +154,6 @@ for (let day = 1; day <= 15; day++) {
                         FROM ${USERS_TABLE}
                         WHERE UserID = @userId
                       `;
-      const pool = await sql.connect();
       const userResult = await pool.request()
         .input('userId', sql.VarChar(36), UserId)
         .query(userQuery);
@@ -201,7 +174,7 @@ for (let day = 1; day <= 15; day++) {
       if (!Number.isInteger(bonusReward)) {
         console.warn('FlexAllCompleteExtraAmount 配置值無效，使用默認值 0');
       }
-      
+
       // 確認任務是否已經完成
       const completionQuery = `
                               SELECT * 
@@ -213,14 +186,16 @@ for (let day = 1; day <= 15; day++) {
         .input('taskId', sql.Int, day)
         .query(completionQuery);
 
-      console.log(completionResult)
       if (completionResult.recordset.length > 0) {
         return res.status(400).send({ error: '任務已完成' });
       }
 
       // 只比對到日期部分
-      const taskDate = task.TaskDate
-      if (taskDate === currentDate) {
+      console.log('TaskDate:', task.TaskDate);
+      console.log('CurrentDate:', currentDate);
+
+      // 檢查任務日期是否為今天
+      if (task.TaskDate === currentDate) {
         // 記錄任務完成
         const insertCompletionQuery = `
         INSERT INTO ${USER_TASK_COMPLETION_TABLE} (UserID, TaskID, CompletionDate, IsCompleted)
@@ -234,17 +209,49 @@ for (let day = 1; day <= 15; day++) {
         // 更新使用者的任務完成情況和獎勵
         tasksCompleted.push(day);
         const rewards = user.rewards + task.RewardAmount;
+        await updateUserRewards(pool, UserId, tasksCompleted, rewards);
 
-        const updateUserQuery = `
-        UPDATE ${USERS_TABLE}
-        SET tasksCompleted = @tasksCompleted, rewards = @rewards
-        WHERE UserID = @userId
-      `;
-        await pool.request()
+
+
+
+
+        // 新增檢查 UserSurveyRewards 是否有未派送獎勵的邏輯
+        const surveyRewardsQuery = `
+                                    SELECT surveyRewardGiven
+                                    FROM ${REWARDS_TABLE}
+                                    WHERE UserID = @userId AND surveyRewardGiven = 0
+                                  `;
+        const surveyRewardsResult = await pool.request()
           .input('userId', sql.VarChar(36), UserId)
-          .input('tasksCompleted', sql.NVarChar, JSON.stringify(tasksCompleted))
-          .input('rewards', sql.Int, rewards)
-          .query(updateUserQuery); console.log(task);
+          .query(surveyRewardsQuery);
+
+        if (surveyRewardsResult.recordset.length > 0) {
+          console.log('[INFO] 發放額外獎勵中...');
+
+          // 更新 UserSurveyRewards 狀態並增加用戶獎勵
+          const extraReward = 10; // 額外獎勵金額
+          const updateRewardsQuery = `
+                                        UPDATE ${USERS_TABLE}
+                                        SET rewards = rewards + @extraReward
+                                        WHERE UserID = @userId
+                                      `;
+          await pool.request()
+            .input('userId', sql.VarChar(36), UserId)
+            .input('extraReward', sql.Int, extraReward)
+            .query(updateRewardsQuery);
+
+          const updateSurveyQuery = `
+                                      UPDATE ${REWARDS_TABLE}
+                                      SET surveyRewardGiven = 1
+                                      WHERE UserID = @userId
+                                    `;
+          await pool.request()
+            .input('userId', sql.VarChar(36), UserId)
+            .query(updateSurveyQuery);
+
+          console.log('[INFO] 額外獎勵已發放');
+        }
+
         // 特殊邏輯處理：day = 15 時檢查所有任務是否完成
         if (day === 15) {
           const allTasksQuery = `
@@ -265,24 +272,14 @@ for (let day = 1; day <= 15; day++) {
 
           if (hasCompletedAllTasks) {
             // 所有任務完成，額外派送獎勵金
-            const newRewards = user.rewards + task.RewardAmount + bonusReward;
-
-            // 更新用戶的獎勵總額
-            const updateUserQuery = `
-            UPDATE ${USERS_TABLE}
-            SET rewards = @rewards
-            WHERE UserID = @userId
-          `;
-            await pool.request()
-              .input('userId', sql.VarChar(36), UserId)
-              .input('rewards', sql.Int, newRewards)
-              .query(updateUserQuery);
+            rewards = rewards + bonusReward;
+            await updateUserRewards(pool, UserId, tasksCompleted, rewards);
 
             // 返回完成所有任務的成功消息
             return res.json({
               message: '恭喜您完成所有任務！您已獲得額外獎勵金。',
               bonusReward,
-              totalRewards: newRewards
+              totalRewards: rewards
             });
           }
         }
@@ -298,7 +295,65 @@ for (let day = 1; day <= 15; day++) {
   });
 }
 
+// 獲取用戶的 Chain
+async function getUserChain(pool, userId) {
+  const query = `
+    SELECT Chain 
+    FROM ${USERS_TABLE}
+    WHERE UserID = @userId;
+  `;
+  const result = await pool.request()
+    .input('userId', sql.VarChar(36), userId)
+    .query(query);
+  return result.recordset.length ? result.recordset[0].Chain : null;
+}
 
+// 檢查用戶的任務是否已完成
+async function isTaskCompleted(pool, userId, taskId) {
+  const query = `
+    SELECT * 
+    FROM ${USER_TASK_COMPLETION_TABLE}
+    WHERE UserID = @userId AND TaskID = @taskId AND IsCompleted = 1;
+  `;
+  const result = await pool.request()
+    .input('userId', sql.VarChar(36), userId)
+    .input('taskId', sql.Int, taskId)
+    .query(query);
+  return result.recordset.length > 0;
+}
+
+// 檢查用戶是否已經抽過獎
+async function GethasDrawnLottery(pool, userId, currentDate) {
+  const query = `
+    SELECT * 
+    FROM ${USER_LOTTERY_ENTRIES_TABLE}
+    WHERE UserID = @userId AND CONVERT(DATE, DrawDate) = @currentDate;
+  `;
+  const result = await pool.request()
+    .input('userId', sql.VarChar(36), userId)
+    .input('currentDate', sql.Date, currentDate)
+    .query(query);
+  return result.recordset.length > 0;
+}
+
+
+
+
+// 獲取用戶的任務完成情況和獎勵金額
+async function updateUserRewards(pool, userId, tasksCompleted, rewards) {
+  const query = `
+    UPDATE ${USERS_TABLE}
+    SET tasksCompleted = @tasksCompleted, rewards = @rewards
+    WHERE UserID = @userId
+  `;
+  await pool.request()
+    .input('userId', sql.VarChar(36), userId)
+    .input('tasksCompleted', sql.NVarChar, JSON.stringify(tasksCompleted))
+    .input('rewards', sql.Int, rewards)
+    .query(query);
+}
+
+// 獲取配置值的通用函數
 async function getSettingValue(pool, settingKey) {
   const query = `
     SELECT SettingValue

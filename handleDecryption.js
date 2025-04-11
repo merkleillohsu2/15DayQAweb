@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const USERS_TABLE = process.env.USERS_TABLE
 const REWARDS_TABLE = process.env.REWARDS_TABLE
+const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE
 
 const getTransformedName = (lastName, firstName) => {
   // 判斷是否為英文名字（簡單判斷英文字母開頭）
@@ -102,9 +103,15 @@ const handleDecryption = async (req, res) => {
         u.UserID, 
         u.LastLoginTime, 
         u.PhoneNumber, 
-        r.surveyRewardGiven 
+        r.surveyRewardGiven,
+        T.IsCompleted
       FROM ${USERS_TABLE} u
       LEFT JOIN ${REWARDS_TABLE} r ON u.UserID = r.UserID
+      Left JOIN (
+          SELECT TOP 1 UserID, TaskID, CompletionDate, IsCompleted
+          FROM ${USER_TASK_COMPLETION_TABLE}
+          WHERE IsCompleted = 1
+      ) T ON T.UserID = u.UserID
       WHERE u.UserID = @userId;
     `;
     const pool = await sql.connect();
@@ -142,8 +149,9 @@ const handleDecryption = async (req, res) => {
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .query(insertQuery);
     }
+    console.log('[INFO] 用戶記錄已更新或創建成功');
     // 檢查是否需要發放獎勵
-    if (userRecord && userRecord.surveyRewardGiven === false) {
+    if (userRecord && userRecord.surveyRewardGiven === false && userRecord.IsCompleted) {
       console.log('[INFO] 發放獎勵中...');
       const updateRewardsQuery = `
         UPDATE ${USERS_TABLE}

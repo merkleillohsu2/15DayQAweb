@@ -424,3 +424,9 @@ img {
     height: auto;
     display: block;
 }
+
+#lotteryImage.disabled {
+    opacity: 0.5; /* 按鈕變淡，表示不可操作 */
+    pointer-events: none; /* 禁止按鈕交互 */
+    cursor: not-allowed; /* 鼠標指示禁用狀態 */
+}
