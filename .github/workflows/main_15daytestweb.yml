@@ -37,7 +37,6 @@ jobs:
         with:
           name: node-app
           path: release.zip
-          retention-days: 7
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,4 +61,4 @@ jobs:
           app-name: '15DayTestWeb'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_48FEAC6301634F258D55B1241E4F306B }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CE0814E8538F4F59B5B6535D95E37C3F }}
