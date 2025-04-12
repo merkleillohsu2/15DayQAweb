@@ -193,7 +193,7 @@
             // 提交任務完成邏輯
             const completeTask = async () => {
                 if (elements.button.disabled) return;
-
+                navigateToParent('GetReward');
                 const userId = sessionStorage.getItem('ContactId');
                 elements.button.disabled = true;
                 elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
