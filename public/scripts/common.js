@@ -38,7 +38,9 @@ function initializeSessionStorage(contactId, queryParamName = 'query') {
 }
 //   彈窗邏輯
 function setupPopupEvents(popup, readMoreImg, closePopupButton) {
-    readMoreImg.addEventListener('click', () => popup.classList.remove('hidden'));
+    if (readMoreImg) {
+        readMoreImg.addEventListener('click', () => popup.classList.remove('hidden'));
+    }
     closePopupButton.addEventListener('click', () => popup.classList.add('hidden'));
     popup.addEventListener('click', (event) => {
         if (event.target === popup) {
