@@ -266,20 +266,21 @@ for (let day = 1; day <= 15; day++) {
             .query(allTasksQuery);
 
           const allTasks = allTasksResult.recordset.map(task => task.TaskID);
-
+          console.log('所有任務:', rewards);
           // 檢查是否所有任務都已完成
           const hasCompletedAllTasks = allTasks.every(taskId => tasksCompleted.includes(taskId));
-
+          console.log('所有任務:', rewards);
+          console.log('已完成的任務:', bonusReward);
           if (hasCompletedAllTasks) {
             // 所有任務完成，額外派送獎勵金
-            rewards = rewards + bonusReward;
+            const newRewards = rewards + bonusReward;
             await updateUserRewards(pool, UserId, tasksCompleted, rewards);
 
             // 返回完成所有任務的成功消息
             return res.json({
               message: '恭喜您完成所有任務！您已獲得額外獎勵金。',
               bonusReward,
-              totalRewards: rewards
+              totalRewards: newRewards
             });
           }
         }
