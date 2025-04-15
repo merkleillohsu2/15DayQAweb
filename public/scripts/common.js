@@ -3,23 +3,15 @@ const targetUrls = {
     sandbox: 'https://pmi--qa.sandbox.my.site.com/',
     production: 'https://tw.pmiandu.com/'
 };
-
-// 通用功能：向父窗口發送消息
-function sendMessageToParent(messageType, messageData) {
-    const environment = window.location.host.includes('15daytestweb') ? 'sandbox' : 'production'; // 根據域名判斷環境
-    const targetUrl = targetUrls[environment];
-
-    if (window.parent && targetUrl) {
-        window.parent.postMessage({ type: messageType, ...messageData }, targetUrl);
-    } else {
-        console.error('父窗口不存在或無效的目標 URL');
-    }
-}
-
-// 高度通知功能
 function sendHeightToParent() {
     const height = document.documentElement.scrollHeight; // 取得整頁高度
-    sendMessageToParent('iframeHeight', { iframeHeight: height }); // 使用通用方法發送高度
+    const environment = window.location.host.includes('15daytestweb') ? 'sandbox' : 'production'; // 根據域名判斷環境
+    const targetUrl = targetUrls[environment];
+    if (window.parent && targetUrl) {
+        window.parent.postMessage({ iframeHeight: height }, targetUrl); // 傳遞高度到父頁面
+    } else {
+        console.error('父窗口不存在或無效的目標 URL');
+    }   
 }
 
 // 當內容加載完成後，通知父頁面
@@ -27,10 +19,16 @@ window.addEventListener('load', sendHeightToParent);
 
 // 如果子頁面內容發生改變（例如，新增動態內容）
 new ResizeObserver(() => sendHeightToParent()).observe(document.body);
+// 通用功能：向父窗口發送消息
+function navigateToParent(message) {
+    const environment = window.location.host.includes('15daytestweb') ? 'sandbox' : 'production'; // 根據域名判斷環境
+    const targetUrl = targetUrls[environment];
 
-// 示例：手動向父窗口發送其他消息
-function navigateToParent(customMessage) {
-    sendMessageToParent('customAction', customMessage); // 使用通用方法發送自定義消息
+    if (window.parent && targetUrl) {
+        window.parent.postMessage(message, targetUrl);
+    } else {
+        console.error('父窗口不存在或無效的目標 URL');
+    }
 }
 
 // 更新按鈕狀態的邏輯
