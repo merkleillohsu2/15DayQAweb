@@ -421,12 +421,21 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
 
     // 獲取任務數據，包括 TaskName
     const taskQuery = `
-      SELECT TaskID, TaskName, TaskDate 
-      FROM ${TASKS_TABLE}
-      ORDER BY TaskDate ASC
-    `;
+                    SELECT 
+                      t.TaskID, 
+                      t.TaskName, 
+                      t.TaskDate, 
+                      ISNULL(utc.IsCompleted, 0) AS IsCompleted -- 如果 IsCompleted 為 NULL，設為 0
+                    FROM [dbo].[Tasks] t
+                    LEFT JOIN [dbo].[UserTaskCompletion] utc
+                      ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+                    ORDER BY t.TaskDate ASC
+                  `;
+
     const pool = await sql.connect();
-    const taskResult = await pool.request().query(taskQuery);
+    const taskResult = await pool.request()
+      .input('userId', sql.VarChar(36), req.session.ContactId) // 傳遞使用者 ID
+      .query(taskQuery);
     const tasks = taskResult.recordset.map(task => ({
       ...task,
       DaysLeft: Math.ceil((new Date(task.TaskDate) - new Date(currentDate)) / (1000 * 60 * 60 * 24))
@@ -443,7 +452,6 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
       .query(userQuery);
     const user = userResult.recordset[0];
     user.tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
-
     res.render('task-list', { tasks, user, currentDate });
   } catch (err) {
     console.error(err.message);
