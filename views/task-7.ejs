@@ -92,6 +92,7 @@
                 gachaImg: document.querySelector('.Gacha-img'),
                 actionContainer: document.querySelector('.action-container'),
                 lotteryImage: document.getElementById('lotteryImage'),
+                rewardImg: document.querySelector('.reward-img'),
             };
 
             const constants = {
@@ -121,10 +122,11 @@
                 elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
             };
             // 彈窗邏輯
-            /*const setupPopupEvents = () => {
+            const setupPopupEvents = () => {
                 elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
-              
-            };*/
+                elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
+                elements.closeRewardButton.addEventListener('click', () =>  elements.rewardMessage.classList.add('hidden'));
+            };
 
             // 提交任務完成
             const completeTask = async () => {
@@ -167,7 +169,7 @@
             const initializeEvents = () => {
                 elements.checkbox.addEventListener('change', updateButtonState);
                 elements.button.addEventListener('click', completeTask);
-                elements.closeRewardButton.addEventListener('click', () =>  elements.rewardMessage.classList.add('hidden'));
+                
                 const bouncePopup = document.getElementById('bouncePopup');
                 const bounceIframe = document.getElementById('bounceIframe');
                 const closeBouncePopup = document.getElementById('closeBouncePopup');

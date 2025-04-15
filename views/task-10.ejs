@@ -120,7 +120,7 @@
                 lotteryImage: document.getElementById('lotteryImage'),
                 overlayImages: document.querySelectorAll('.overlay-image'), // 疊加圖片
                 actionContainer: document.querySelector('.action-container'), // 行動區域
-
+                rewardImg: document.querySelector('.reward-img'),
             };
 
 
@@ -165,6 +165,13 @@
                         checkAllImagesClicked();        // 檢查點選完成狀態
                     });
                 });
+            };
+
+
+            // 彈窗控制
+            const setupPopupEvents = () => {
+                elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
+                
             };
             // 抽取單獨的函數來處理圖片替換邏輯
             const updateOverlayImage = (image, index) => {
@@ -284,7 +291,7 @@
                     bouncePopup.classList.add('hidden'); // 隱藏彈窗
                     bounceIframe.setAttribute('src', ''); // 清空 iframe
                 });
-
+                setupPopupEvents();
                 setupOverlayPopupEvents();
             };
 
