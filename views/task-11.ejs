@@ -16,6 +16,7 @@
         <img src="/images/D05/750x1200-Day5.png" alt="任務圖片">
 
         <!-- 更多訊息 -->
+        <p class="text-above-read-more">裝置預訂服務專案</p>
         <img class="read-more-img" src="/images/D05/750x1200-CTA_03.png" alt="更多圖片">
 
         <!-- 彈窗內容 -->
@@ -59,7 +60,7 @@
     <!-- 凍結層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-     <script nonce="<%= nonce %>">
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
@@ -107,7 +108,7 @@
             // 彈窗邏輯
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.readMoreImg.addEventListener('click', () => navigateToParent('prize-info'));
+                elements.readMoreImg.addEventListener('click', () => navigateToParent('device-reservation-service'));
                 elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
                 elements.popup.addEventListener('click', (event) => {
                     if (event.target === elements.popup) {

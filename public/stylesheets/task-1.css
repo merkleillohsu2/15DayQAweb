@@ -187,7 +187,7 @@ img {
     .read-more-img {
         width: 60%;
         /* 調整手機檢視時的大小 */
-        bottom: -2px;
+        bottom: -10px;
         /* 調整手機檢視時的位置 */
     }
 }

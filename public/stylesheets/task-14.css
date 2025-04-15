@@ -58,7 +58,7 @@ img {
 /* 操作區域樣式 */
 .action-container {
     position: absolute;
-    top: 86%;
+    top: 84%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -175,6 +175,24 @@ img {
 @media (max-width: 767px) {
     .read-more-img {
         width: 90%; /* 手機檢視大小調整 */
+    }
+}
+
+.text-above-read-more {
+    position: absolute;
+    bottom: 7%; /* 控制與圖片的位置距離 */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 修正居中偏移 */
+    font-size: 1rem; /* 調整文字大小 */
+    font-weight: bold; /* 文字加粗 */
+    color: #333; /* 文字顏色 */
+    z-index: 2; /* 確保文字在圖片上方 */
+}
+
+/* 桌面裝置（寬度大於 1024px） */
+@media screen and (min-width: 1025px) {
+    .text-above-read-more {
+        font-size: 2rem; 
     }
 }
 

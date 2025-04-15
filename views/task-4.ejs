@@ -168,17 +168,13 @@
             // 彈窗相關事件
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.readMoreImg.addEventListener('click', () => navigateToParent('prize-info'));
+                elements.readMoreImg.addEventListener('click', () => navigateToParent('device-reservation-service'));
                 elements.popup.addEventListener('click', (event) => {
                     if (event.target === elements.popup) {
                         elements.popup.classList.add('hidden');
                     }
                 });
-
             };
-
-
-
             // 提交任務完成邏輯
             const completeTask = async () => {
                 if (elements.button.disabled) return;

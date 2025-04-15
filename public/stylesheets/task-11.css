@@ -163,12 +163,30 @@ img {
 /* 更多圖片樣式 */
 .read-more-img {
     position: absolute;
-    bottom: 4%;
+    bottom: 2%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;
     cursor: pointer;
     z-index: 2;
+}
+
+.text-above-read-more {
+    position: absolute;
+    bottom: 7%; /* 控制與圖片的位置距離 */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 修正居中偏移 */
+    font-size: 1rem; /* 調整文字大小 */
+    font-weight: bold; /* 文字加粗 */
+    color: #333; /* 文字顏色 */
+    z-index: 2; /* 確保文字在圖片上方 */
+}
+
+/* 桌面裝置（寬度大於 1024px） */
+@media screen and (min-width: 1025px) {
+    .text-above-read-more {
+        font-size: 2rem; 
+    }
 }
 
 /* 獎勵訊息樣式 */
