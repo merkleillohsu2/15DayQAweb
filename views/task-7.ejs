@@ -171,10 +171,9 @@
                 const bouncePopup = document.getElementById('bouncePopup');
                 const bounceIframe = document.getElementById('bounceIframe');
                 const closeBouncePopup = document.getElementById('closeBouncePopup');
-                const lotteryImage = document.getElementById('lotteryImage'); // 點擊觸發的按鈕
 
                 // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
-                lotteryImage.addEventListener('click', () => {
+                elements.lotteryImage.addEventListener('click', () => {
                     const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
                     bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
                     bouncePopup.classList.remove('hidden'); // 顯示彈窗

@@ -149,7 +149,13 @@
                         </div>
                     </div>
             </div>
-
+            <!-- Bounce 頁面彈窗 -->
+            <div id="bouncePopup" class="popup hidden">
+                <div class="popup-content">
+                    <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
+                    <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+                </div>
+            </div>
             <!-- 冷凍層 -->
             <div id="freezeLayer" class="hidden"></div>
 
@@ -173,6 +179,9 @@
                         gachaImg: document.querySelector('.Gacha-img'),
                         actionContainer: document.querySelector('.action-container'),
                         lotteryImage: document.getElementById('lotteryImage'),
+                        bouncePopup:  document.getElementById('bouncePopup'),
+                        bounceIframe:  document.getElementById('bounceIframe'),
+                        closeBouncePopup:  document.getElementById('closeBouncePopup')
                     };
 
                     const constants = {
@@ -324,8 +333,17 @@
                         elements.checkbox.addEventListener('change', updateButtonState);
                         elements.button.addEventListener('click', completeTask);
                         elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
+                        
+                        // 影片結束啟用操作
                         elements.lotteryImage.addEventListener('click', () => {
-                            window.location.href = '/lottery/bounce' + window.location.search;
+                            const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                            elements.bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                            elements.bouncePopup.classList.remove('hidden'); // 顯示彈窗
+                        });
+                        // 關閉彈窗邏輯
+                        elements.closeBouncePopup.addEventListener('click', () => {
+                            bouncePopup.classList.add('hidden'); // 隱藏彈窗
+                            bounceIframe.setAttribute('src', ''); // 清空 iframe
                         });
                         setupPopupEvents();
                         setupQuizEvents();
