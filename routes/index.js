@@ -274,7 +274,7 @@ for (let day = 1; day <= 15; day++) {
           if (hasCompletedAllTasks) {
             // 所有任務完成，額外派送獎勵金
             const newRewards = rewards + bonusReward;
-            await updateUserRewards(pool, UserId, tasksCompleted, rewards);
+            await updateUserRewards(pool, UserId, tasksCompleted, newRewards);
 
             // 返回完成所有任務的成功消息
             return res.json({

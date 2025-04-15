@@ -309,6 +309,10 @@
                                     elements.actionContainer.classList.remove('hidden');
                                     elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
                                 }
+                                document.documentElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'end', // 滑動到最底部
+                                });
                             });
                         });
 

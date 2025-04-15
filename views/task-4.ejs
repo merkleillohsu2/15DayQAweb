@@ -271,6 +271,10 @@
                         } else if (questionNumber === '2') {
                             document.querySelector('.action-container').classList.remove('hidden');
                         }
+                        document.documentElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'end', // 滑動到最底部
+                        });
                     });
                 });
 

@@ -158,6 +158,7 @@
                         const popupSrc = image.getAttribute('data-popup');
                         elements.popupImage.setAttribute('src', popupSrc);
                         elements.popup.classList.remove('hidden');
+                        elements.freezeLayer.classList.add('active');
                         updateOverlayImage(image, index); // 更新當前圖片
                         syncOverlayStyles(image);        // 同步相關圖片的更新
                         markAsClicked(image);           // 標記點選狀態
@@ -265,6 +266,7 @@
                 elements.closePopupButton.addEventListener('click', () => {
                     elements.popup.classList.add('hidden');
                     elements.popupImage.setAttribute('src', '');
+                    elements.freezeLayer.classList.remove('active');
                 });
                 const bouncePopup = document.getElementById('bouncePopup');
                 const bounceIframe = document.getElementById('bounceIframe');

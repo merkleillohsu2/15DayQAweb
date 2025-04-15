@@ -115,7 +115,7 @@
     </div>
     <div id="freezeLayer" class="hidden"></div>
 
-     <script nonce="<%= nonce %>">
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage，存儲 ContactId 和 Query
         initializeSessionStorage('<%= contactId %>');
 
@@ -131,6 +131,7 @@
                 rewardMessage: document.getElementById('rewardMessage'),
                 closeRewardButton: document.querySelector('#rewardMessage .close-button'),
                 rewardImg: document.querySelector('.reward-img'),
+                confirmButton: document.querySelectorAll('.confirm')
             };
 
             const constants = {
@@ -138,6 +139,7 @@
                 taskIncompleteSrc: '/images/D07/750x1200-CTA_01.png',
                 rewardApiEndpoint: '/task/9/complete',
             };
+
 
             // 更新按鈕狀態
             const updateButtonState = () => {
@@ -270,6 +272,10 @@
                         } else if (questionNumber === '2') {
                             document.querySelector('.action-container').classList.remove('hidden');
                         }
+                        document.documentElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'end', // 滑動到最底部
+                        });
                     });
                 });
 
