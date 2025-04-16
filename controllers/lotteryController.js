@@ -189,7 +189,7 @@ exports.performLottery = async (req, res) => {
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.Int, taskIds)
+        .input('taskId',  sql.NVarChar, taskIds)
         .query(insertLotteryEntryQuery);
 
       return res.json({
