@@ -287,7 +287,7 @@ for (let day = 1; day <= 15; day++) {
         // 返回成功消息和獎勵金
         return res.json({ message: '恭喜你完成任務', reward: task.RewardAmount });
       } else {
-        return res.status(400).send({ error: '非今日任務' });
+        return res.status(400).send({ error: '非本日任務' });
       }
     } catch (err) {
       console.error(err); // 輸出錯誤信息到控制台
