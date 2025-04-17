@@ -108,7 +108,7 @@ const handleDecryption = async (req, res) => {
       FROM ${USERS_TABLE} u
       LEFT JOIN ${REWARDS_TABLE} r ON u.UserID = r.UserID
       Left JOIN (
-          SELECT TOP 1 UserID, TaskID, CompletionDate, IsCompleted
+          SELECT UserID, TaskID, CompletionDate, IsCompleted
           FROM ${USER_TASK_COMPLETION_TABLE}
           WHERE IsCompleted = 1
       ) T ON T.UserID = u.UserID
@@ -150,6 +150,9 @@ const handleDecryption = async (req, res) => {
         .query(insertQuery);
     }
     console.log('[INFO] 用戶記錄已更新或創建成功');
+    console.log('[INFO] 用戶名稱:', userRecord);
+    console.log('[INFO] 用戶名稱:', userRecord.surveyRewardGiven);
+    console.log('[INFO] 用戶名稱:', userRecord.IsCompleted);
     // 檢查是否需要發放獎勵
     if (userRecord && userRecord.surveyRewardGiven === false && userRecord.IsCompleted) {
       console.log('[INFO] 發放獎勵中...');
