@@ -40,7 +40,7 @@ img {
 /* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 97.5%;
+    top: 94.5%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;

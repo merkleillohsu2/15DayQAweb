@@ -42,7 +42,7 @@ img {
 /* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 85%;
+    top: 74%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -362,35 +362,35 @@ img {
 
 /* 針對每張疊加圖片的個別定位 */
 .overlay-1 {
-    top: 29%; /* 根據主圖片頂部的偏移量 */
+    top: 25%; /* 根據主圖片頂部的偏移量 */
     left: 46%; /* 主圖片左側的偏移量 */
 
 }
 
 .overlay-2 {
-    top: 42.5%; /* 根據需要調整位置 */
+    top: 38.5%; /* 根據需要調整位置 */
     left: 6%;
 }
 
 .overlay-3 {
-    top: 34%; /* 主圖片底部偏移量 */
+    top: 30%; /* 主圖片底部偏移量 */
     left: 6%;
 }
 
 .overlay-4 {
-    top: 39%; /* 調整底部位置 */
+    top: 35%; /* 調整底部位置 */
     left: 24%; /* 主圖片右側偏移量 */
 }
 
 /* 新增圖片的位置 */
 .overlay-5 {
-    top: 34%;
+    top: 30%;
     right: 10%;
 }
 
 .overlay-6 {
+    top: 35%;
     right: 26%;
-    top: 39%;
 }
 
 

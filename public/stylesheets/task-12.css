@@ -58,7 +58,7 @@ img {
 /* 操作區域樣式 */
 .action-container {
     position: absolute;
-    bottom: 37%;
+    bottom: 47%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -163,7 +163,7 @@ img {
 /* 更多圖片樣式 */
 .read-more-img {
     position: absolute;
-    bottom: 23%;
+    bottom: 33%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;

@@ -40,7 +40,7 @@ img {
 .action-container {
     position: absolute;
     /* 絕對定位，依附於 .container */
-    top: 95%;
+    top: 88%;
     /* 與 #image-2 的頂部對齊 */
     transform: translateY(-50%);
     /* 垂直居中調整 */

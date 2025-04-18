@@ -58,7 +58,7 @@ img {
 /* 操作區域樣式 */
 .action-container {
     position: absolute;
-    top: 84%;
+    top: 79%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -163,7 +163,7 @@ img {
 /* 更多圖片樣式 */
 .read-more-img {
     position: absolute;
-    bottom: 2%;
+    bottom: 8%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;
@@ -180,7 +180,7 @@ img {
 
 .text-above-read-more {
     position: absolute;
-    bottom: 7%; /* 控制與圖片的位置距離 */
+    bottom: 12%; /* 控制與圖片的位置距離 */
     left: 50%; /* 水平居中 */
     transform: translateX(-50%); /* 修正居中偏移 */
     font-size: 1rem; /* 調整文字大小 */

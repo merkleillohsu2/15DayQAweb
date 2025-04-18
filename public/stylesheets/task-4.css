@@ -40,7 +40,7 @@ img {
 /* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 88%;
+    top: 18%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -147,39 +147,19 @@ img {
 }
 
 /* 更多圖片區域樣式 */
-.read-more-container {
+.content-container {
     top: 30%;
-    position: absolute;
-    bottom: 40px;
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
-    width: 75%;
+    width: 100%;
     text-align: center;
     z-index: 2;
 }
 
-.read-more-p {
-    font-size: 1.2rem;
-    color: white;
-    cursor: pointer;
-    margin: 0;
-}
-
-@media (min-width: 768px) {
-    .read-more-p {
-        font-size: 2rem;
-    }
-}
-
-@media (min-width: 1200px) {
-    .read-more-p {
-        font-size: 1.8rem;
-    }
-}
-
 .read-more-img {
     position: absolute;
-    bottom: 1.5%;
+    bottom: 25%;
     left: 50%;
     transform: translateX(-50%);
     height: auto;

@@ -87,7 +87,7 @@ video::-moz-progressbar {
 /* 行動區域樣式 */
 .action-container {
     position: absolute; /* 絕對定位，疊加在圖片之上 */
-    top: 87%; /* 緊貼圖片底部 */
+    top: 77%; /* 緊貼圖片底部 */
     left: 50%; /* 水平居中對齊 */
     transform: translateX(-50%); /* 修正偏移，確保居中 */
     width: 100%; /* 行動區域寬度，根據需要調整 */
