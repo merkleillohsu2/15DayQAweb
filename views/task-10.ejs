@@ -87,7 +87,7 @@
                 <!-- 獎勵訊息 -->
                 <div id="rewardMessage" class="hidden">
                     <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-                    <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
+                    <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-4.png" alt="獎勵圖片">
                 </div>
 
 
@@ -170,7 +170,7 @@
 
                 // 彈窗控制
                 const setupPopupEvents = () => {
-                    elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
+                    //elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
 
                 };
                 // 抽取單獨的函數來處理圖片替換邏輯
@@ -286,6 +286,14 @@
                         bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
                         bouncePopup.classList.remove('hidden'); // 顯示彈窗
                     });
+
+
+                    elements.rewardImg.addEventListener('click', () => {
+                        const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                        bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                        bouncePopup.classList.remove('hidden'); // 顯示彈窗
+                    });
+
                     // 關閉彈窗邏輯
                     closeBouncePopup.addEventListener('click', () => {
                         bouncePopup.classList.add('hidden'); // 隱藏彈窗

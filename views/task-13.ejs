@@ -137,7 +137,7 @@
                     <!-- 獎勵訊息 -->
                     <div id="rewardMessage" class="hidden">
                         <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-                        <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
+                        <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-4.png" alt="獎勵圖片">
                     </div>
 
                     <!-- 彈窗內容 -->
@@ -180,7 +180,8 @@
                 lotteryImage: document.getElementById('lotteryImage'),
                 bouncePopup: document.getElementById('bouncePopup'),
                 bounceIframe: document.getElementById('bounceIframe'),
-                closeBouncePopup: document.getElementById('closeBouncePopup')
+                closeBouncePopup: document.getElementById('closeBouncePopup'),
+                rewardImg: document.querySelector('.reward-img'),
             };
 
             const constants = {
@@ -339,6 +340,13 @@
 
                 // 影片結束啟用操作
                 elements.lotteryImage.addEventListener('click', () => {
+                    const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                    elements.bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                    elements.bouncePopup.classList.remove('hidden'); // 顯示彈窗
+                });
+
+
+                elements.rewardImg.addEventListener('click', () => {
                     const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
                     elements.bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
                     elements.bouncePopup.classList.remove('hidden'); // 顯示彈窗
