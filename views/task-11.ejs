@@ -16,7 +16,7 @@
         <img src="/images/D05/750x1200-Day5.png" alt="任務圖片">
 
         <!-- 更多訊息 -->
-        <p class="text-above-read-more">裝置預訂服務專案</p>
+        <p class="text-above-read-more">裝置註冊服務專案</p>
         <img class="read-more-img" src="/images/D05/750x1200-CTA_03.png" alt="更多圖片">
 
         <!-- 彈窗內容 -->
@@ -108,7 +108,7 @@
             // 彈窗邏輯
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.readMoreImg.addEventListener('click', () => navigateToParent('device-reservation-service'));
+                elements.readMoreImg.addEventListener('click', () => navigateToParent('device-registration-service'));
                 elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
                 elements.popup.addEventListener('click', (event) => {
                     if (event.target === elements.popup) {
