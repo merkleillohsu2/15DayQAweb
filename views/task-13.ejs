@@ -318,14 +318,18 @@
                         quiz.querySelectorAll('.answer').forEach(answer => answer.style.pointerEvents = 'none');
                         if (questionNumber === '1') {
                             document.getElementById('quiz2').classList.remove('hidden');
+                            document.getElementById('quiz2').scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start' // 滑動到物件的頂部，可以調整為 'center' 或 'end'
+                            });
                         } else if (questionNumber === '2') {
                             elements.actionContainer.classList.remove('hidden');
                             elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
+                            document.documentElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end', // 滑動到最底部
+                            })
                         }
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
                     });
                 });
 
