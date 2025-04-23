@@ -269,13 +269,17 @@
                         quiz.querySelectorAll('.answer').forEach(answer => answer.style.pointerEvents = 'none');
                         if (questionNumber === '1') {
                             document.getElementById('quiz2').classList.remove('hidden');
+                            document.getElementById('quiz2').scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end', // 滑動到最底部
+                            });
                         } else if (questionNumber === '2') {
                             document.querySelector('.action-container').classList.remove('hidden');
+                            document.documentElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end', // 滑動到最底部
+                            });
                         }
-                        document.documentElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'end', // 滑動到最底部
-                        });
                     });
                 });
 
