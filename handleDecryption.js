@@ -150,9 +150,6 @@ const handleDecryption = async (req, res) => {
         .query(insertQuery);
     }
     console.log('[INFO] 用戶記錄已更新或創建成功');
-    console.log('[INFO] 用戶名稱:', userRecord);
-    console.log('[INFO] 用戶名稱:', userRecord.surveyRewardGiven);
-    console.log('[INFO] 用戶名稱:', userRecord.IsCompleted);
     // 檢查是否需要發放獎勵
     if (userRecord && userRecord.surveyRewardGiven === false && userRecord.IsCompleted) {
       console.log('[INFO] 發放獎勵中...');
