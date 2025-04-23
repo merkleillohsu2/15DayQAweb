@@ -245,7 +245,7 @@
                     elements.gachaContainer.classList.remove('hidden');
                     elements.gachaImg.classList.remove('hidden');
                     window.scrollTo({
-                        top: document.documentElement.scrollHeight,
+                        top: document.body.scrollHeight,
                         behavior: 'smooth'
                     });
                 } catch (error) {
@@ -323,7 +323,7 @@
                             elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
                         }
                         window.scrollTo({
-                            top: document.documentElement.scrollHeight,
+                            top: document.body.scrollHeight,
                             behavior: 'smooth'
                         });
                     });
