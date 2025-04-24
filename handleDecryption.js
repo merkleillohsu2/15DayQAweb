@@ -15,13 +15,13 @@ const getTransformedName = (lastName, firstName) => {
 
   if (isEnglishName) {
     // 英文名字：保留首字母，其餘替換為 X
-    const transformedLastName = lastName.charAt(0) + 'x'.repeat(lastName.length - 1);
-    const transformedFirstName = firstName.charAt(0) + 'x'.repeat(firstName.length - 1);
+    const transformedLastName = lastName.charAt(0) + 'O'.repeat(lastName.length - 1);
+    const transformedFirstName = firstName.charAt(0) + 'O'.repeat(firstName.length - 1);
     return `${transformedLastName} ${transformedFirstName}`;
   } else {
     // 中文名字：替換第二個字為 X
     const userName = lastName + firstName;
-    return userName.replace(/(\S)(\S)(\S+)/, '$1X$3');
+    return userName.replace(/(\S)(\S)(\S+)/, '$1O$3');
   }
 };
 
@@ -31,10 +31,10 @@ const transformPhoneNumber = (phone) => {
     // 將 "+886" 替換為 "0"
     const localPhone = phone.replace("+886", "0");
     // 切割電話號碼
-    const prefix = localPhone.slice(0, 2); // 前 4 位
-    const suffix = localPhone.slice(-3); // 後 3 位
+    const prefix = localPhone.slice(0, 4); // 前 4 位
+    const suffix = localPhone.slice(-2); // 後 2 位
     // 拼接隱藏的電話號碼
-    return `${prefix}XXXXXX${suffix}`;
+    return `${prefix}OOOO${suffix}`;
   }
   // 若非 "+886" 開頭，直接返回原始電話號碼
   return phone;
