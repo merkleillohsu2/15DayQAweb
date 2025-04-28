@@ -344,6 +344,7 @@
 
                 // 影片結束啟用操作
                 elements.lotteryImage.addEventListener('click', () => {
+                    navigateToParent('Draw_now'); // 導向獎勵頁面
                     const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
                     elements.bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
                     elements.bouncePopup.classList.remove('hidden'); // 顯示彈窗
