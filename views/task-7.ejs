@@ -15,7 +15,8 @@
         <!-- 圖片與行動區域 -->
         <div class="media-wrapper">
             <img src="/images/D09/750x1200-Day9_KV.png" alt="任務圖片">
-            <video class="video-container" controls controlsList="nodownload noremoteplayback" id="taskVideo" poster="/images/task-7_videopreview.jpg">
+            <video class="video-container" controls controlsList="nodownload noremoteplayback" id="taskVideo"
+                poster="/images/task-7_videopreview.jpg">
                 <source
                     src="https://pmi-salesforce.videomarketingplatform.co/64968575/111368416/2247ee998bfd2636430035dd9087e841/video_hd/d9iqosvideo0312-9-video.mp4"
                     type="video/mp4">
@@ -25,8 +26,8 @@
             <div class="action-container disabled-container">
                 <div class="checkbox-container">
                     <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                    <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
-                    <br /><br />
+                        <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                        <br /><br />
                 </div>
                 <div>
                     <% if (!isCompleted && task.TaskDate===currentDate) { %>
@@ -47,163 +48,172 @@
             <!-- 扭蛋相關 -->
             <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
                 <div class="gacha-wrapper">
-              <% } else { %>
-                <div class="gacha-wrapper hidden">
-              <% } %>
-                <img class="Gacha-img" src="/images/D09/扭蛋.png" alt="扭蛋圖片">
-                <div class="Gacha-Container">
-                    <img src="/images/D09/扭蛋-CTA_02.png" alt="扭蛋圖片" id="lotteryImage">
+                    <% } else { %>
+                        <div class="gacha-wrapper hidden">
+                            <% } %>
+                                <img class="Gacha-img" src="/images/D09/扭蛋.png" alt="扭蛋圖片">
+                                <div class="Gacha-Container">
+                                    <img src="/images/D09/扭蛋-CTA_02.png" alt="扭蛋圖片" id="lotteryImage">
+                                </div>
+                        </div>
                 </div>
+
+                <!-- 獎勵訊息 -->
+                <div id="rewardMessage" class="hidden">
+                    <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
+                    <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-4.png" alt="獎勵圖片">
+                </div>
+        </div>
+        <!-- Bounce 頁面彈窗 -->
+        <div id="bouncePopup" class="popup hidden">
+            <div class="popup-content">
+                <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
+                <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
             </div>
         </div>
+        <!-- 冷凍層 -->
+        <div id="freezeLayer" class="hidden"></div>
 
-        <!-- 獎勵訊息 -->
-        <div id="rewardMessage" class="hidden">
-            <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-            <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-4.png" alt="獎勵圖片">
-        </div>
-    </div>
-    <!-- Bounce 頁面彈窗 -->
-    <div id="bouncePopup" class="popup hidden">
-        <div class="popup-content">
-            <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
-            <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
-        </div>
-    </div>
-    <!-- 冷凍層 -->
-    <div id="freezeLayer" class="hidden"></div>
+        <script nonce="<%= nonce %>">
+            // 初始化 sessionStorage
+            initializeSessionStorage('<%= contactId %>');
 
-    <script nonce="<%= nonce %>">
-        // 初始化 sessionStorage
-        initializeSessionStorage('<%= contactId %>');
+            // 定義 DOM 元素和常量
+            document.addEventListener('DOMContentLoaded', () => {
+                const elements = {
+                    closePopupButton: document.querySelector('.close-popup'),
+                    checkbox: document.getElementById('taskCompletedCheckbox'),
+                    button: document.getElementById('complete-task-btn'),
+                    buttonImg: document.querySelector('#complete-task-btn img'),
+                    freezeLayer: document.getElementById('freezeLayer'),
+                    rewardMessage: document.getElementById('rewardMessage'),
+                    closeRewardButton: document.querySelector('#rewardMessage .close-button'),
+                    taskVideo: document.getElementById('taskVideo'),
+                    gachaContainer: document.querySelector('.gacha-wrapper'),
+                    gachaImg: document.querySelector('.Gacha-img'),
+                    actionContainer: document.querySelector('.action-container'),
+                    lotteryImage: document.getElementById('lotteryImage'),
+                    rewardImg: document.querySelector('.reward-img'),
+                };
 
-        // 定義 DOM 元素和常量
-        document.addEventListener('DOMContentLoaded', () => {
-            const elements = {
-                closePopupButton: document.querySelector('.close-popup'),
-                checkbox: document.getElementById('taskCompletedCheckbox'),
-                button: document.getElementById('complete-task-btn'),
-                buttonImg: document.querySelector('#complete-task-btn img'),
-                freezeLayer: document.getElementById('freezeLayer'),
-                rewardMessage: document.getElementById('rewardMessage'),
-                closeRewardButton: document.querySelector('#rewardMessage .close-button'),
-                taskVideo: document.getElementById('taskVideo'),
-                gachaContainer: document.querySelector('.gacha-wrapper'),
-                gachaImg: document.querySelector('.Gacha-img'),
-                actionContainer: document.querySelector('.action-container'),
-                lotteryImage: document.getElementById('lotteryImage'),
-                rewardImg: document.querySelector('.reward-img'),
-            };
+                const constants = {
+                    taskCompletedSrc: '/images/D09/750x1200-CTA_02.png',
+                    taskIncompleteSrc: '/images/D09/750x1200-CTA_01.png',
+                    rewardApiEndpoint: '/task/7/complete',
+                };
 
-            const constants = {
-                taskCompletedSrc: '/images/D09/750x1200-CTA_02.png',
-                taskIncompleteSrc: '/images/D09/750x1200-CTA_01.png',
-                rewardApiEndpoint: '/task/7/complete',
-            };
+                // 更新按鈕狀態
+                const updateButtonState = () => {
+                    const isCheckboxChecked = elements.checkbox.checked;
+                    let isCompleted;
+                    // 檢查是否存在圖片
+                    if (elements.buttonImg) {
+                        const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                        console.log('按鈕圖片:', buttonImgSrc);
 
-            // 更新按鈕狀態
-            const updateButtonState = () => {
-                const isCheckboxChecked = elements.checkbox.checked;
-                let isCompleted;
-                // 檢查是否存在圖片
-                if (elements.buttonImg) {
-                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
-                    console.log('按鈕圖片:', buttonImgSrc);
+                        // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                        isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                        elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
 
-                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
-                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
-                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
+                        console.log('按鈕是否已完成:', isCompleted);
 
-                    console.log('按鈕是否已完成:', isCompleted);
+                    } else {
+                        console.log('按鈕未包含圖片');
+                    }
+                    elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
+                };
+                // 彈窗邏輯
+                const setupPopupEvents = () => {
+                    elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
+                    // elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
+                    elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
+                };
 
-                } else {
-                    console.log('按鈕未包含圖片');
-                }
-                elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
-            };
-            // 彈窗邏輯
-            const setupPopupEvents = () => {
-                elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
-               // elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.closeRewardButton.addEventListener('click', () =>  elements.rewardMessage.classList.add('hidden'));
-            };
+                // 提交任務完成
+                const completeTask = async () => {
+                    if (elements.button.disabled) return;
+                    navigateToParent('GetReward');
+                    const userId = sessionStorage.getItem('ContactId');
+                    elements.button.disabled = true;
+                    elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
+                    elements.freezeLayer.classList.add('active');
 
-            // 提交任務完成
-            const completeTask = async () => {
-                if (elements.button.disabled) return;
-                navigateToParent('GetReward');
-                const userId = sessionStorage.getItem('ContactId');
-                elements.button.disabled = true;
-                elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
-                elements.freezeLayer.classList.add('active');
+                    try {
+                        const response = await fetch(constants.rewardApiEndpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ UserId: userId }),
+                        });
 
-                try {
-                    const response = await fetch(constants.rewardApiEndpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ UserId: userId }),
+                        if (!response.ok) {
+                            throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
+                        }
+
+                        elements.rewardMessage.classList.remove('hidden');
+                        elements.gachaContainer.classList.remove('hidden');
+                        elements.gachaImg.classList.remove('hidden');
+                    } catch (error) {
+                        console.error('提交失敗:', error);
+                    } finally {
+                        elements.freezeLayer.classList.remove('active');
+                    }
+                };
+
+                // 影片結束啟用操作
+                const setupVideoEvents = () => {
+                    elements.actionContainer.classList.add('disabled-container'); // 禁用行動區域
+                    if (elements.taskVideo) {
+                        elements.taskVideo.addEventListener('play', () => {
+                            navigateToParent('video-played');
+                        });
+                        elements.taskVideo.addEventListener('pause', () => {
+                            navigateToParent('video-paused');
+                        });
+                        elements.taskVideo.addEventListener('ended', () => {
+                            navigateToParent('video-ended'); // 導向影片結束
+                            elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
+                        });
+                    }
+                };
+                // 初始化事件監聽
+                const initializeEvents = () => {
+                    elements.checkbox.addEventListener('change', updateButtonState);
+                    elements.button.addEventListener('click', completeTask);
+
+                    const bouncePopup = document.getElementById('bouncePopup');
+                    const bounceIframe = document.getElementById('bounceIframe');
+                    const closeBouncePopup = document.getElementById('closeBouncePopup');
+
+                    // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
+                    elements.lotteryImage.addEventListener('click', () => {
+                        navigateToParent('Draw_now'); // 導向獎勵頁面
+                        const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                        bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                        bouncePopup.classList.remove('hidden'); // 顯示彈窗
                     });
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
-                    }
-
-                    elements.rewardMessage.classList.remove('hidden');
-                    elements.gachaContainer.classList.remove('hidden');
-                    elements.gachaImg.classList.remove('hidden');
-                } catch (error) {
-                    console.error('提交失敗:', error);
-                } finally {
-                    elements.freezeLayer.classList.remove('active');
-                }
-            };
-
-            // 影片結束啟用操作
-            const setupVideoEvents = () => {
-                elements.actionContainer.classList.add('disabled-container'); // 禁用行動區域
-                elements.taskVideo.addEventListener('ended', () => {
-                    elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
-                });
-            };  
-            // 初始化事件監聽
-            const initializeEvents = () => {
-                elements.checkbox.addEventListener('change', updateButtonState);
-                elements.button.addEventListener('click', completeTask);
-                
-                const bouncePopup = document.getElementById('bouncePopup');
-                const bounceIframe = document.getElementById('bounceIframe');
-                const closeBouncePopup = document.getElementById('closeBouncePopup');
-
-                // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
-                elements.lotteryImage.addEventListener('click', () => {
-                    navigateToParent('Draw_now'); // 導向獎勵頁面
-                    const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
-                    bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
-                    bouncePopup.classList.remove('hidden'); // 顯示彈窗
-                });
-
-                elements.rewardImg.addEventListener('click', () => {
-                    const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
-                    bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
-                    bouncePopup.classList.remove('hidden'); // 顯示彈窗
-                });
+                    elements.rewardImg.addEventListener('click', () => {
+                        const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                        bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
+                        bouncePopup.classList.remove('hidden'); // 顯示彈窗
+                    });
 
 
-                // 關閉彈窗邏輯
-                closeBouncePopup.addEventListener('click', () => {
-                    bouncePopup.classList.add('hidden'); // 隱藏彈窗
-                    bounceIframe.setAttribute('src', ''); // 清空 iframe
-                });
+                    // 關閉彈窗邏輯
+                    closeBouncePopup.addEventListener('click', () => {
+                        bouncePopup.classList.add('hidden'); // 隱藏彈窗
+                        bounceIframe.setAttribute('src', ''); // 清空 iframe
+                    });
 
-                setupPopupEvents();
-                setupVideoEvents();
-            };
+                    setupPopupEvents();
+                    setupVideoEvents();
+                };
 
-            // 初始化
-            updateButtonState();
-            initializeEvents();
-        });
-    </script>
+                // 初始化
+                updateButtonState();
+                initializeEvents();
+            });
+        </script>
 </body>
 
 </html>
