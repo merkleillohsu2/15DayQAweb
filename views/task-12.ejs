@@ -124,7 +124,7 @@
                                     stateMap.set(nextId, !isVisible);
                                     return { nextImg, isVisible };
                                 }
-                            });
+                            }).filter(Boolean); // 過濾掉無效值
 
                             updatedStates.forEach(({ nextImg, isVisible }) => {
                                 nextImg.classList.toggle('hidden', isVisible);
@@ -143,7 +143,8 @@
                                 elements.actionContainer.style.pointerEvents = 'auto'; // 啟用交互
                                 elements.actionContainer.style.opacity = 1; // 恢復正常狀態
                             }
-
+                            // 新增 navigateToParent 邏輯
+                            navigateToParent('day4' + img.id);
                         }
                     });
                 });

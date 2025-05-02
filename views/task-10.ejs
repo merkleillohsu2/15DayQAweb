@@ -217,6 +217,9 @@
 
                 // 更新同步更新邏輯，加入 overlay-4 和 overlay-6 的邏輯
                 const syncOverlayStyles = (image) => {
+
+                    const overlay1 = document.querySelector('.overlay-image.overlay-1');
+                    const overlay2 = document.querySelector('.overlay-image.overlay-2');
                     const overlay3 = document.querySelector('.overlay-image.overlay-3');
                     const overlay5 = document.querySelector('.overlay-image.overlay-5');
                     const overlay4 = document.querySelector('.overlay-image.overlay-4');
@@ -231,10 +234,25 @@
                         overlay4.setAttribute('src', updatedSrc);
                         overlay6.setAttribute('src', updatedSrc);
                     }
+                    overlay1.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_1'); 
+                    });
+                    overlay2.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_2'); 
+                    });
+                    overlay3.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_3'); 
+                    });
+                    overlay4.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_4'); 
+                    });
+                    overlay5.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_5'); 
+                    });
+                    overlay6.addEventListener('click', () => {
+                        navigateToParent('day6_magnifier_6'); 
+                    });
                 };
-
-
-
                 // 提交任務完成
                 const completeTask = async () => {
                     if (elements.button.disabled) return;
