@@ -44,7 +44,7 @@ header {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 1.5em;
+    font-size: 2rem;
     font-weight: bold;
     text-shadow: 0px 0px 5px black;
     pointer-events: none;
@@ -56,8 +56,13 @@ header {
 
 /* 金幣圖標樣式 */
 .coin-icon {
-    width: 24px; /* 金幣圖標大小 */
-    height: 24px;
+    width: 40px; /* 增大金幣 */
+    height: 40px;
+    flex-shrink: 0;
+    position: relative;
+    top: 5px; /* 向下移動 5px，可根據需求調整 */
+
+
 }
 
 /* Task list 容器 */

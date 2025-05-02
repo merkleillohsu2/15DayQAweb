@@ -24,7 +24,7 @@
             <img src="/images/D09/750x1200-Day9_content.png" alt="任務圖片" class="content-image">
             <div class="action-container disabled-container">
                 <div class="checkbox-container">
-                    <input type="checkbox" id="taskCompletedCheckbox">
+                    <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
                     <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
                     <br /><br />
                 </div>
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <!-- 扭蛋相關 -->
-            <% if (isCompleted && !hasDrawnLottery) { %>
+            <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
                 <div class="gacha-wrapper">
               <% } else { %>
                 <div class="gacha-wrapper hidden">

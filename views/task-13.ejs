@@ -58,7 +58,7 @@
                     <img class="confirm" src="/images/D03/D3-QA-CTA-images/Q1/D3-QA-CTA_Confirm.png" alt="問答題 1 答案">
                 </div>
             </div>
-            <div>
+            <div id="answerquiz1">
                 <img class="result correct" src="/images/D03/750x1200-Day3_03.png" alt="問答題 1 正確答案"
                     style="display: none;">
                 <img class="result incorrect" src="/images/D03/750x1200-Day3_X_03.png" alt="問答題 1 錯誤答案"
@@ -92,36 +92,42 @@
                     <img class="confirm" src="/images/D03/D3-QA-CTA-images/Q2/D3-QA-CTA_Confirm.png" alt="問答題 2 答案">
                 </div>
             </div>
-            <div>
+            <div id="answerquiz2">
                 <img class="result correct" src="/images/D03/750x1200-Day3_05.png" alt="問答題 2 正確答案"
                     style="display: none;">
                 <img class="result incorrect" src="/images/D03/750x1200-Day3_X_05.png" alt="問答題 2 錯誤答案"
                     style="display: none;">
             </div>
         </div>
-        <div class="action-container disabled-container hidden">
-            <div class="checkbox-container">
-                <input type="checkbox" id="taskCompletedCheckbox">
-                <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
-            </div>
-            <div>
-                <% if (!isCompleted && task.TaskDate===currentDate) { %>
-                    <button class="button" id="complete-task-btn">
-                        <img src="/images/D03/750x1200-CTA_01.png" alt="提交按鈕">
-                    </button>
-                    <% } else if (isCompleted) { %>
-                        <button class="button" id="complete-task-btn">
-                            <img src="/images/D03/750x1200-CTA_02.png" alt="已完成按鈕">
-                        </button>
-                        <% } else { %>
-                            <div class="button" id="complete-task-btn">
-                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
-                            </div>
-                            <% } %>
-            </div>
+        <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
+            <img src="/images/D03/750x1200-Day3_06.png" alt="任務圖片" >
+                <div class="action-container disabled-container">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% }
+                            %>>
+                            <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                    </div>
+                    <div>
+                        <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                            <button class="button" id="complete-task-btn">
+                                <img src="/images/D03/750x1200-CTA_01.png" alt="提交按鈕">
+                            </button>
+                            <% } else if (isCompleted) { %>
+                                <button class="button" id="complete-task-btn">
+                                    <img src="/images/D03/750x1200-CTA_02.png" alt="已完成按鈕">
+                                </button>
+                                <% } else { %>
+                                    <div class="button" id="complete-task-btn">
+                                        <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                    </div>
+                                    <% } %>
+                    </div>
+                </div>
+
         </div>
+
         <!-- 扭蛋相關 -->
-        <% if (isCompleted && !hasDrawnLottery) { %>
+        <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
             <div class="gacha-wrapper">
                 <% } else { %>
                     <div class="gacha-wrapper hidden">
@@ -177,6 +183,7 @@
                 gachaContainer: document.querySelector('.gacha-wrapper'),
                 gachaImg: document.querySelector('.Gacha-img'),
                 actionContainer: document.querySelector('.action-container'),
+                contentContainer: document.querySelector('.content-container'),
                 lotteryImage: document.getElementById('lotteryImage'),
                 bouncePopup: document.getElementById('bouncePopup'),
                 bounceIframe: document.getElementById('bounceIframe'),
@@ -318,16 +325,17 @@
                         quiz.querySelectorAll('.answer').forEach(answer => answer.style.pointerEvents = 'none');
                         if (questionNumber === '1') {
                             document.getElementById('quiz2').classList.remove('hidden');
-                            document.getElementById('quiz2').scrollIntoView({
+                            document.getElementById('answerquiz1').scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'start' // 滑動到物件的頂部，可以調整為 'center' 或 'end'
                             });
                         } else if (questionNumber === '2') {
                             elements.actionContainer.classList.remove('hidden');
+                            elements.contentContainer.classList.remove('hidden'); // 禁用行動區域
                             elements.actionContainer.classList.remove('disabled-container'); // 啟用行動區域
-                            document.documentElement.scrollIntoView({
+                            document.getElementById('answerquiz2').scrollIntoView({
                                 behavior: 'smooth',
-                                block: 'end', // 滑動到最底部
+                                block: 'start', // 滑動到最底部
                             })
                         }
                     });

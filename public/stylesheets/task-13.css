@@ -78,11 +78,21 @@ img {
     display: block;
 }
 
+/* 更多圖片區域樣式 */
+.content-container {
+    top: 30%;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+}
 
 /* 行動區域樣式 */
 .action-container {
     position: absolute; /* 絕對定位，疊加在圖片之上 */
-    top: 93%; /* 緊貼圖片底部 */
+    top: 10%; /* 緊貼圖片底部 */
     left: 50%; /* 水平居中對齊 */
     transform: translateX(-50%); /* 修正偏移，確保居中 */
     width: 100%; /* 行動區域寬度，根據需要調整 */

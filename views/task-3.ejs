@@ -26,7 +26,7 @@
         <!-- 行動區域 -->
         <div class="action-container">
             <div class="checkbox-container">
-                <input type="checkbox" id="taskCompletedCheckbox">
+                <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
                 <label style="color: white;" for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
             </div>
             <div>

@@ -34,7 +34,7 @@
                     <img class="confirm" src="/images/D12/QA-CTA-images/Q1/D12-Q1-CTA_confirm.png" alt="問答題 1 答案">
                 </div>
             </div>
-            <div>
+            <div id="answerquiz1">
                 <img class="result correct" src="/images/D12/750x1200-Day12_QA1_V.png" alt="問答題 1 正確答案"
                     style="display: none;">
                 <img class="result incorrect" src="/images/D12/750x1200-Day12_QA1_X.png" alt="問答題 1 錯誤答案"
@@ -61,7 +61,7 @@
                     <img class="confirm" src="/images/D12/QA-CTA-images/Q2/D12-Q2-CTA_confirm.png" alt="問答題 2 答案">
                 </div>
             </div>
-            <div>
+            <div id="answerquiz2">
                 <img class="result correct" src="/images/D12/750x1200-Day12_QA2_V.png" alt="問答題 2 正確答案"
                     style="display: none;">
                 <img class="result incorrect" src="/images/D12/750x1200-Day12_QA2_X.png" alt="問答題 2 錯誤答案"
@@ -88,9 +88,9 @@
                 </div>
             </div>
 
-            <div class="action-container hidden">
+            <div class="action-container <% if (!isCompleted) { %> hidden <% } %> ">
                 <div class="checkbox-container">
-                    <input type="checkbox" id="taskCompletedCheckbox">
+                    <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
                     <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
                 </div>
                 <div>
@@ -268,15 +268,15 @@
                         quiz.querySelectorAll('.answer').forEach(answer => answer.style.pointerEvents = 'none');
                         if (questionNumber === '1') {
                             document.getElementById('quiz2').classList.remove('hidden');
-                            document.getElementById('quiz2').scrollIntoView({
+                            document.getElementById('answerquiz1').scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'start' // 滑動到物件的頂部，可以調整為 'center' 或 'end'
                             });
                         } else if (questionNumber === '2') {
                             document.querySelector('.action-container').classList.remove('hidden');
-                            document.documentElement.scrollIntoView({
+                            document.getElementById('answerquiz2').scrollIntoView({
                                 behavior: 'smooth',
-                                block: 'end', // 滑動到最底部
+                                block: 'start', // 滑動到最底部
                             });
                         }
                     });
