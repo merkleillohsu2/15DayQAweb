@@ -282,8 +282,7 @@ img {
     top: 23%;
     right: 3%;
     cursor: pointer;
-    width: 10%;
-    height: 10%;
+    width: 10%; /* Adjusted size */
 }
 
 
