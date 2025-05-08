@@ -13,7 +13,11 @@ const port = process.env.PORT || 3000;
 
 // 連接數據庫
 connectDB();
-app.use(helmet());
+app.use(helmet.hsts({
+  maxAge: 31536000, // 1 年
+  includeSubDomains: true,
+  preload: true
+}));
 // 使用 helmet 增強安全性，防止一些常見的網絡攻擊
 
 app.use(express.json({ limit: '10kb' })); // 限制 JSON 請求大小為 10KB
@@ -37,19 +41,29 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // 添加這個中間件
 app.use((req, res, next) => {
-  res.locals.nonce = crypto.randomBytes(16).toString('base64'); // 使用 crypto 生成唯一 nonce
+  res.locals.nonce = crypto.randomBytes(16).toString('base64'); // 生成唯一 nonce
+
+  let cspHeader = "";
+
   if (process.env.NODE_ENV === 'development') {
-    res.setHeader(
-        'Content-Security-Policy',
-        "frame-src 'self' http://localhost:3000 https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;"
-    );
-} else {
-    res.setHeader(
-        'Content-Security-Policy',
-        "frame-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;"
-    );
-}
-  // 設置 CSP 標頭，允許來自 'self' 和指定來源的腳本
+      cspHeader = `
+          default-src 'self';
+          script-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          style-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          frame-src 'self' http://localhost:3000 https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          frame-ancestors 'none'; // 禁止外部嵌入
+      `;
+  } else {
+      cspHeader = `
+          default-src 'self';
+          script-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          style-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          frame-src 'self' https://pmi--qa.sandbox.my.site.com https://tw.pmiandu.com;
+          frame-ancestors 'none'; // 禁止外部嵌入
+      `;
+  }
+
+  res.setHeader('Content-Security-Policy', cspHeader.replace(/\s+/g, ' ')); // 去除多餘空格
   next();
 });
 app.use((req, res, next) => {
@@ -65,7 +79,6 @@ const limiter = rateLimit({
 });
 
 app.use(limiter); // 使用速率限制中間件來防止暴力破解攻擊
-
 
 const exportRoutes = require('./routes/exportRoutes');
 const indexRouter = require('./routes/index');
