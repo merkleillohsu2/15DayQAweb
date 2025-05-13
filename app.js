@@ -10,6 +10,8 @@ const helmet = require('helmet');
 const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
+const tls = require('tls');
+tls.DEFAULT_CIPHERS = 'TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256';
 
 // 連接數據庫
 connectDB();

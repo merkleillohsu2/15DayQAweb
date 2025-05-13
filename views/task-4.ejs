@@ -68,7 +68,7 @@
                     style="display: none;">
             </div>
         </div>
-        <div class="content-container">
+        <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
             <!-- 圖片 2 -->
             <img src="/images/D12/750x1200-Day12_end.png" alt="任務圖片">
             <!-- 新增 "更多圖片" -->
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="action-container <% if (!isCompleted) { %> hidden <% } %> ">
+            <div class="action-container ">
                 <div class="checkbox-container">
                     <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
                     <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
@@ -133,6 +133,7 @@
                 button: document.getElementById('complete-task-btn'),
                 buttonImg: document.querySelector('#complete-task-btn img'),
                 freezeLayer: document.getElementById('freezeLayer'),
+                contentContainer: document.querySelector('.content-container'),
                 rewardMessage: document.getElementById('rewardMessage'),
                 closeRewardButton: document.querySelector('#rewardMessage .close-button'),
                 rewardImg: document.querySelector('.reward-img'),
@@ -273,6 +274,7 @@
                                 block: 'start' // 滑動到物件的頂部，可以調整為 'center' 或 'end'
                             });
                         } else if (questionNumber === '2') {
+                            elements.contentContainer.classList.remove('hidden'); // 禁用行動區域
                             document.querySelector('.action-container').classList.remove('hidden');
                             document.getElementById('answerquiz2').scrollIntoView({
                                 behavior: 'smooth',

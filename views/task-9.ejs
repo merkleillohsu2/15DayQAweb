@@ -83,36 +83,40 @@
                     <button class="close-popup">關閉</button>
                 </div>
             </div>
-
-            <div class="action-container hidden">
-                <div class="checkbox-container">
-                    <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                    <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
-                </div>
-                <div>
-                    <% if (!isCompleted && task.TaskDate===currentDate) { %>
-                        <button class="button" id="complete-task-btn">
-                            <img src="/images/D07/750x1200-CTA_01.png" alt="按鈕圖片">
-                        </button>
-                        <% } else if (isCompleted) { %>
+            <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
+                <img src="/images/D07/750x1200-Day7_03.png" alt="任務圖片">
+                <div class="action-container">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% }
+                            %>>
+                            <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                    </div>
+                    <div>
+                        <% if (!isCompleted && task.TaskDate===currentDate) { %>
                             <button class="button" id="complete-task-btn">
-                                <img src="/images/D07/750x1200-CTA_02.png" alt="按鈕圖片">
+                                <img src="/images/D07/750x1200-CTA_01.png" alt="按鈕圖片">
                             </button>
-                            <% } else if (!isCompleted && task.TaskDate !==currentDate) { %>
-                                <div class="button" id="complete-task-btn">
-                                    <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
-                                </div>
-                                <% } %>
+                            <% } else if (isCompleted) { %>
+                                <button class="button" id="complete-task-btn">
+                                    <img src="/images/D07/750x1200-CTA_02.png" alt="按鈕圖片">
+                                </button>
+                                <% } else if (!isCompleted && task.TaskDate !==currentDate) { %>
+                                    <div class="button" id="complete-task-btn">
+                                        <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                    </div>
+                                    <% } %>
+                    </div>
                 </div>
             </div>
         </div>
-
         <!-- 獎勵訊息 -->
         <div id="rewardMessage" class="hidden">
             <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
             <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-2.png" alt="獎勵圖片">
         </div>
     </div>
+
+
     <div id="freezeLayer" class="hidden"></div>
 
     <script nonce="<%= nonce %>">
@@ -129,6 +133,7 @@
                 buttonImg: document.querySelector('#complete-task-btn img'),
                 freezeLayer: document.getElementById('freezeLayer'),
                 rewardMessage: document.getElementById('rewardMessage'),
+                contentContainer: document.querySelector('.content-container'),
                 closeRewardButton: document.querySelector('#rewardMessage .close-button'),
                 rewardImg: document.querySelector('.reward-img'),
                 confirmButton: document.querySelectorAll('.confirm')
@@ -275,6 +280,7 @@
                             });
                         } else if (questionNumber === '2') {
                             document.querySelector('.action-container').classList.remove('hidden');
+                            elements.contentContainer.classList.remove('hidden'); // 禁用行動區域
                             document.getElementById('answerquiz2').scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'start', // 滑動到最底部

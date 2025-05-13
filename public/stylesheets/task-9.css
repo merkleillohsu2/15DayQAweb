@@ -37,10 +37,20 @@ img {
     margin-bottom: 20px;
 }
 
+/* 更多圖片區域樣式 */
+.content-container {
+    top: 30%;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+}
 /* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 94.5%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
