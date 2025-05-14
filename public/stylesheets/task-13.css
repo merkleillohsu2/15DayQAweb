@@ -126,7 +126,7 @@ img {
 
 /* 扭蛋相關樣式 */
 .gacha-wrapper {
-    position: absolute;
+    position: relative;
     width: 100%;
     left: 50%;
     transform: translateX(-50%);

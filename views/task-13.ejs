@@ -103,9 +103,9 @@
 
         <!-- 扭蛋相關 -->
         <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
-            <div class="gacha-wrapper">
+            <div class="gacha-wrapper" id="gacha-wrapper"> 
                 <% } else { %>
-                    <div class="gacha-wrapper hidden">
+                    <div class="gacha-wrapper hidden" id="gacha-wrapper">
                         <% } %>
                             <img class="Gacha-img" src="/images/D03/扭蛋.png" alt="扭蛋圖片">
                             <div class="Gacha-Container">
@@ -230,7 +230,7 @@
                     elements.gachaContainer.classList.remove('hidden');
                     elements.gachaImg.classList.remove('hidden');
 
-                     document.getElementsByClassName('gacha-wrapper').scrollIntoView({
+                     document.getElementById('gacha-wrapper').scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'start', // 滑動到最底部
                             })
