@@ -4,16 +4,20 @@ body {
     margin: 0;
     background-color: #CCFFFF;
     display: flex;
-    justify-content: center; /* 主軸居中 */
-    align-items: center; /* 交叉軸居中 */
-    min-height: 100vh; /* 垂直居中屏幕 */
+    justify-content: center;
+    /* 主軸居中 */
+    align-items: center;
+    /* 交叉軸居中 */
+    min-height: 100vh;
+    /* 垂直居中屏幕 */
 }
 
 /* 容器樣式 */
 .container {
     border-radius: 10px;
     text-align: center;
-    position: relative; /* 子元素定位依附於此 */
+    position: relative;
+    /* 子元素定位依附於此 */
 }
 
 /* 標題樣式 */
@@ -26,47 +30,57 @@ body {
 /* 通用圖片樣式 */
 img {
     display: block;
-    max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
+    max-width: 100%;
+    /* 確保圖片在不同裝置上保持比例 */
     margin: 0 auto;
 }
 
 /* 特殊圖片間距樣式 */
 #image-2 {
-    margin-bottom: 20px; /* 與其他元素分隔 */
+    margin-bottom: 20px;
+    /* 與其他元素分隔 */
 }
 
 /* 箭頭圖片樣式 */
 .arrow-img {
-    width: 8%; /* 默認寬度 */
-    height: auto; /* 保持圖片比例 */
+    width: 8%;
+    /* 默認寬度 */
+    height: auto;
+    /* 保持圖片比例 */
 }
 
 @media (min-width: 768px) {
     .arrow-img {
-        width: 10%; /* 平板大小 */
+        width: 10%;
+        /* 平板大小 */
     }
 }
 
 @media (min-width: 1200px) {
     .arrow-img {
-        width: 12%; /* 桌面大屏幕 */
+        width: 12%;
+        /* 桌面大屏幕 */
     }
 }
 
 /* 圖片與行動區域的父容器 */
 .media-wrapper {
-    position: relative; /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */
+    position: relative;
+    /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */
     width: 100%;
     max-width: 90%;
-    margin: 0 auto; /* 居中對齊 */
+    margin: 0 auto;
+    /* 居中對齊 */
     text-align: center;
 }
 
 
 /* 圖片樣式 */
 .content-image {
-    width: 100%; /* 確保圖片適配容器 */
-    height: auto; /* 保持長寬比例 */
+    width: 100%;
+    /* 確保圖片適配容器 */
+    height: auto;
+    /* 保持長寬比例 */
     display: block;
 }
 
@@ -91,11 +105,16 @@ img {
 
 /* 行動區域樣式 */
 .action-container {
-    position: absolute; /* 絕對定位，疊加在圖片之上 */
-    top: 10%; /* 緊貼圖片底部 */
-    left: 50%; /* 水平居中對齊 */
-    transform: translateX(-50%); /* 修正偏移，確保居中 */
-    width: 100%; /* 行動區域寬度，根據需要調整 */
+    position: absolute;
+    /* 絕對定位，疊加在圖片之上 */
+    top: 10%;
+    /* 緊貼圖片底部 */
+    left: 50%;
+    /* 水平居中對齊 */
+    transform: translateX(-50%);
+    /* 修正偏移，確保居中 */
+    width: 100%;
+    /* 行動區域寬度，根據需要調整 */
 }
 
 
@@ -123,11 +142,16 @@ img {
 }
 
 .Gacha-Container {
-    position: absolute; /* 絕對定位，疊加在圖片之上 */
-    top: 80%; /* 緊貼圖片底部 */
-    left: 50%; /* 水平居中對齊 */
-    transform: translateX(-50%); /* 修正偏移，確保居中 */
-    width: 100%; /* 行動區域寬度，根據需要調整 */
+    position: absolute;
+    /* 絕對定位，疊加在圖片之上 */
+    top: 80%;
+    /* 緊貼圖片底部 */
+    left: 50%;
+    /* 水平居中對齊 */
+    transform: translateX(-50%);
+    /* 修正偏移，確保居中 */
+    width: 100%;
+    /* 行動區域寬度，根據需要調整 */
 }
 
 /* 隱藏元素 */
@@ -137,14 +161,16 @@ img {
 
 /* 勾選框樣式 */
 .checkbox-container {
-    align-items: center; /* 垂直對齊 */
+    align-items: center;
+    /* 垂直對齊 */
     gap: 10px;
 }
 
 .checkbox-container input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #f4b400; /* 更改勾選框顏色 */
+    accent-color: #f4b400;
+    /* 更改勾選框顏色 */
 }
 
 @media (min-width: 768px) {
@@ -174,7 +200,8 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* 半透明背景 */
+    background-color: rgba(0, 0, 0, 0.8);
+    /* 半透明背景 */
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -200,7 +227,8 @@ img {
     cursor: pointer;
     width: 30px;
     height: 30px;
-    z-index: 1010; /* 確保按鈕位於彈窗內容之上 */
+    z-index: 1010;
+    /* 確保按鈕位於彈窗內容之上 */
 }
 
 .popup p {
@@ -212,10 +240,12 @@ img {
 .popup.hidden {
     display: none;
 }
+
 /* 隱藏類別 */
 .hidden {
     display: none;
 }
+
 /* 冷凍層樣式 */
 #freezeLayer {
     position: fixed;
@@ -247,7 +277,8 @@ img {
 /* 響應式處理 */
 @media (max-width: 767px) {
     .read-more-img {
-        width: 90%; /* 手機檢視大小調整 */
+        width: 90%;
+        /* 手機檢視大小調整 */
     }
 }
 
@@ -261,9 +292,12 @@ img {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    width: 90%; /* Adjusted width */
-    max-width: 600px; /* Adjusted max-width */
-    padding: 20px; /* Added padding */
+    width: 90%;
+    /* Adjusted width */
+    max-width: 600px;
+    /* Adjusted max-width */
+    padding: 20px;
+    /* Added padding */
 }
 
 #rewardMessage .reward-img {
@@ -278,24 +312,32 @@ img {
     top: 15%;
     right: 8%;
     cursor: pointer;
-    width: 50px; /* Adjusted size */
-    height: 50px; /* Adjusted size */
+    width: 50px;
+    /* Adjusted size */
+    height: 50px;
+    /* Adjusted size */
 }
 
 
 /* 父容器，確保圖片和影片大小一致 */
 .media-wrapper {
-    width: 100%; /* 父容器的寬度 */
-    margin: 0 auto; /* 水平居中 */
-    text-align: center; /* 內容居中 */
+    width: 100%;
+    max-width: 90%;
+    /* 限制寬度，避免過寬 */
+    margin: 0 auto;
+    /* 居中 */
+    text-align: center;
 }
 
 /* 圖片和影片樣式 */
 .media-wrapper img,
 .media-wrapper video {
-    width: 100%; /* 繼承父容器的寬度 */
-    height: auto; /* 自動保持比例 */
-    display: block; /* 居中顯示 */
+    width: 100%;
+    /* 繼承父容器的寬度 */
+    height: auto;
+    /* 自動保持比例 */
+    display: block;
+    /* 居中顯示 */
 }
 
 /* 問答題樣式 */
@@ -329,7 +371,11 @@ img {
 }
 
 #lotteryImage.disabled {
-    opacity: 0.5; /* 按鈕變淡，表示不可操作 */
-    pointer-events: none; /* 禁止按鈕交互 */
-    cursor: not-allowed; /* 鼠標指示禁用狀態 */
+    opacity: 0.5;
+    /* 按鈕變淡，表示不可操作 */
+    pointer-events: none;
+    /* 禁止按鈕交互 */
+    cursor: not-allowed;
+    /* 鼠標指示禁用狀態 */
 }
+

@@ -8,30 +8,6 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-13.css">
     <script src="/scripts/common.js"></script>
-    <style>
-        /* 禁用操作的樣式 */
-        .disabled-container {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        /* 確保媒體容器寬度一致 */
-        .media-wrapper {
-            width: 100%;
-            max-width: 90%;
-            /* 限制寬度，避免過寬 */
-            margin: 0 auto;
-            /* 居中 */
-            text-align: center;
-        }
-
-        .media-wrapper img,
-        .media-wrapper video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-    </style>
 </head>
 
 <body>
@@ -100,32 +76,31 @@
             </div>
         </div>
         <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
-            <img src="/images/D03/750x1200-Day3_06.png" alt="任務圖片" >
-                <div class="action-container disabled-container">
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% }
-                            %>>
-                            <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
-                    </div>
-                    <div>
-                        <% if (!isCompleted && task.TaskDate===currentDate) { %>
-                            <button class="button" id="complete-task-btn">
-                                <img src="/images/D03/750x1200-CTA_01.png" alt="提交按鈕">
-                            </button>
-                            <% } else if (isCompleted) { %>
-                                <button class="button" id="complete-task-btn">
-                                    <img src="/images/D03/750x1200-CTA_02.png" alt="已完成按鈕">
-                                </button>
-                                <% } else { %>
-                                    <div class="button" id="complete-task-btn">
-                                        <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
-                                    </div>
-                                    <% } %>
-                    </div>
+            <img src="/images/D03/750x1200-Day3_06.png" alt="任務圖片">
+            <div class="action-container disabled-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
+                        <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
                 </div>
+                <div>
+                    <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                        <button class="button" id="complete-task-btn">
+                            <img src="/images/D03/750x1200-CTA_01.png" alt="提交按鈕">
+                        </button>
+                        <% } else if (isCompleted) { %>
+                            <button class="button" id="complete-task-btn">
+                                <img src="/images/D03/750x1200-CTA_02.png" alt="已完成按鈕">
+                            </button>
+                            <% } else { %>
+                                <div class="button" id="complete-task-btn">
+                                    <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                </div>
+                                <% } %>
+                </div>
+            </div>
 
         </div>
-        <img src="/images/D03/background.png" alt="背景圖片">
+
         <!-- 扭蛋相關 -->
         <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
             <div class="gacha-wrapper">
@@ -153,7 +128,7 @@
                             <button class="close-popup">關閉</button>
                         </div>
                     </div>
-            </div>
+
             <!-- Bounce 頁面彈窗 -->
             <div id="bouncePopup" class="popup hidden">
                 <div class="popup-content">
@@ -161,10 +136,12 @@
                     <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
                 </div>
             </div>
+
             <!-- 冷凍層 -->
             <div id="freezeLayer" class="hidden"></div>
-            
+            <img class="fixed-bottom" src="/images/D03/background.png" alt="背景圖片">
     </div>
+    
     <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
