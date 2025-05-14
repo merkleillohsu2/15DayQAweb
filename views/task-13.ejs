@@ -229,10 +229,11 @@
                     elements.rewardMessage.classList.remove('hidden');
                     elements.gachaContainer.classList.remove('hidden');
                     elements.gachaImg.classList.remove('hidden');
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: 'smooth'
-                    });
+
+                     document.getElementsByClassName('gacha-wrapper').scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start', // 滑動到最底部
+                            })
                 } catch (error) {
                     console.error('提交失敗:', error);
                 } finally {
