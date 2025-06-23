@@ -10,33 +10,8 @@ const helmet = require('helmet');
 const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
-const https = require('https');
-const fs = require('fs');
-const constants = require('crypto').constants;
-
-const options = {
-  key: fs.readFileSync('your-key.pem'),
-  cert: fs.readFileSync('your-cert.pem'),
-  minVersion: 'TLSv1.2',
-  maxVersion: 'TLSv1.3',
-  honorCipherOrder: true,
-  secureOptions:
-    constants.SSL_OP_NO_TLSv1 |
-    constants.SSL_OP_NO_TLSv1_1 |
-    constants.SSL_OP_NO_COMPRESSION,
-  ciphers: [
-    'TLS_AES_256_GCM_SHA384',
-    'TLS_AES_128_GCM_SHA256',
-    'ECDHE-RSA-AES256-GCM-SHA384',
-    'ECDHE-RSA-AES128-GCM-SHA256'
-  ].join(':')
-};
-
-https.createServer(options, (req, res) => {
-  res.writeHead(200);
-  res.end('TLS configuration is secure.\n');
-}).listen(443);
-
+const tls = require('tls');
+tls.DEFAULT_CIPHERS = 'TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256';
 
 // 連接數據庫
 connectDB();
