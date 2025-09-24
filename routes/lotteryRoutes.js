@@ -3,6 +3,7 @@ const router = express.Router();
 const lotteryController = require('../controllers/lotteryController');
 const { handleDecryption } = require('../handleDecryption'); // 導入 decryptString 函數
 const { sql } = require('../dbconfig');
+const { DateTime } = require('luxon');
 
 require('dotenv').config();
 // 動態配置表名稱
@@ -12,6 +13,8 @@ const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE;
 const TASKS_TABLE = process.env.TASKS_TABLE;
 const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
 const CONFIGURATION_SETTINGS_TABLE = process.env.CONFIGURATION_SETTINGS_TABLE;
+const LOTTERY_RULES_TABLE = process.env.LOTTERY_RULES_TABLE;
+
 
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
@@ -58,99 +61,93 @@ router.get('/get-user-lottery-records', lotteryController.getUserLotteryRecords)
 
 router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
     try {
-        console.log(`[INFO] 獲取 ContactId: ${req.session.ContactId}`);
-        const currentDate = new Date().toISOString().split('T')[0];
         const userId = req.session.ContactId;
         if (!userId) {
             console.error('[ERROR] 缺少有效的 ContactId');
             return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
         }
 
-        console.log(`今日時間: ${currentDate}`);
+        const taiwanNow = DateTime.now().setZone('Asia/Taipei');
+        const currentDate = taiwanNow.toISODate(); // yyyy-MM-dd
+        console.log(`[INFO] 今日台灣時間: ${currentDate}`);
+        console.log(`[INFO] 獲取 ContactId: ${userId}`);
+
         const pool = await sql.connect();
-        // 1. 獲取當天所有的任務
-        const tasksQuery = `
-                            SELECT t.TaskID, utc.IsCompleted
-                            FROM ${TASKS_TABLE} t
-                            LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc 
-                                ON t.TaskID = utc.TaskID AND utc.UserID = @userId
-                            INNER JOIN ${USERS_TABLE} u
-                                ON u.UserID = @userId
-                            WHERE t.TaskDate = @currentDate
-                                AND t.Chain = u.Chain; -- 僅返回與用戶 Chain 匹配的任務
+        // 1. 查詢使用者 Chain 相符的任務 + 完成狀態 + 抽獎規則 + 抽獎次數
+        // ✅ 查詢還有抽獎機會的任務（已完成、在期間內、尚未達抽獎上限）
+        const query = `
+                        SELECT 
+                            t.TaskID,
+                            t.TaskName,
+                            lr.RuleID,
+                            lr.RuleName,
+                            lr.MaxEntriesPerUser,
+                            ISNULL(ul.Draws, 0) AS DrawsUsed,
+                            t.StartDate,
+                            t.EndDate
+                        FROM ${TASKS_TABLE} t
+                        INNER JOIN ${USERS_TABLE} u ON u.UserID = @userId AND t.Chain = u.Chain
+                        INNER JOIN ${USER_TASK_COMPLETION_TABLE} utc ON utc.TaskID = t.TaskID AND utc.UserID = @userId AND utc.IsCompleted = 1
+                        LEFT JOIN ${LOTTERY_RULES_TABLE} lr ON t.LotteryRuleID = lr.RuleID
+                        LEFT JOIN (
+                            SELECT TaskID, UserID, COUNT(*) AS Draws
+                            FROM ${USER_LOTTERY_ENTRIES_TABLE}
+                            WHERE UserID = @userId
+                            GROUP BY TaskID, UserID
+                        ) ul ON ul.TaskID = t.TaskID AND ul.UserID = @userId
+                        WHERE @currentDate BETWEEN t.StartDate AND t.EndDate
+                            AND ISNULL(ul.Draws, 0) < lr.MaxEntriesPerUser
                         `;
-        const tasksResult = await pool.request()
+
+        const result = await pool.request()
             .input('userId', sql.VarChar(36), userId)
             .input('currentDate', sql.Date, currentDate)
-            .query(tasksQuery);
-        const tasks = tasksResult.recordset;
+            .query(query);
 
-        if (tasks.length === 0) {
-            console.log(`[INFO] 今日無任務`);
-            return res.redirect('/tasks'); // 如果無任務，跳轉到任務頁
+        const eligibleTasks = result.recordset.map(row => ({
+            taskId: row.TaskID,
+            taskName: row.TaskName,
+            ruleName: row.RuleName,
+            maxEntries: row.MaxEntriesPerUser,
+            usedEntries: row.DrawsUsed,
+            remainingEntries: Math.max(0, row.MaxEntriesPerUser - row.DrawsUsed),
+            startDate: DateTime.fromJSDate(row.StartDate).toISODate(),
+            endDate: DateTime.fromJSDate(row.EndDate).toISODate()
+        }));
+
+        if (eligibleTasks.length === 0) {
+            console.log('[INFO] 無符合抽獎資格的任務，跳轉回任務頁');
+            return res.redirect('/tasks');
         }
 
-        console.log(`[INFO] 今日任務數量: ${tasks.length}`);
-
-        // 2. 檢查是否所有任務都已完成
-        const allTasksCompleted = tasks.every(task => task.IsCompleted === true);
-        console.log(`[INFO] 任務完成狀態: ${JSON.stringify(tasks.map(task => ({ TaskID: task.TaskID, IsCompleted: task.IsCompleted })), null, 2)}`);
-        if (!allTasksCompleted) {
-            console.log('[INFO] 有未完成的任務，跳轉回任務頁');
-            return res.redirect('/tasks'); // 若有未完成的任務，跳轉到任務頁
-        }
+        const taskIds = eligibleTasks.map(task => task.taskId);
+        console.log(`[INFO] 符合抽獎資格的任務 ID: ${taskIds.join(', ')}`);
 
 
-
-        // 3. 獲取所有任務的 TaskID（以便傳送到下一頁面）
-        const taskIds = tasks.map(task => task.TaskID);
-        console.log(`[INFO] 當天所有任務 ID: ${taskIds.join(', ')}`);
-
-        // 4. 檢查剩餘抽獎次數
-        const drawsQuery = `
-        SELECT COUNT(*) AS TotalDraws
-        FROM ${USER_LOTTERY_ENTRIES_TABLE}
-        WHERE UserID = @userId AND CAST(DrawDate AS DATE) = @currentDate;
-        `;
-        const drawsResult = await pool.request()
-            .input('userId', sql.VarChar(36), userId)
-            .input('currentDate', sql.Date, currentDate)
-            .query(drawsQuery);
-        const totalDrawsToday = drawsResult.recordset[0]?.TotalDraws || 0;
-        console.log(`今日抽獎次數: ${totalDrawsToday}`);
-
-        // 5. 獲取最大抽獎次數
-        const settingsQuery = `
-                                SELECT SettingValue
-                                FROM ${CONFIGURATION_SETTINGS_TABLE}
-                                WHERE SettingKey = 'MaxDailyDrawsPerUser';
-                            `;
-        const settingsResult = await pool.request().query(settingsQuery);
-        const maxDailyDraws = parseInt(settingsResult.recordset[0]?.SettingValue || '0', 10);
-
-
-        // 6. 檢查剩餘獎品
+        // ✅ 查詢剩餘獎品
         const remainingPrizesQuery = `
-                    SELECT COUNT(*) AS RemainingPrizes
-                    FROM ${PRIZES_TABLE}
-                    WHERE AvailableDate = @currentDate AND IsClaimed = 0;
+      SELECT COUNT(*) AS RemainingPrizes
+            FROM [dbo].[Prizes]
+            WHERE @currentDate BETWEEN AvailableStartDate AND AvailableEndDate
+            AND IsClaimed = 0
+            AND IsActive = 1;
                 `;
         const remainingPrizesResult = await pool.request()
             .input('currentDate', sql.Date, currentDate)
             .query(remainingPrizesQuery);
+
         const remainingPrizes = remainingPrizesResult.recordset[0]?.RemainingPrizes || 0;
+        console.log(`剩餘獎品數: ${remainingPrizes}`);
 
-        console.log(`剩餘獎品數: ${remainingPrizes}, 最大每日抽獎次數: ${maxDailyDraws}`);
-
-
-        // 渲染 Bounce 頁面，傳遞必要資訊
+        // ✅ 渲染 Bounce 頁面
         res.render('Bounce', {
             contactId: res.locals.contactId,
             query: res.locals.query,
-            taskIds, // 當天的任務 ID
+            taskIds,
             remainingPrizes,
-            isMaxDrawsReached: totalDrawsToday >= maxDailyDraws // 是否已達最大次數
+            eligibleTasks
         });
+
     } catch (err) {
         console.error('檢查邏輯失敗:', err.message);
         res.render('error', { message: '系統錯誤，請稍後再試！' });

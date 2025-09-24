@@ -6,22 +6,23 @@ require('dotenv').config();
 // 動態配置表名稱
 const PRIZES_TABLE = process.env.PRIZES_TABLE;
 const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
-const CONFIGURATION_SETTINGS_TABLE = process.env.CONFIGURATION_SETTINGS_TABLE;
+const TASKS_TABLE = process.env.TASKS_TABLE;
+const LOTTERY_RULES_TABLE = process.env.LOTTERY_RULES_TABLE;
 const TIME_BASED_PROBABILITY_TABLE = process.env.TIME_BASED_PROBABILITY_TABLE;
 
 // 通用 SQL 執行函數
 async function executeQuery(query, inputs = {}) {
   try {
-      const pool = await sql.connect();
-      const request = pool.request();
-      for (const [key, value] of Object.entries(inputs)) {
-          request.input(key, value.type, value.value);
-      }
-      const result = await request.query(query);
-      return result.recordset;
+    const pool = await sql.connect();
+    const request = pool.request();
+    for (const [key, value] of Object.entries(inputs)) {
+      request.input(key, value.type, value.value);
+    }
+    const result = await request.query(query);
+    return result.recordset;
   } catch (error) {
-      console.error('執行 SQL 失敗:', error.message);
-      throw error;
+    console.error('執行 SQL 失敗:', error.message);
+    throw error;
   }
 }
 
@@ -48,18 +49,23 @@ function createResponse(success, data, message) {
 // 獲取今日剩餘抽獎名額
 exports.getRemainingPrizes = async (req, res) => {
   try {
-      const { today } = getFormattedDateTime();
-      const query = `
-          SELECT COUNT(*) AS RemainingPrizes
-          FROM ${PRIZES_TABLE}
-          WHERE AvailableDate = @today AND IsClaimed = 0;
-      `;
-      const result = await executeQuery(query, { today: { type: sql.Date, value: today } });
-      const remainingPrizes = result[0]?.RemainingPrizes || 0;
-      res.json(createResponse(true, { remainingPrizes }, '成功獲取剩餘獎項數量'));
+    const { today } = getFormattedDateTime(); // yyyy-MM-dd 格式（台灣時區）
+    const query = `
+    SELECT COUNT(*) AS RemainingPrizes
+    FROM ${PRIZES_TABLE}
+    WHERE @today BETWEEN AvailableStartDate AND AvailableEndDate
+      AND IsClaimed = 0
+      AND IsActive = 1;
+  `;
+    const result = await executeQuery(query, {
+      today: { type: sql.Date, value: today }
+    });
+
+    const remainingPrizes = result[0]?.RemainingPrizes || 0;
+    res.json(createResponse(true, { remainingPrizes }, '成功獲取剩餘獎項數量'));
   } catch (error) {
-      console.error('獲取剩餘獎項失敗:', error.message);
-      res.status(500).json(createResponse(false, null, '無法獲取剩餘獎項數量'));
+    console.error('獲取剩餘獎項失敗:', error.message);
+    res.status(500).json(createResponse(false, null, '無法獲取剩餘獎項數量'));
   }
 };
 
@@ -67,74 +73,69 @@ exports.getRemainingPrizes = async (req, res) => {
 
 // 用戶參加抽獎
 exports.performLottery = async (req, res) => {
-  const { userId, taskIds } = req.body; // 從請求中接收 userId 和 taskId
+  const { userId, taskId } = req.body; // 從請求中接收 userId 和 taskId
+  console.log(`[INFO] 用戶 ${userId} 嘗試參加任務 ${taskId} 的抽獎`);
   const { today, taiwanTime } = getFormattedDateTime();
   console.log(`[INFO] 台灣時間轉換後: ${taiwanTime}`);
   const pool = await sql.connect();
   try {
-    // 1. 獲取每日最大抽獎次數限制
-    const settingsQuery = `
-                          SELECT SettingValue
-                          FROM ${CONFIGURATION_SETTINGS_TABLE}
-                          WHERE SettingKey = 'MaxDailyDrawsPerUser'
-                          `;
-    const settingsResult = await pool.request().query(settingsQuery);
-    const maxDailyDraws = parseInt(settingsResult.recordset[0]?.SettingValue || '0', 10);
-
-    if (!maxDailyDraws) {
-      return res.status(500).json({ message: '無法獲取每日抽獎次數限制' });
-    }
-
-    console.log(`[INFO] 每日最大抽獎次數限制: ${maxDailyDraws}`);
-    // 2. 查詢當前用戶今日的抽獎次數
-    const drawsQuery = `
-        SELECT COUNT(*) AS TotalDraws
-        FROM ${USER_LOTTERY_ENTRIES_TABLE}
-        WHERE UserID = @userId AND CAST(DrawDate AS DATE) = @today
-      `;
-    const drawsResult = await pool.request()
+    // 1. 查詢該任務的抽獎規則與使用者已抽次數
+    const chanceQuery = `
+    SELECT lr.MaxEntriesPerUser, ISNULL(ul.Draws, 0) AS DrawsUsed
+    FROM ${TASKS_TABLE} t
+    LEFT JOIN ${LOTTERY_RULES_TABLE} lr ON t.LotteryRuleID = lr.RuleID
+    LEFT JOIN (
+      SELECT TaskID, COUNT(*) AS Draws
+      FROM ${USER_LOTTERY_ENTRIES_TABLE}
+      WHERE UserID = @userId AND TaskID = @taskId
+      GROUP BY TaskID
+    ) ul ON ul.TaskID = t.TaskID
+    WHERE t.TaskID = @taskId
+  `;
+    const chanceResult = await pool.request()
       .input('userId', sql.VarChar(36), userId)
-      .input('today', sql.Date, today)
-      .query(drawsQuery);
-    const totalDrawsToday = drawsResult.recordset[0]?.TotalDraws || 0;
+      .input('taskId', sql.Int, taskId)
+      .query(chanceQuery);
 
-    console.log(`[INFO] 用戶今日抽獎次數: ${totalDrawsToday}`);
-
-    // 3. 判斷是否超出每日抽獎限制
-    if (totalDrawsToday >= maxDailyDraws) {
-      return res.status(403).json({
-        success: false,
-        message: `您已達到每日最大抽獎次數限制 (${maxDailyDraws})，請明天再試！`,
-      });
+    const chance = chanceResult.recordset[0];
+    if (!chance || chance.MaxEntriesPerUser === undefined) {
+      return res.status(404).json({ success: false, message: '無法取得抽獎規則' });
     }
-    // 4. 根據當前時間獲取對應的機率設定
+
+    if (chance.DrawsUsed >= chance.MaxEntriesPerUser) {
+      return res.status(403).json({ success: false, message: '此任務已達最大抽獎次數' });
+    }
+
+    // 2. 查詢時間段機率
     const probabilityQuery = `
     SELECT TOP 1 WinningThreshold, TotalProbability
     FROM ${TIME_BASED_PROBABILITY_TABLE}
     WHERE '${taiwanTime}' >= StartTime AND '${taiwanTime}' < EndTime
-`;
-
-    const probabilityResult = await sql.query(probabilityQuery); // 執行直接查詢
-    console.log('[INFO] Query Result:', probabilityResult.recordset);
+  `;
+    const probabilityResult = await sql.query(probabilityQuery);
     if (probabilityResult.recordset.length === 0) {
-      return res.status(404).json({ message: '無符合的時間段' });
+      return res.status(404).json({ success: false, message: '無符合的時間段' });
     }
 
     const { WinningThreshold, TotalProbability } = probabilityResult.recordset[0];
-    // 5. 隨機生成一個數字，決定是否中獎
     const randomNumber = Math.floor(Math.random() * TotalProbability) + 1;
     const isWinner = randomNumber <= WinningThreshold;
 
-    // 6. 查詢當天是否還有獎品
+
+    // 3. 查詢可用獎品（依日期區間）
     const prizeQuery = `
-        SELECT TOP 1 PrizeID, PrizeName, PrizeValue
-        FROM ${PRIZES_TABLE}
-        WHERE AvailableDate = @today AND IsClaimed = 0
-        ORDER BY NEWID();
-    `;
+    SELECT TOP 1 PrizeID, PrizeName, PrizeValue
+    FROM ${PRIZES_TABLE}
+    WHERE @today BETWEEN AvailableStartDate AND AvailableEndDate
+      AND IsClaimed = 0
+      AND IsActive = 1
+    ORDER BY NEWID()
+  `;
     const prizeResult = await pool.request()
       .input('today', sql.Date, today)
       .query(prizeQuery);
+
+
 
     if (prizeResult.recordset.length === 0) {
       // 當天無獎品時，記錄為未中獎
@@ -150,27 +151,31 @@ exports.performLottery = async (req, res) => {
       return res.json({ success: false, message: '很遺憾，您未中獎！' });
     }
 
-    // 獲取獎品信息
+    // ✅ 有獎品可抽，繼續抽獎流程
     const prize = prizeResult.recordset[0];
     const prizeId = prize.PrizeID;
 
-    if (isWinner) {
-      // 中獎處理
-      const insertLotteryEntryQuery = `
+    // ✅ 插入抽獎記錄（中獎或未中獎）
+    const insertLotteryEntryQuery = `
           INSERT INTO ${USER_LOTTERY_ENTRIES_TABLE} (UserID, TaskID, PrizeID, IsWinner, DrawDate)
-          VALUES (@userId, @taskId, @prizeId, 1, SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'));
-      `;
-      await pool.request()
-        .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.NVarChar, taskIds)
-        .input('prizeId', sql.Int, prizeId)
-        .query(insertLotteryEntryQuery);
+          VALUES (@userId, @taskId, @prizeId, @isWinner, SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'));
+        `;
+    await pool.request()
+      .input('userId', sql.VarChar(36), userId)
+      .input('taskId', sql.Int, taskId)
+      .input('prizeId', sql.Int, prizeId)
+      .input('isWinner', sql.Bit, isWinner ? 1 : 0)
+      .query(insertLotteryEntryQuery);
 
+    // ✅ 若中獎則更新獎品狀態
+    if (isWinner) {
       const updatePrizeQuery = `
-          UPDATE ${PRIZES_TABLE}
-          SET IsClaimed = 1, ClaimedByUserID = @userId, ClaimedDate = SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00')
-          WHERE PrizeID = @prizeId;
-      `;
+    UPDATE ${PRIZES_TABLE}
+    SET IsClaimed = 1,
+        ClaimedByUserID = @userId,
+        ClaimedDate = SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00')
+    WHERE PrizeID = @prizeId;
+  `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('prizeId', sql.Int, prizeId)
@@ -179,24 +184,15 @@ exports.performLottery = async (req, res) => {
       return res.json({
         success: true,
         prizeName: prize.PrizeName,
-        prizeValue: prize.PrizeValue,
+        prizeValue: prize.PrizeValue
       });
     } else {
-      // 未中獎處理
-      const insertLotteryEntryQuery = `
-          INSERT INTO ${USER_LOTTERY_ENTRIES_TABLE} (UserID, TaskID, IsWinner, DrawDate)
-          VALUES (@userId, @taskId, 0, SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'));
-      `;
-      await pool.request()
-        .input('userId', sql.VarChar(36), userId)
-        .input('taskId',  sql.NVarChar, taskIds)
-        .query(insertLotteryEntryQuery);
-
       return res.json({
         success: false,
-        message: '很遺憾，您未中獎！',
+        message: '很遺憾，您未中獎！'
       });
     }
+
   } catch (error) {
     console.error('抽獎失敗:', error.message);
     res.status(500).json({ success: false, message: '抽獎失敗，請稍後再試' });
