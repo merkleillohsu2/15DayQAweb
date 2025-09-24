@@ -83,7 +83,7 @@
                         <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
                 </div>
                 <div>
-                    <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                    <% if (status === '進行中' && !isCompleted) { %>
                         <button class="button" id="complete-task-btn">
                             <img src="/images/D03/750x1200-CTA_01.png" alt="提交按鈕">
                         </button>
@@ -102,7 +102,7 @@
         </div>
 
         <!-- 扭蛋相關 -->
-        <% if (isCompleted && !hasDrawnLottery && task.TaskDate===currentDate) { %>
+        <% if (isCompleted && remainingEntries > 0 && status === '進行中') { %>
             <div class="gacha-wrapper" id="gacha-wrapper"> 
                 <% } else { %>
                     <div class="gacha-wrapper hidden" id="gacha-wrapper">

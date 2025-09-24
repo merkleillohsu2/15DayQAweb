@@ -12,7 +12,7 @@ const USERS_TABLE = process.env.USERS_TABLE;
 const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE;
 const REWARDS_TABLE = process.env.REWARDS_TABLE;
 const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
-
+const LOTTERY_RULES_TABLE = process.env.LOTTERY_RULES_TABLE;
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
   const now = new Date();
@@ -52,30 +52,33 @@ const handleDecryptionMiddleware = async (req, res, next) => {
 
 // 根據當前日期跳轉到今日任務
 router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
-  const currentDate = getCurrentDate();
+  const currentDate = getCurrentDate(); // yyyy-mm-dd 格式字串
 
   try {
-    // 查找當前日期的任務
-    const query = `
-      SELECT * 
-      FROM ${TASKS_TABLE}
-      WHERE TaskDate = @currentDate
-    `;
     const pool = await sql.connect();
+
+    // 查找今天正在進行的任務（StartDate <= currentDate <= EndDate）
+    const query = `
+      SELECT TOP 1 *
+      FROM ${TASKS_TABLE}
+      WHERE @currentDate BETWEEN StartDate AND EndDate
+      ORDER BY StartDate ASC
+    `;
+
     const result = await pool.request()
-      .input('currentDate', sql.Date, currentDate) // 使用參數化處理日期
+      .input('currentDate', sql.Date, currentDate)
       .query(query);
+
     const task = result.recordset[0];
 
     if (task) {
-      // 保留查詢參數並重新導向到對應的任務頁面
       const queryParams = new URLSearchParams(req.query).toString();
       const redirectUrl = queryParams
         ? `/task/${task.TaskID}?${queryParams}`
         : `/task/${task.TaskID}`;
       res.redirect(redirectUrl);
     } else {
-      res.status(404).send('今日無任務');
+      res.status(404).send('今日無進行中的任務');
     }
   } catch (err) {
     console.error('Database error:', err.message);
@@ -86,51 +89,68 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 // 每日任務頁面
 for (let day = 1; day <= 15; day++) {
   router.get(`/task/${day}`, handleDecryptionMiddleware, async (req, res) => {
-    console.log(`[INFO] 獲取 ContactId: ${req.session.ContactId}`);
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
     const userId = req.session.ContactId;
     console.log(`[INFO] 獲取 UserId: ${userId}`);
+
     try {
-      const task = await getTask(day);  // 獲取任務
-      console.log(`[INFO] 獲取任務: ${JSON.stringify(task)}`);
-
       const pool = await sql.connect();
-
-      // 新增邏輯：檢查 User 的 Chain 與 Task 的 Chain 是否匹配
-      // 獲取用戶 Chain 並比對
+      const task = await getTask(day); // 取得任務資料（含 StartDate / EndDate）
+      console.log(`[INFO] 獲取 Task 資料:`, task);
+      // 驗證使用者 Chain 是否符合任務 Chain
       const userChain = await getUserChain(pool, userId);
+      console.log(`[INFO] 用戶 Chain: ${userChain}, 任務 Chain: ${task.Chain}`);
       if (!userChain) {
         return res.render('error', { message: '用戶不存在，請重新登入後重試' });
       }
-
       if (userChain !== task.Chain) {
-        return res.render('error', { message: '您無權訪問此任務，請聯繫支持人員' });
+        return res.render('error', { message: '您無權訪問此任務，請聯繫支援人員' });
       }
 
-      // 新增邏輯：檢查活動是否尚未開始
-      if (currentDate < task.TaskDate) {
-        return res.render('error', {
-          message: '活動尚未開始',
-          taskName: task.TaskName,
-          taskDate: task.TaskDate
-        });
+      // 判斷任務狀態
+      const startDateStr = task.StartDate;
+      const endDateStr = task.EndDate;
+      let status = '';
+
+      if (currentDate < startDateStr) {
+        status = '未開始';
+      } else if (currentDate > endDateStr) {
+        status = '已結束';
+      } else {
+        status = '進行中';
       }
 
-      // 檢查任務是否完成
+      // 查詢任務完成狀態
       const isCompleted = await isTaskCompleted(pool, userId, day);
+      console.log(`[INFO] 任務完成狀態: ${isCompleted}`);
+      // 查詢是否已抽過該任務的獎
+      const chances = await getRemainingLotteryChances(pool, userId);
+      console.log(`[INFO] 任務抽獎次數:`, chances);
+      const currentChance = chances.find(c => c.taskId === day);
+      const remainingEntries = currentChance?.remainingEntries || 0;
+      const hasDrawnLottery = remainingEntries === 0;
+      console.log(`[INFO] 任務狀態: ${status}`);
+      console.log(`[INFO] 是否完成: ${isCompleted}`);
+      console.log(`[INFO] 是否已抽獎: ${hasDrawnLottery}`);
 
-      // 檢查是否已抽過獎
-      const hasDrawnLottery = await GethasDrawnLottery(pool, userId, currentDate);
-      console.log(`[INFO] 使用者當天是否已抽過獎: ${hasDrawnLottery}`);
-      console.log(`IsCompleted: ${JSON.stringify(isCompleted)}`);
+      // 渲染任務頁面
       res.render(`task-${day}`, {
         task,
         currentDate,
+        status,
         isCompleted,
-        hasDrawnLottery, // 傳遞到頁面
+        remainingEntries,
+        hasDrawnLottery,
+        lotteryRule: {
+          ruleId: currentChance?.ruleId,
+          ruleName: currentChance?.ruleName,
+          maxEntries: currentChance?.maxEntries,
+          usedEntries: currentChance?.usedEntries
+        },
         contactId: res.locals.contactId,
-        query: res.locals.query,
+        query: res.locals.query
       });
+
     } catch (err) {
       console.error('[ERROR] Failed to load task:', err.message);
       res.status(500).send('Database error');
@@ -148,6 +168,11 @@ for (let day = 1; day <= 15; day++) {
     try {
       const pool = await sql.connect();
       const task = await getTask(day);  // 獲取任務
+
+      const startDateStr = new Date(task.StartDate).toISOString().slice(0, 10);
+      const endDateStr = new Date(task.EndDate).toISOString().slice(0, 10);
+      const isActive = currentDate >= startDateStr && currentDate <= endDateStr;
+      const taskId = task.TaskID;
       // 獲取用戶資料
       const userQuery = `
                         SELECT * 
@@ -163,7 +188,9 @@ for (let day = 1; day <= 15; day++) {
 
       // 獲取 user 的資料
       const user = userResult.recordset[0];
-
+      if (userChain !== task.Chain) {
+        return res.render('error', { message: '您無權訪問此任務' });
+      }
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
       const tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
       console.log('Tasks completed by user:', { UserId, tasksCompleted });
@@ -183,7 +210,7 @@ for (let day = 1; day <= 15; day++) {
                             `;
       const completionResult = await pool.request()
         .input('userId', sql.VarChar(36), UserId)
-        .input('taskId', sql.Int, day)
+        .input('taskId', sql.Int, taskId)
         .query(completionQuery);
 
       if (completionResult.recordset.length > 0) {
@@ -191,11 +218,12 @@ for (let day = 1; day <= 15; day++) {
       }
 
       // 只比對到日期部分
-      console.log('TaskDate:', task.TaskDate);
+      console.log('StartDate:', startDateStr);
+      console.log('EndDate:', endDateStr);
       console.log('CurrentDate:', currentDate);
 
       // 檢查任務日期是否為今天
-      if (task.TaskDate === currentDate) {
+      if (isActive) {
         // 記錄任務完成
         const insertCompletionQuery = `
         INSERT INTO ${USER_TASK_COMPLETION_TABLE} (UserID, TaskID, CompletionDate, IsCompleted)
@@ -287,7 +315,7 @@ for (let day = 1; day <= 15; day++) {
         // 返回成功消息和獎勵金
         return res.json({ message: '恭喜你完成任務', reward: task.RewardAmount });
       } else {
-        return res.status(400).send({ error: '非本日任務' });
+        return res.status(400).send({ error: '非任務期間，無法完成任務' });
       }
     } catch (err) {
       console.error(err); // 輸出錯誤信息到控制台
@@ -323,21 +351,44 @@ async function isTaskCompleted(pool, userId, taskId) {
   return result.recordset.length > 0;
 }
 
-// 檢查用戶是否已經抽過獎
-async function GethasDrawnLottery(pool, userId, currentDate) {
+async function getRemainingLotteryChances(pool, userId) {
   const query = `
-    SELECT * 
-    FROM ${USER_LOTTERY_ENTRIES_TABLE}
-    WHERE UserID = @userId AND CONVERT(DATE, DrawDate) = @currentDate;
+    SELECT 
+      t.TaskID,
+      t.TaskName,
+      lr.RuleID,
+      lr.RuleName,
+      lr.MaxEntriesPerUser,
+      ISNULL(ul.Draws, 0) AS DrawsUsed
+    FROM ${USER_TASK_COMPLETION_TABLE} utc
+    JOIN ${TASKS_TABLE} t ON utc.TaskID = t.TaskID
+    LEFT JOIN ${LOTTERY_RULES_TABLE} lr ON t.LotteryRuleID = lr.RuleID
+    LEFT JOIN (
+      SELECT TaskID, UserID, COUNT(*) AS Draws
+      FROM ${USER_LOTTERY_ENTRIES_TABLE}
+      WHERE UserID = @userId
+      GROUP BY TaskID, UserID
+    ) ul ON ul.TaskID = t.TaskID AND ul.UserID = @userId
+    WHERE utc.UserID = @userId AND utc.IsCompleted = 1
   `;
+
   const result = await pool.request()
     .input('userId', sql.VarChar(36), userId)
-    .input('currentDate', sql.Date, currentDate)
     .query(query);
-  return result.recordset.length > 0;
+
+  // 整理剩餘抽獎次數
+  const chances = result.recordset.map(row => ({
+    taskId: row.TaskID,
+    taskName: row.TaskName,
+    ruleId: row.RuleID,
+    ruleName: row.RuleName,
+    maxEntries: row.MaxEntriesPerUser,
+    usedEntries: row.DrawsUsed,
+    remainingEntries: Math.max(0, row.MaxEntriesPerUser - row.DrawsUsed)
+  }));
+
+  return chances;
 }
-
-
 
 
 // 獲取用戶的任務完成情況和獎勵金額
@@ -372,15 +423,15 @@ async function getSettingValue(pool, settingKey) {
 // 通用函數：獲取任務
 async function getTask(day) {
   const query = `
-    SELECT * 
-    FROM ${TASKS_TABLE} 
+    SELECT *
+    FROM ${TASKS_TABLE}
     WHERE TaskID = @taskId
   `;
 
   try {
     const pool = await sql.connect();
     const taskResult = await pool.request()
-      .input('taskId', sql.Int, day) // 使用參數化處理 TaskID
+      .input('taskId', sql.Int, day)
       .query(query);
 
     if (taskResult.recordset.length === 0) {
@@ -389,17 +440,16 @@ async function getTask(day) {
     }
 
     const task = taskResult.recordset[0];
-    // 將 TaskDate 格式化為 YYYY-MM-DD
-    task.TaskDate = task.TaskDate.toISOString().split('T')[0];
+
+    // 格式化 StartDate 和 EndDate 為 YYYY-MM-DD
+    task.StartDate = new Date(task.StartDate).toISOString().slice(0, 10);
+    task.EndDate = new Date(task.EndDate).toISOString().slice(0, 10);
 
     return task;
   } catch (err) {
     console.error('[ERROR] 無法獲取任務:', err.message);
     throw err;
   }
-
-
-
 }
 
 // 首頁路由
@@ -412,51 +462,88 @@ router.get('/prize-info', (req, res) => {
   res.render('prize-info');
 });
 
-
-
 // 任務總表頁面
 router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
   try {
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const userId = req.session.ContactId;
 
-    // 獲取任務數據，包括 TaskName
-    const taskQuery = `
-                    SELECT 
-                      t.TaskID, 
-                      t.TaskName, 
-                      t.TaskDate, 
-                      ISNULL(utc.IsCompleted, 0) AS IsCompleted -- 如果 IsCompleted 為 NULL，設為 0
-                    FROM [dbo].[Tasks] t
-                    LEFT JOIN [dbo].[UserTaskCompletion] utc
-                      ON t.TaskID = utc.TaskID AND utc.UserID = @userId
-                    ORDER BY t.TaskDate ASC
-                  `;
+    if (!userId) {
+      console.error('[ERROR] 缺少有效的 ContactId');
+      return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
+    }
 
     const pool = await sql.connect();
-    const taskResult = await pool.request()
-      .input('userId', sql.VarChar(36), req.session.ContactId) // 傳遞使用者 ID
-      .query(taskQuery);
-    const tasks = taskResult.recordset.map(task => ({
-      ...task,
-      DaysLeft: Math.ceil((new Date(task.TaskDate) - new Date(currentDate)) / (1000 * 60 * 60 * 24))
-    }));
 
-    // 獲取用戶數據
+
+    // 獲取任務數據，包括 TaskName
+    // 1. 查詢任務資料 + 完成狀態
+    const taskQuery = `
+      SELECT 
+        t.TaskID,
+        t.TaskName,
+        t.StartDate,
+        t.EndDate,
+        ISNULL(utc.IsCompleted, 0) AS IsCompleted
+      FROM ${TASKS_TABLE} t
+      LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc
+        ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+      ORDER BY t.StartDate ASC
+    `;
+    const taskResult = await pool.request()
+      .input('userId', sql.VarChar(36), userId)
+      .query(taskQuery);
+
+    const today = new Date(currentDate);
+    const tasks = taskResult.recordset.map(task => {
+      const startDate = new Date(task.StartDate);
+      const endDate = new Date(task.EndDate);
+
+      const status = today < startDate
+        ? '未開始'
+        : today > endDate
+          ? '已結束'
+          : '進行中';
+
+      const DaysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
+
+      return {
+        TaskID: task.TaskID,
+        TaskName: task.TaskName,
+        StartDate: startDate.toISOString().slice(0, 10),
+        EndDate: endDate.toISOString().slice(0, 10),
+        IsCompleted: task.IsCompleted === true || task.IsCompleted === 1,
+        DaysLeft,
+        status
+      };
+    });
+
+
+    // 2. 查詢使用者資料
     const userQuery = `
-      SELECT * 
-      FROM ${USERS_TABLE} 
+      SELECT *
+      FROM ${USERS_TABLE}
       WHERE UserID = @userId
     `;
     const userResult = await pool.request()
-      .input('userId', sql.VarChar(36), req.session.ContactId)
+      .input('userId', sql.VarChar(36), userId)
       .query(userQuery);
+
     const user = userResult.recordset[0];
     user.tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
-    res.render('task-list', { tasks, user, currentDate });
+
+    // 3. 渲染頁面
+    res.render('task-list', {
+      tasks,
+      user,
+      currentDate
+    });
+
   } catch (err) {
-    console.error(err.message);
+    console.error('[ERROR] 任務列表載入失敗:', err.message);
     res.status(500).send('Database error');
   }
+
 });
 
 module.exports = router;

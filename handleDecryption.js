@@ -63,13 +63,18 @@ const handleDecryption = async (req, res) => {
     const userName = getTransformedName(parsedData.User.LastName, parsedData.User.FirstName);
     // 判斷 MobilePhone 是否為空值，若是則使用 Phone
     const phoneNumber = parsedData.User.Contact.MobilePhone
-    ? transformPhoneNumber(parsedData.User.Contact.MobilePhone)
-    : (parsedData.User.Contact.Phone
+      ? transformPhoneNumber(parsedData.User.Contact.MobilePhone)
+      : (parsedData.User.Contact.Phone
         ? transformPhoneNumber(parsedData.User.Contact.Phone)
         : null); // 如果兩者都不存在，返回 null
 
     console.log('[INFO] 處理後的電話號碼:', phoneNumber);
     const chain = parsedData.User.Contact.Account.DTE_Chain__c || null; // 提取 Chain 值
+
+
+    // ✅ 新增：取得 AccountName
+    const accountName = parsedData.User.Contact.Account.Name || null;
+
 
     if (!parsedData || !parsedData.User || !parsedData.User.ContactId) {
       console.error('[ERROR] 無效的解密數據，缺少 User、ContactId');
@@ -125,7 +130,7 @@ const handleDecryption = async (req, res) => {
       // 更新 LastLoginTime 和 PhoneNumber
       const updateQuery = `
       UPDATE ${USERS_TABLE}
-      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber , Chain = @chain
+      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber , Chain = @chain , AccountName = @accountName
       WHERE UserID = @userId;
     `;
       await pool.request()
@@ -133,13 +138,14 @@ const handleDecryption = async (req, res) => {
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .input('phoneNumber', sql.NVarChar(15), phoneNumber)
         .input('chain', sql.NVarChar(10), chain)
+        .input('accountName', sql.NVarChar(255), accountName)
         .query(updateQuery);
     } else {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
       const insertQuery = `
-        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, Chain, LastLoginTime, tasksCompleted, rewards)
-        VALUES (@userId, @userName, @phoneNumber, @chain, @lastLoginTime, '[]', 0);
+        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, Chain, LastLoginTime, tasksCompleted, rewards, AccountName)
+        VALUES (@userId, @userName, @phoneNumber, @chain, @lastLoginTime, '[]', 0, @accountName);
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
@@ -147,6 +153,7 @@ const handleDecryption = async (req, res) => {
         .input('phoneNumber', sql.NVarChar(15), phoneNumber)
         .input('chain', sql.NVarChar(10), chain)
         .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
+        .input('accountName', sql.NVarChar(255), accountName)
         .query(insertQuery);
     }
     console.log('[INFO] 用戶記錄已更新或創建成功');

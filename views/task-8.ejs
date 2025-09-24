@@ -22,7 +22,7 @@
                 <label style="color: white;" for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
             </div>
             <div>
-                <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                <% if (status === '進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
                         <img src="/images/D08/750x1200-CTA_01.png" alt="提交按鈕">
                     </button>

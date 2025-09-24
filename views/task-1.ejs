@@ -35,7 +35,7 @@
 
             <!-- 動態顯示按鈕 -->
             <div>
-                <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                <% if (status === '進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
                         <img src="/images/D15/750x1200-Day15-CTA_01.png" alt="提交按鈕">
                     </button>

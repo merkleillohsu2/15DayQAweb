@@ -40,7 +40,7 @@
             </div>
             <div>
                 <!-- 按鈕圖片條件渲染 -->
-                <% if (!isCompleted && task.TaskDate===currentDate) { %>
+                <% if (status === '進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
                         <img src="/images/CTA- gain money.png" alt="按鈕圖片">
                     </button>
