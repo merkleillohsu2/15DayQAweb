@@ -8,7 +8,7 @@ html, body {
 }
 
 .checkbox-container label {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   /* 預設為手機顯示的大小 */
   font-weight: bold;
   color: #333;

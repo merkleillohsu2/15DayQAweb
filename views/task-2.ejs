@@ -13,13 +13,13 @@
 <body>
     <div class="container">
         <!-- 圖片展示 -->
-        <img src="/images/D14/750x1200-Day14.png" alt="任務圖片">
+        <img src="/images/Mission 2/M2_Task page.jpg" alt="任務圖片">
 
-        <!-- 更多訊息 -->
+        <!-- 更多訊息 
         <div class="read-more-container">
             <p class="read-more-p">預訂服務專案</p>
         </div>
-        <img class="read-more-img" src="/images/D14/750x1200-CTA_03.png" alt="更多圖片">
+        <img class="read-more-img" src="/images/750x1200-CTA_03.png" alt="更多圖片">-->
 
         <!-- 彈窗內容 -->
         <div id="popup" class="popup hidden">
@@ -38,11 +38,11 @@
             <div>
                 <% if (status === '進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
-                        <img src="/images/D14/750x1200-CTA_01.png" alt="提交按鈕">
+                        <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
                     </button>
                     <% } else if (isCompleted) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D14/750x1200-CTA_02.png" alt="已完成按鈕">
+                            <img src="/images/750x1200-CTA_02.png" alt="已完成按鈕">
                         </button>
                         <% } else { %>
                             <div class="button" id="complete-task-btn">
@@ -82,8 +82,8 @@
             };
 
             const constants = {
-                taskCompletedSrc: '/images/D14/750x1200-CTA_02.png',
-                taskIncompleteSrc: '/images/D14/750x1200-CTA_01.png',
+                taskCompletedSrc: '/images/750x1200-CTA_02.png',
+                taskIncompleteSrc: '/images/750x1200-CTA_01.png',
                 rewardApiEndpoint: '/task/2/complete',
             };
 
@@ -111,7 +111,7 @@
             // 彈窗控制
             const setupPopupEvents = () => {
                 elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.readMoreImg.addEventListener('click', () => navigateToParent('device-reservation-service'));
+                //elements.readMoreImg.addEventListener('click', () => navigateToParent('device-reservation-service'));
                 elements.popup.addEventListener('click', (event) => {
                     if (event.target === elements.popup) {
                         elements.popup.classList.add('hidden');

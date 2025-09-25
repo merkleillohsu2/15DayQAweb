@@ -188,9 +188,10 @@ for (let day = 1; day <= 15; day++) {
 
       // 獲取 user 的資料
       const user = userResult.recordset[0];
-      if (userChain !== task.Chain) {
+      if (user.Chain !== task.Chain) {
         return res.render('error', { message: '您無權訪問此任務' });
       }
+
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
       const tasksCompleted = JSON.parse(user.tasksCompleted || '[]');
       console.log('Tasks completed by user:', { UserId, tasksCompleted });

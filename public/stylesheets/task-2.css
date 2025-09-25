@@ -40,7 +40,7 @@ img {
 .action-container {
     position: absolute;
     /* 絕對定位，依附於 .container */
-    top: 91%;
+    top: 85%;
     /* 與 #image-2 的頂部對齊 */
     transform: translateY(-50%);
     /* 垂直居中調整 */
@@ -222,7 +222,7 @@ img {
 
 
 .read-more-img {
-    top: 96%;
+    top: 85%;
     position: absolute;
     bottom: 40px;
     /* 向上移動，根據需求調整 */

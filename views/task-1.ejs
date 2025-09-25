@@ -13,7 +13,7 @@
 <body>
     <div class="container">
         <!-- 主圖片展示 -->
-        <img src="/images/D15/750x1200-Day15.png" alt="任務圖片">
+        <img src="/images/Mission 1/M1_Task page.jpg" alt="任務圖片">
 
         <!-- "更多圖片"按鈕 -->
         <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
@@ -30,18 +30,18 @@
         <div class="action-container">
             <div class="checkbox-container">
                 <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
             </div>
 
             <!-- 動態顯示按鈕 -->
             <div>
                 <% if (status === '進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
-                        <img src="/images/D15/750x1200-Day15-CTA_01.png" alt="提交按鈕">
+                        <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
                     </button>
                     <% } else if (isCompleted) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D15/750x1200-Day15-CTA_02.png" alt="已完成按鈕">
+                            <img src="/images/750x1200-CTA_02.png" alt="已完成按鈕">
                         </button>
                         <% } else { %>
                             <div class="button" id="complete-task-btn">
@@ -54,7 +54,7 @@
         <!-- 獎勵訊息 -->
         <div id="rewardMessage" class="hidden">
             <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-            <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-1.png" alt="獎勵圖片">
+            <img class="reward-img" src="/images/Mission 1/Pop-up appears​-1.png" alt="獎勵圖片">
         </div>
     </div>
 
@@ -81,8 +81,8 @@
             };
 
             const constants = {
-                taskCompletedSrc: '/images/D15/750x1200-Day15-CTA_02.png',
-                taskIncompleteSrc: '/images/D15/750x1200-Day15-CTA_01.png',
+                taskCompletedSrc: '/images/750x1200-CTA_02.png',
+                taskIncompleteSrc: '/images/750x1200-CTA_01.png',
                 rewardApiEndpoint: '/task/1/complete',
             };
 
