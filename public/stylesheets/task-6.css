@@ -4,86 +4,92 @@ body {
     margin: 0;
     background-color: #CCFFFF;
     display: flex;
-    justify-content: center; /* 主軸居中 */
-    align-items: center; /* 交叉軸居中 */
-    min-height: 100vh; /* 垂直居中屏幕 */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 /* 容器樣式 */
 .container {
-    background: #fff;
+    background: #CCFFFF;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    position: relative; /* 子元素定位依附於此 */
+    position: relative;
 }
 
-/* 標題樣式 */
+/* 任務標題樣式 */
 .task-title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* 通用圖片樣式 */
+/* 圖片樣式 */
 img {
-    max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
+    max-width: 100%;
     margin: 0 auto;
-    display: block; /* 居中顯示圖片 */
+    display: block;
 }
 
-/* 特殊圖片間距樣式 */
+/* 特殊圖片樣式 */
 #image-2 {
-    margin-bottom: 20px; /* 與其他元素分隔 */
+    margin-bottom: 20px;
 }
 
-/* 箭頭圖片樣式 */
-.arrow-img {
-    width: 8%; /* 默認寬度 */
-    height: auto; /* 保持圖片比例 */
+/* 更多圖片區域樣式 */
+.content-container {
+    top: 30%;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 2;
 }
-
-@media (min-width: 768px) {
-    .arrow-img {
-        width: 10%; /* 平板大小 */
-    }
-}
-
-@media (min-width: 1200px) {
-    .arrow-img {
-        width: 12%; /* 桌面大屏幕 */
-    }
-}
-
-/* 操作區域樣式 */
+/* 行動按鈕容器 */
 .action-container {
     position: absolute;
-    top: 78%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* 控制子元素之間的距離 */
-    z-index: 2; /* 確保內容在背景圖片上方 */
-    width: 100%; /* 防止溢出 */
+    gap: 10px;
+    z-index: 2;
+    width: 100%;
+}
+
+/* 箭頭圖片樣式 */
+.arrow-img {
+    width: 8%;
+    height: auto;
+}
+
+@media (min-width: 768px) {
+    .arrow-img {
+        width: 10%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .arrow-img {
+        width: 12%;
+    }
 }
 
 /* 勾選框樣式 */
 .checkbox-container {
     display: flex;
-    align-items: center; /* 垂直對齊 */
+    align-items: center;
     gap: 10px;
-}
-
-.checkbox-container label {
-    color: #ffffff;
 }
 
 .checkbox-container input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #f4b400; /* 更改勾選框顏色 */
+    accent-color: #f4b400;
 }
 
 @media (min-width: 768px) {
@@ -106,84 +112,11 @@ img {
     display: block;
 }
 
-/* 彈窗樣式 */
-.popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    width: 80%;
-    max-width: 400px; /* 限制寬度，避免跑版 */
-    text-align: center;
-}
-
-.popup p {
-    margin: 10px 0;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.popup .close-popup {
-    background-color: #f4b400;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.popup.hidden {
+/* 完成訊息樣式 */
+#completionMessage {
     display: none;
 }
 
-
-/* 隱藏類別 */
-.hidden {
-    display: none;
-}
-
-/* 冷凍層樣式 */
-#freezeLayer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: none;
-}
-
-/* 冷凍層顯示時啟用 */
-#freezeLayer.active {
-    display: block;
-}
-
-/* 更多圖片樣式 */
-.read-more-img {
-    position: absolute;
-    bottom: 4%;
-    left: 50%;
-    transform: translateX(-50%);
-    height: auto;
-    cursor: pointer;
-    z-index: 2;
-}
-
-/* 響應式處理 */
-@media (max-width: 767px) {
-    .read-more-img {
-        width: 90%; /* 手機檢視大小調整 */
-    }
-}
-
-/* 獎勵訊息樣式 */
 #rewardMessage {
     color: red;
     position: fixed;
@@ -214,12 +147,190 @@ img {
     height: 50px; /* Adjusted size */
 }
 
+/* 隱藏類別 */
+.hidden {
+    display: none;
+}
 
-/* 問答題結果樣式 */
+/* 更多圖片區域樣式 */
+.read-more-container {
+    top: 30%;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    text-align: center;
+    z-index: 2;
+}
+
+.read-more-p {
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .read-more-p {
+        font-size: 2rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .read-more-p {
+        font-size: 1.8rem;
+    }
+}
+
+.read-more-img {
+    position: absolute;
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+    cursor: pointer;
+    z-index: 2;
+    width: 50%;
+}
+
+/* 彈窗樣式 */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* 半透明背景 */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.popup-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.popup-content img.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    z-index: 1010;
+    /* 確保按鈕位於彈窗內容之上 */
+}
+
+.popup p {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.popup .close-popup {
+       position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    z-index: 1010;
+}
+
+.popup.hidden {
+    display: none;
+}
+
+/* 冻結層樣式 */
+#freezeLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+#freezeLayer.active {
+    display: block;
+}
+
+/* 問答題樣式 */
+.quiz {
+    position: relative;
+}
+
+.quiz img {
+    position: relative;
+    top: 0;
+}
+
+.quiz .answers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    bottom: 7%;
+    z-index: 2;
+}
+
 .quiz .result {
     position: static;
-    margin: 10px 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
     width: 100%;
     height: auto;
     text-align: center;
+}
+
+
+/* 扭蛋相關樣式 */
+.gacha-wrapper {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.Gacha-img,
+.Gacha-Container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.Gacha-Container {
+    position: absolute;
+    /* 絕對定位，疊加在圖片之上 */
+    top: 80%;
+    /* 緊貼圖片底部 */
+    left: 50%;
+    /* 水平居中對齊 */
+    transform: translateX(-50%);
+    /* 修正偏移，確保居中 */
+    width: 100%;
+    /* 行動區域寬度，根據需要調整 */
+}
+
+.popup-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }

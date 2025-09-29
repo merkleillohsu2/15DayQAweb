@@ -4,157 +4,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任務倒數第10天</title>
+    <title>Mission 6</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-6.css">
     <script src="/scripts/common.js"></script>
+    <script type="module" src="/scripts/bounce.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <!-- 主圖片展示 -->
-        <img src="/images/D10/750x1200-Day10.png" alt="任務圖片">
+        <!-- 圖片 1 -->
+        <img src="/images/Mission 6/M6_Task page_01.jpg" alt="任務圖片">
+        <!-- 新增問答題 1 -->
+        <div class="quiz-container" id="quiz1">
+            <div class="quiz">
+                <img src="/images/Mission 6/M6_Task page_02.png" alt="問答題 1 題目">
+                <div class="answers">
+                    <img class="answer" data-answer="1" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_01_O.png"
+                        alt="問答題 1 答案">
+                    <img class="answer" data-answer="1" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_01_V.png"
+                        alt="問答題 1 答案 選擇" style="display: none;">
+                    <img class="answer" data-answer="2" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_02_O.png"
+                        alt="問答題 1 答案">
+                    <img class="answer" data-answer="2" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_02_V.png"
+                        alt="問答題 1 答案 選擇" style="display: none;">
+                    <img class="answer" data-answer="3" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_03_O.png"
+                        alt="問答題 1 答案">
+                    <img class="answer" data-answer="3" src="/images/Mission 6/QA-CTA-images/Q1/M6-Q1-CTA_03_V.png"
+                        alt="問答題 1 答案 選擇" style="display: none;">
+                    <img class="confirm" src="/images/Mission 6/QA-CTA-images/btn_09.png" alt="問答題 1 答案">
+                </div>
+            </div>
+            <div id="answerquiz1">
+                <img class="result correct" src="/images/Mission 6/M6_Task page_03_O.png" alt="問答題 1 正確答案"
+                    style="display: none;">
+                <img class="result incorrect" src="/images/Mission 6/M6_Task page_03_X.png" alt="問答題 1 錯誤答案"
+                    style="display: none;">
+            </div>
+        </div>
+        <!-- 新增問答題 2 -->
+        <div class="quiz-container hidden" id="quiz2">
+            <div class="quiz">
+                <img src="/images/Mission 6/M6_Task page_04.png" alt="問答題 2 題目">
+                <div class="answers">
+                    <img class="answer" data-answer="1" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_01_O.png"
+                        alt="問答題 2 答案">
+                    <img class="answer" data-answer="1" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_01_V.png"
+                        alt="問答題 2 答案 選擇" style="display: none;">
+                    <img class="answer" data-answer="2" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_02_O.png"
+                        alt="問答題 2 答案">
+                    <img class="answer" data-answer="2" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_02_V.png"
+                        alt="問答題 2 答案 選擇" style="display: none;">
+                    <img class="answer" data-answer="3" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_03_O.png"
+                        alt="問答題 2 答案">
+                    <img class="answer" data-answer="3" src="/images/Mission 6/QA-CTA-images/Q2/M6-Q2-CTA_03_V.png"
+                        alt="問答題 2 答案 選擇" style="display: none;">
+                    <img class="confirm" src="/images/Mission 6/QA-CTA-images/btn_09.png" alt="問答題 2 答案">
+                </div>
+            </div>
+            <div id="answerquiz2">
+                <img class="result correct" src="/images/Mission 6/M6_Task page_05_O.png" alt="問答題 2 正確答案"
+                    style="display: none;">
+                <img class="result incorrect" src="/images/Mission 6/M6_Task page_05_X.png" alt="問答題 2 錯誤答案"
+                    style="display: none;">
+            </div>
+        </div>
+        <div>
+            <!-- 彈窗內容 -->
+            <div id="popup" class="popup hidden">
+                <div class="popup-content">
+                    <p>更多訊息</p>
+                    <button class="close-popup">關閉</button>
+                </div>
+            </div>
 
-        <!-- 彈窗內容 -->
-        <div id="popup" class="popup hidden">
-            <div class="popup-content">
-                <p>更多訊息</p>
-                <button class="close-popup">關閉</button>
+            <div id="popup" class="popup hidden">
+                <div class="popup-content">
+                    <p>更多訊息</p>
+                    <button class="close-popup">關閉</button>
+                </div>
+            </div>
+            <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
+                <img src="/images/Mission 6/M6_Task page_06.png" alt="任務圖片">
+                <div class="action-container">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% }
+                            %>>
+                            <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                    </div>
+                    <div>
+                        <% if (status==='進行中' && !isCompleted) { %>
+                            <button class="button" id="complete-task-btn">
+                                <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
+                            </button>
+                            <% } else if (isCompleted) { %>
+                                <button class="button" id="complete-task-btn">
+                                    <img src="/images/750x1200-CTA_02.png" alt="已完成按鈕">
+                                </button>
+                                <% } else { %>
+                                    <div class="button" id="complete-task-btn">
+                                        <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                                    </div>
+                                    <% } %>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 行動區域 -->
-        <div class="action-container">
-            <div class="checkbox-container">
-                <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
-            </div>
-            <div>
-                <% if (status === '進行中' && !isCompleted) { %>
-                    <button class="button" id="complete-task-btn">
-                        <img src="/images/D10/750x1200-CTA_01.png" alt="提交按鈕">
-                    </button>
-                    <% } else if (isCompleted) { %>
-                        <button class="button" id="complete-task-btn">
-                            <img src="/images/D10/750x1200-CTA_02.png" alt="已完成按鈕">
-                        </button>
-                        <% } else { %>
-                            <div class="button" id="complete-task-btn">
-                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+        <!-- 扭蛋相關 -->
+        <% if (isCompleted && remainingEntries> 0 && status === '進行中') { %>
+            <div class="gacha-wrapper">
+                <% } else { %>
+                    <div class="gacha-wrapper hidden">
+                        <% } %>
+                            <img class="Gacha-img" src="/images/D09/扭蛋.png" alt="扭蛋圖片">
+                            <div class="Gacha-Container">
+                                <img src="/images/D09/扭蛋-CTA_02.png" alt="扭蛋圖片" id="lotteryImage">
                             </div>
-                            <% } %>
+                    </div>
+
+                    <div id="bouncePopup" class="popup hidden">
+                        <div class="popup-content">
+                            <iframe id="bounceIframe" src="" frameborder="0"></iframe>
+                            <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+                        </div>
+                    </div>
+
+
+                    <!-- 獎勵訊息 -->
+                    <div id="rewardMessage" class="hidden">
+                        <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
+                        <img class="reward-img" src="/images/Mission 6/Pop-up appears​-3.png" alt="獎勵圖片">
+                    </div>
+                    <div id="freezeLayer" class="hidden"></div>
+                    <img class="fixed-bottom" src="/images/D03/background.png" alt="背景圖片">
             </div>
-        </div>
 
-        <!-- 獎勵訊息 -->
-        <div id="rewardMessage" class="hidden">
-            <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-            <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-2.png" alt="獎勵圖片">
-        </div>
-    </div>
 
-    <!-- 凍結層 -->
-    <div id="freezeLayer" class="hidden"></div>
 
-     <script nonce="<%= nonce %>">
-        // 初始化 sessionStorage
-        initializeSessionStorage('<%= contactId %>');
 
-        // 定義 DOM 元素和常量
-        document.addEventListener('DOMContentLoaded', () => {
-            const elements = {
-                popup: document.getElementById('popup'),
-                closePopupButton: document.querySelector('.close-popup'),
-                checkbox: document.getElementById('taskCompletedCheckbox'),
-                button: document.getElementById('complete-task-btn'),
-                buttonImg: document.querySelector('#complete-task-btn img'),
-                freezeLayer: document.getElementById('freezeLayer'),
-                rewardMessage: document.getElementById('rewardMessage'),
-                closeRewardButton: document.querySelector('#rewardMessage .close-button'),
-                rewardImg: document.querySelector('.reward-img'),
-            };
+            <script nonce="<%= nonce %>">
+                // 初始化 sessionStorage，存儲 ContactId 和 Query
+                initializeSessionStorage('<%= contactId %>');
 
-            const constants = {
-                taskCompletedSrc: '/images/D10/750x1200-CTA_02.png',
-                taskIncompleteSrc: '/images/D10/750x1200-CTA_01.png',
-                rewardApiEndpoint: '/task/6/complete',
-            };
+                // 定義 DOM 元素和常量
+                document.addEventListener('DOMContentLoaded', () => {
+                    const elements = {
+                        popup: document.getElementById('popup'),
+                        closePopupButton: document.querySelector('.close-popup'),
+                        checkbox: document.getElementById('taskCompletedCheckbox'),
+                        button: document.getElementById('complete-task-btn'),
+                        buttonImg: document.querySelector('#complete-task-btn img'),
+                        freezeLayer: document.getElementById('freezeLayer'),
+                        rewardMessage: document.getElementById('rewardMessage'),
+                        contentContainer: document.querySelector('.content-container'),
+                        closeRewardButton: document.querySelector('#rewardMessage .close-button'),
+                        confirmButton: document.querySelectorAll('.confirm'),
+                        gachaContainer: document.querySelector('.gacha-wrapper'),
+                        gachaImg: document.querySelector('.Gacha-img'),
+                    };
 
-            // 更新按鈕狀態
-            const updateButtonState = () => {
-                const isCheckboxChecked = elements.checkbox.checked;
-                let isCompleted;
-                // 檢查是否存在圖片
-                if (elements.buttonImg) {
-                    const buttonImgSrc = elements.buttonImg.getAttribute('src');
-                    console.log('按鈕圖片:', buttonImgSrc);
+                    const constants = {
+                        taskCompletedSrc: '/images/750x1200-CTA_02.png',
+                        taskIncompleteSrc: '/images/750x1200-CTA_01.png',
+                        rewardApiEndpoint: '/task/6/complete',
+                    };
 
-                    // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
-                    isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
-                    elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
 
-                    console.log('按鈕是否已完成:', isCompleted);
+                    // 更新按鈕狀態
+                    const updateButtonState = () => {
+                        const isCheckboxChecked = elements.checkbox.checked;
+                        let isCompleted;
+                        // 檢查是否存在圖片
+                        if (elements.buttonImg) {
+                            const buttonImgSrc = elements.buttonImg.getAttribute('src');
+                            console.log('按鈕圖片:', buttonImgSrc);
 
-                } else {
-                    console.log('按鈕未包含圖片');
-                }
-                elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
-            };
+                            // 判斷是否是指定的提交圖片，並且按鈕非完成狀態
+                            isCompleted = buttonImgSrc === constants.taskCompletedSrc; // 檢查是否完成
+                            elements.button.disabled = !isCheckboxChecked || isCompleted || buttonImgSrc !== constants.taskIncompleteSrc;
 
-            // 彈窗控制邏輯
-            const setupPopupEvents = () => {
-                elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
-                elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
-                elements.popup.addEventListener('click', (event) => {
-                    if (event.target === elements.popup) {
-                        elements.popup.classList.add('hidden');
-                    }
+                            console.log('按鈕是否已完成:', isCompleted);
+
+                        } else {
+                            console.log('按鈕未包含圖片');
+                        }
+                        elements.button.style.opacity = elements.button.disabled ? 0.5 : 1;
+                    };
+
+                    // 彈窗相關事件
+                    const setupPopupEvents = () => {
+                        elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
+                        elements.popup.addEventListener('click', (event) => {
+                            if (event.target === elements.popup) {
+                                elements.popup.classList.add('hidden');
+                            }
+                        });
+
+                    };
+
+
+
+                    // 提交任務完成邏輯
+                    const completeTask = async () => {
+                        if (elements.button.disabled) return;
+                        navigateToParent('GetReward');
+                        const userId = sessionStorage.getItem('ContactId');
+                        elements.button.disabled = true;
+                        elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
+                        elements.freezeLayer.classList.add('active');
+
+                        try {
+                            const response = await fetch(constants.rewardApiEndpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ UserId: userId }),
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP錯誤！狀態碼: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+                            elements.rewardMessage.classList.remove('hidden');
+                            elements.gachaContainer.classList.remove('hidden');
+                            elements.gachaImg.classList.remove('hidden');
+                        } catch (error) {
+                            console.error('提交失敗:', error);
+                        } finally {
+                            elements.freezeLayer.classList.remove('active');
+                        }
+                    };
+
+                    // 問答題邏輯
+                    const setupQuizEvents = () => {
+                        document.querySelectorAll('.quiz .answer').forEach(answer => {
+                            answer.addEventListener('click', (e) => {
+                                const quiz = answer.closest('.quiz');
+                                const answerGroup = quiz.querySelectorAll('.answer');
+                                const initialAnswers = quiz.querySelectorAll('.answer:not([alt*="選擇"])');
+                                const selectedAnswer = quiz.querySelector(`.answer[data-answer="${answer.dataset.answer}"][alt*="選擇"]`);
+
+                                // 檢查是否已經有選中的答案
+                                const alreadySelected = quiz.querySelector('.answer.selected');
+                                if (alreadySelected && alreadySelected !== selectedAnswer) {
+                                    // 解除原來選中答案的禁用狀態
+                                    alreadySelected.classList.remove('selected');
+                                    alreadySelected.style.pointerEvents = 'auto'; // 重新啟用點擊
+                                }
+
+                                // 隱藏所有答案，並恢復初始狀態
+                                answerGroup.forEach(img => {
+                                    img.style.display = 'none';
+                                    img.classList.remove('selected');
+                                    img.style.pointerEvents = 'auto'; // 重置所有答案的點擊狀態
+                                });
+                                // 顯示初始答案圖片
+                                initialAnswers.forEach(img => img.style.display = 'block');
+                                e.target.style.display = 'none';
+
+                                // 如果有選中的答案，禁用其點擊
+                                if (selectedAnswer) {
+                                    selectedAnswer.classList.add('selected');
+                                    selectedAnswer.style.display = 'block';
+                                    selectedAnswer.style.pointerEvents = 'none'; // 禁用點擊選中的答案
+                                }
+                            });
+                        });
+
+                        document.querySelectorAll('.quiz .confirm').forEach(confirmButton => {
+                            confirmButton.addEventListener('click', () => {
+                                const quiz = confirmButton.closest('.quiz');
+                                const quizContainer = confirmButton.closest('.quiz-container');
+                                const selectedAnswer = quiz.querySelector('.answer.selected');
+                                const questionNumber = quiz.querySelector('img').getAttribute('alt').match(/問答題 (\d+)/)[1];
+
+                                let correctAnswer;
+                                if (questionNumber === '1') {
+                                    correctAnswer = quiz.querySelector('.answer[data-answer="1"]');
+                                } else if (questionNumber === '2') {
+                                    correctAnswer = quiz.querySelector('.answer[data-answer="3"]');
+                                }
+
+                                const correctImage = quizContainer.querySelector('.result.correct');
+                                const incorrectImage = quizContainer.querySelector('.result.incorrect');
+
+                                if (selectedAnswer && selectedAnswer.dataset.answer === correctAnswer.dataset.answer) {
+                                    correctImage.style.display = 'block';
+                                } else {
+                                    incorrectImage.style.display = 'block';
+                                }
+
+                                // 禁用答案並顯示下一步
+                                quiz.querySelectorAll('.answer').forEach(answer => answer.style.pointerEvents = 'none');
+                                if (questionNumber === '1') {
+                                    document.getElementById('quiz2').classList.remove('hidden');
+                                    document.getElementById('answerquiz1').scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'start', // 滑動到最底部
+                                    });
+                                } else if (questionNumber === '2') {
+                                    document.querySelector('.action-container').classList.remove('hidden');
+                                    elements.contentContainer.classList.remove('hidden'); // 禁用行動區域
+                                    document.getElementById('answerquiz2').scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'start', // 滑動到最底部
+                                    });
+                                }
+                            });
+                        });
+
+                        document.getElementById('quiz1').classList.remove('hidden');
+                    };
+
+                    // 初始化所有事件
+                    const initializeEvents = () => {
+                        elements.checkbox.addEventListener('change', updateButtonState);
+                        elements.button.addEventListener('click', completeTask);
+                        elements.closeRewardButton.addEventListener('click', () => {
+                            elements.rewardMessage.style.display = 'none';
+                        });
+                        setupPopupEvents();
+                        setupQuizEvents();
+                    
+                    };
+
+                    // 初始化
+                    updateButtonState();
+                    initializeEvents();
                 });
-            };
-
-            // 提交任務完成邏輯
-            const completeTask = async () => {
-                if (elements.button.disabled) return;
-                navigateToParent('GetReward');
-                const userId = sessionStorage.getItem('ContactId');
-                elements.button.disabled = true;
-                elements.buttonImg.setAttribute('src', constants.taskCompletedSrc);
-                elements.freezeLayer.classList.add('active');
-
-                try {
-                    const response = await fetch(constants.rewardApiEndpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ UserId: userId }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
-                    }
-
-                    elements.rewardMessage.classList.remove('hidden'); // 僅在提交成功後顯示
-                } catch (error) {
-                    console.error('提交失敗:', error);
-                } finally {
-                    elements.freezeLayer.classList.remove('active');
-                }
-            };
-
-            // 初始化事件監聽
-            const initializeEvents = () => {
-                elements.checkbox.addEventListener('change', updateButtonState);
-                elements.button.addEventListener('click', completeTask);
-                elements.closeRewardButton.addEventListener('click', () => {
-                    elements.rewardMessage.classList.add('hidden'); // 隱藏獎勵訊息
-                });
-                setupPopupEvents();
-            };
-
-            // 初始化邏輯
-            updateButtonState();
-            initializeEvents();
-        });
-    </script>
+            </script>
 </body>
 
 </html>
