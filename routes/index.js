@@ -3,6 +3,7 @@ const router = express.Router();
 const { sql } = require('../dbconfig');
 const { decryptString } = require('../userSetup'); // 導入 decryptString 函數
 const { handleDecryption } = require('../handleDecryption'); // 導入 decryptString 函數
+const { DateTime } = require('luxon');
 
 require('dotenv').config(); // 加載環境變數
 
@@ -89,7 +90,8 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 // 每日任務頁面
 for (let day = 1; day <= 15; day++) {
   router.get(`/task/${day}`, handleDecryptionMiddleware, async (req, res) => {
-    const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const currentDate = getCurrentDate();// yyyy-mm-dd
+    console.log(`[INFO] 當前日期: ${currentDate}`);
     const userId = req.session.ContactId;
     console.log(`[INFO] 獲取 UserId: ${userId}`);
 
@@ -120,6 +122,9 @@ for (let day = 1; day <= 15; day++) {
         status = '進行中';
       }
 
+      if (status === '未開始') {
+        return res.render('error', { message: '任務尚未開始，請稍後再來！' });
+      }
       // 查詢任務完成狀態
       const isCompleted = await isTaskCompleted(pool, userId, day);
       console.log(`[INFO] 任務完成狀態: ${isCompleted}`);

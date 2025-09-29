@@ -1,97 +1,124 @@
-/* 全局樣式 */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     background-color: #CCFFFF;
-    display: flex;
-    justify-content: center; /* 主軸居中 */
-    align-items: center; /* 交叉軸居中 */
-    min-height: 100vh; /* 垂直居中屏幕 */
+    justify-content: center;
+    /* 主軸居中 */
+    align-items: center;
+    /* 交叉軸居中 */
+    min-height: 100vh;
+    /* 確保內容垂直居中 */
 }
 
-/* 容器樣式 */
 .container {
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    position: relative; /* 子元素定位依附於此 */
+    position: relative;
+    /* 讓子元素的定位依附於此 */
 }
 
-/* 標題樣式 */
 .task-title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* 通用圖片樣式 */
 img {
-    max-width: 100%; /* 確保圖片在不同裝置上保持比例 */
+    max-width: 100%;
     margin: 0 auto;
-    display: block; /* 居中顯示圖片 */
+    display: block;
+    /* 確保圖片居中 */
 }
 
-/* 特殊圖片間距樣式 */
 #image-2 {
-    margin-bottom: 20px; /* 與其他元素分隔 */
+    margin-bottom: 20px;
+    /* 與操作容器保持適當距離 */
 }
 
-/* 箭頭圖片樣式 */
-.arrow-img {
-    width: 8%; /* 默認寬度 */
-    height: auto; /* 保持圖片比例 */
-}
-
-@media (min-width: 768px) {
-    .arrow-img {
-        width: 10%; /* 平板大小 */
-    }
-}
-
-@media (min-width: 1200px) {
-    .arrow-img {
-        width: 12%; /* 桌面大屏幕 */
-    }
-}
-
-/* 操作區域樣式 */
 .action-container {
     position: absolute;
-    top: 77%;
+    /* 絕對定位，依附於 .container */
+    top: 85%;
+    /* 與 #image-2 的頂部對齊 */
+    transform: translateY(-50%);
+    /* 垂直居中調整 */
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
+    /* 垂直排列子元素 */
     align-items: center;
-    gap: 10px; /* 控制子元素之間的距離 */
-    z-index: 2; /* 確保內容在背景圖片上方 */
-    width: 100%; /* 防止溢出 */
+    /* 水平居中 */
+    gap: 10px;
+    /* 控制勾選框和按鈕的間距 */
+    z-index: 2;
+    /* 保持內容在圖片上方 */
+    width: 100%;
 }
 
-/* 勾選框樣式 */
-.checkbox-container {
-    display: flex;
-    align-items: center; /* 垂直對齊 */
-    gap: 10px;
+@media (max-width: 768px) {
+    .action-container {
+        font-size: 1.5rem; /* 在小螢幕上保持不變 */
+    }
 }
-.checkbox-container label {
-    color: #ffffff;
-}
-.checkbox-container input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #f4b400; /* 更改勾選框顏色 */
+.arrow-img {
+    width: 8%;
+    /* 默認情況下箭頭圖片佔父容器寬度的 50% */
+    height: auto;
+    /* 保持圖片的寬高比例 */
 }
 
 @media (min-width: 768px) {
-    .checkbox-container input[type="checkbox"] {
-        width: 30px;
-        height: 30px;
+
+    /* 平板或桌面視圖 */
+    .arrow-img {
+        width: 10%;
+        /* 在寬屏顯示時縮小箭頭圖片大小 */
     }
 }
 
-/* 按鈕樣式 */
+@media (min-width: 1200px) {
+
+    /* 桌面大屏幕 */
+    .arrow-img {
+        width: 12%;
+        /* 在更大屏幕進一步縮小箭頭圖片 */
+    }
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    /* 勾選框和文字垂直對齊 */
+    gap: 10px;
+    /* 勾選框和文字之間的距離 */
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    /* 預設為手機顯示的大小 */
+    height: 20px;
+    accent-color: #f4b400;
+    /* 更改勾選框顏色 */
+}
+
+@media (min-width: 768px) {
+
+    /* 電腦視圖（平板或更大屏幕） */
+    .checkbox-container input[type="checkbox"] {
+        width: 30px;
+        /* 增加勾選框的寬度 */
+        height: 30px;
+        /* 增加勾選框的高度 */
+    }
+}
+
+
+
+
+
 .button {
     background: none;
     border: none;
@@ -100,87 +127,17 @@ img {
 
 .button img {
     width: 100%;
+    /* 調整按鈕圖片寬度 */
     height: auto;
+    /* 保持按比例縮放 */
     display: block;
+    /* 確保按鈕圖片居中 */
 }
 
-/* 彈窗樣式 */
-.popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    width: 80%;
-    max-width: 400px; /* 限制寬度，避免跑版 */
-    text-align: center;
-}
-
-.popup p {
-    margin: 10px 0;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.popup .close-popup {
-    background-color: #f4b400;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.popup.hidden {
+#completionMessage {
     display: none;
 }
 
-/* 隱藏類別 */
-.hidden {
-    display: none;
-}
-
-/* 冷凍層樣式 */
-#freezeLayer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: none;
-}
-
-/* 冷凍層顯示時啟用 */
-#freezeLayer.active {
-    display: block;
-}
-
-/* 更多圖片樣式 */
-.read-more-img {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    height: auto;
-    cursor: pointer;
-    z-index: 2;
-}
-
-/* 響應式處理 */
-@media (max-width: 767px) {
-    .read-more-img {
-        width: 100%; /* 手機檢視大小調整 */
-    }
-}
-
-/* 獎勵訊息樣式 */
 #rewardMessage {
     color: red;
     position: fixed;
@@ -211,12 +168,78 @@ img {
     height: 50px; /* Adjusted size */
 }
 
+.hidden {
+    display: none;
+}
 
-/* 問答題結果樣式 */
-.quiz .result {
-    position: static;
-    margin: 10px 0;
-    width: 100%;
-    height: auto;
+.read-more-img {
+    position: absolute;
+    bottom: 10px;
+    cursor: pointer;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* 設置為可點擊的樣式 */
+    z-index: 2;
+    /* 確保圖片在其他元素上方 */
+}
+
+@media (max-width: 767px) {
+    .read-more-img {
+        width: 60%;
+        /* 調整手機檢視時的大小 */
+        bottom: -10px;
+        /* 調整手機檢視時的位置 */
+    }
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    width: 80%;
+    max-width: 400px;
     text-align: center;
+    /* 默認不顯示 */
+}
+
+.popup p {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.popup .close-popup {
+    background-color: #f4b400;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup.hidden {
+    display: none;
+}
+/* 遮罩層樣式 */
+#freezeLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+    z-index: 9999; /* 遮罩層的層級 */
+    display: none; /* 初始隱藏 */
+}
+
+/* 顯示遮罩層 */
+#freezeLayer.active {
+    display: block;
 }

@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任務倒數第9天</title>
+    <title>Mission 4
+    </title>
     <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/task-7.css">
+    <link rel="stylesheet" href="/stylesheets/task-4.css">
     <script src="/scripts/common.js"></script>
 </head>
 
@@ -14,15 +15,13 @@
     <div class="container">
         <!-- 圖片與行動區域 -->
         <div class="media-wrapper">
-            <img src="/images/D09/750x1200-Day9_KV.png" alt="任務圖片">
+            <img src="/images/Mission 4/M4_Task page_01.jpg" alt="任務圖片">
             <video class="video-container" controls controlsList="nodownload noremoteplayback" id="taskVideo"
                 poster="/images/task-7_videopreview.jpg">
-                <source
-                    src="https://pmi-salesforce.videomarketingplatform.co/64968558/112361554/fabb6ef8bd3286188b3c9960d175dd47/video_hd/d9iluma-video250319-8-video.mp4"
-                    type="video/mp4">
+                <source src="/images/Mission 4/M4_ILUMA video.mp4" type="video/mp4">
                 您的瀏覽器不支援 HTML5 影片標籤。
             </video>
-            <img src="/images/D09/750x1200-Day9_content.png" alt="任務圖片" class="content-image">
+            <img src="/images/Mission 4/M2_Task page_02.jpg" alt="任務圖片" class="content-image">
             <div class="action-container disabled-container">
                 <div class="checkbox-container">
                     <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
@@ -30,13 +29,13 @@
                         <br /><br />
                 </div>
                 <div>
-                    <% if (status === '進行中' && !isCompleted) { %>
+                    <% if (status==='進行中' && !isCompleted) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D09/750x1200-CTA_01.png" alt="提交按鈕">
+                            <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
                         </button>
                         <% } else if (isCompleted) { %>
                             <button class="button" id="complete-task-btn">
-                                <img src="/images/D09/750x1200-CTA_02.png" alt="已完成按鈕">
+                                <img src="/images/750x1200-CTA_02.png" alt="已完成按鈕">
                             </button>
                             <% } else { %>
                                 <div class="button" id="complete-task-btn">
@@ -45,8 +44,8 @@
                                 <% } %>
                 </div>
             </div>
-            <!-- 扭蛋相關 -->
-            <% if (isCompleted && remainingEntries > 0 && status === '進行中') { %>
+            <!-- 扭蛋相關 
+            <% if (isCompleted && remainingEntries> 0 && status === '進行中') { %>
                 <div class="gacha-wrapper">
                     <% } else { %>
                         <div class="gacha-wrapper hidden">
@@ -56,21 +55,21 @@
                                     <img src="/images/D09/扭蛋-CTA_02.png" alt="扭蛋圖片" id="lotteryImage">
                                 </div>
                         </div>
-                </div>
+                </div> -->
 
-                <!-- 獎勵訊息 -->
-                <div id="rewardMessage" class="hidden">
-                    <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-                    <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-4.png" alt="獎勵圖片">
-                </div>
-        </div>
-        <!-- Bounce 頁面彈窗 -->
-        <div id="bouncePopup" class="popup hidden">
-            <div class="popup-content">
-                <iframe id="bounceIframe" src="" frameborder="0"></iframe> <!-- 用 iframe 嵌入 bounce.ejs -->
-                <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+            <!-- 獎勵訊息 -->
+            <div id="rewardMessage" class="hidden">
+                <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
+                <img class="reward-img" src="/images/Mission 4/Pop-up appears​-1.png" alt="獎勵圖片">
             </div>
         </div>
+        <!-- Bounce 頁面彈窗 
+        <div id="bouncePopup" class="popup hidden">
+            <div class="popup-content">
+                <iframe id="bounceIframe" src="" frameborder="0"></iframe> 
+                <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
+            </div>
+        </div>-->
         <!-- 冷凍層 -->
         <div id="freezeLayer" class="hidden"></div>
 
@@ -92,14 +91,14 @@
                     gachaContainer: document.querySelector('.gacha-wrapper'),
                     gachaImg: document.querySelector('.Gacha-img'),
                     actionContainer: document.querySelector('.action-container'),
-                    lotteryImage: document.getElementById('lotteryImage'),
+                    //lotteryImage: document.getElementById('lotteryImage'),
                     rewardImg: document.querySelector('.reward-img'),
                 };
 
                 const constants = {
-                    taskCompletedSrc: '/images/D09/750x1200-CTA_02.png',
-                    taskIncompleteSrc: '/images/D09/750x1200-CTA_01.png',
-                    rewardApiEndpoint: '/task/7/complete',
+                    taskCompletedSrc: '/images/750x1200-CTA_02.png',
+                    taskIncompleteSrc: '/images/750x1200-CTA_01.png',
+                    rewardApiEndpoint: '/task/4/complete',
                 };
 
                 // 更新按鈕狀態
@@ -124,7 +123,7 @@
                 };
                 // 彈窗邏輯
                 const setupPopupEvents = () => {
-                    elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
+                    //elements.closePopupButton.addEventListener('click', () => elements.popup.classList.add('hidden'));
                     // elements.rewardImg.addEventListener('click', () => navigateToParent('task-list'));
                     elements.closeRewardButton.addEventListener('click', () => elements.rewardMessage.classList.add('hidden'));
                 };
@@ -185,25 +184,26 @@
                     const closeBouncePopup = document.getElementById('closeBouncePopup');
 
                     // 點擊抽獎按鈕顯示 bounce.ejs 彈窗
-                    elements.lotteryImage.addEventListener('click', () => {
+                    /*elements.lotteryImage.addEventListener('click', () => {
                         navigateToParent('Draw_now'); // 導向獎勵頁面
                         const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
                         bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
                         bouncePopup.classList.remove('hidden'); // 顯示彈窗
-                    });
+                    });*/
 
                     elements.rewardImg.addEventListener('click', () => {
-                        const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
+                        /*const bounceURL = '/lottery/bounce' + window.location.search; // 動態生成 URL
                         bounceIframe.setAttribute('src', bounceURL); // 嵌入 bounce.ejs 的內容
-                        bouncePopup.classList.remove('hidden'); // 顯示彈窗
+                        bouncePopup.classList.remove('hidden'); // 顯示彈窗*/
+                        navigateToParent('task-list')
                     });
 
 
                     // 關閉彈窗邏輯
-                    closeBouncePopup.addEventListener('click', () => {
-                        bouncePopup.classList.add('hidden'); // 隱藏彈窗
-                        bounceIframe.setAttribute('src', ''); // 清空 iframe
-                    });
+                    /*closeBouncePopup.addEventListener('click', () => {
+                       bouncePopup.classList.add('hidden'); // 隱藏彈窗
+                       bounceIframe.setAttribute('src', ''); // 清空 iframe
+                   });*/
 
                     setupPopupEvents();
                     setupVideoEvents();
