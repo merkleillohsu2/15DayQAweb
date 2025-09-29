@@ -4,31 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任務倒數第4天</title>
+    <title>Mission 9</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/task-12.css">
+    <link rel="stylesheet" href="/stylesheets/task-9.css">
     <script src="/scripts/common.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <img src="/images/D04/750x1200-Day4_01.png" alt="任務圖片" id="img-02" class="clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_01.jpg" alt="任務圖片" id="img-02" class="clickable" loading="lazy">
         <!-- 預設顯示的圖片 -->
-        <img src="/images/D04/750x1200-Day4_02.png" alt="任務圖片" id="img-02" class="clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step1.jpg" alt="任務圖片" id="img-02" class="clickable" loading="lazy">
 
         <!-- 隱藏的圖片 -->
-        <img src="/images/D04/750x1200-Day4_03.png" alt="任務圖片" id="img-03" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_04.png" alt="任務圖片" id="img-04" class="clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_05.png" alt="任務圖片" id="img-05" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_06.png" alt="任務圖片" id="img-06" class=" clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_07.png" alt="任務圖片" id="img-07" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_08.png" alt="任務圖片" id="img-08" class=" clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_09.png" alt="任務圖片" id="img-09" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_10.png" alt="任務圖片" id="img-10" class=" clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_11.png" alt="任務圖片" id="img-11" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_12.png" alt="任務圖片" id="img-12" class=" clickable" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_13.png" alt="任務圖片" id="img-13" class="hidden" loading="lazy">
-        <img src="/images/D04/750x1200-Day4_13_2.png" alt="任務圖片" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step1_1.jpg" alt="任務圖片" id="img-03" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step2.jpg" alt="任務圖片" id="img-04" class="clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step2_1.jpg" alt="任務圖片" id="img-05" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step3.jpg" alt="任務圖片" id="img-06" class=" clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step3_1.jpg" alt="任務圖片" id="img-07" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step4.jpg" alt="任務圖片" id="img-08" class=" clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step4_1.jpg" alt="任務圖片" id="img-09" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step5.jpg" alt="任務圖片" id="img-10" class=" clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step5_1.jpg" alt="任務圖片" id="img-11" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step6.jpg" alt="任務圖片" id="img-12" class=" clickable" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step6_1.jpg" alt="任務圖片" id="img-13" class="hidden" loading="lazy">
+        <img src="/images/Mission 9/M9_Task page_step6_2.jpg" alt="任務圖片" loading="lazy">
 
 
 
@@ -42,23 +42,23 @@
 
         <!-- 行動區域 -->
         <div class="relative-container">
-            <img src="/images/D04/750x1200-Day4_14.png" alt="任務圖片" id="img-14" loading="lazy">
+            <img src="/images/Mission 9/M9_Task page_finsh.jpg" alt="任務圖片" id="img-14" loading="lazy">
             <!-- 更多訊息 -->
-            <img class="read-more-img" src="/images/D04/D4-CTA.png" alt="更多圖片">
-            <div class="action-container disabled" style="pointerEvents: none; opacity: 0.5;">
+            <img class="read-more-img" src="/images/Mission 9/M9_Task page_CTA_demo.png" alt="更多圖片">
+            <div class="action-container disabled" style="pointer-events: none; opacity: 0.5;">
 
                 <div class="checkbox-container">
                     <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                    <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                        <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
                 </div>
                 <div>
-                    <% if (status === '進行中' && !isCompleted) { %>
+                    <% if (status==='進行中' && !isCompleted) { %>
                         <button class="button" id="complete-task-btn">
-                            <img src="/images/D04/750x1200-CTA_01.png" alt="提交按鈕">
+                            <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
                         </button>
                         <% } else if (isCompleted) { %>
                             <button class="button" id="complete-task-btn">
-                                <img src="/images/D04/750x1200-CTA_02.png" alt="已完成按鈕">
+                                <img src="/images/750x1200-CTA_02.png" alt="已完成按鈕">
                             </button>
                             <% } else { %>
                                 <div class="button" id="complete-task-btn">
@@ -70,8 +70,8 @@
         </div>
         <!-- 獎勵訊息 -->
         <div id="rewardMessage" class="hidden">
-            <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
-            <img class="reward-img" src="/images/PopUp/點擊領取獎勵金popup-2.png" alt="獎勵圖片">
+            <img class="close-button" src="/images/Mission 9/X.png" alt="關閉獎勵提示按鈕">
+            <img class="reward-img" src="/images/Mission 9/Pop-up appears​-2.png" alt="獎勵圖片">
         </div>
     </div>
 
@@ -154,9 +154,9 @@
 
 
             const constants = {
-                taskCompletedSrc: '/images/D04/750x1200-CTA_02.png',
-                taskIncompleteSrc: '/images/D04/750x1200-CTA_01.png',
-                rewardApiEndpoint: '/task/12/complete',
+                taskCompletedSrc: '/images/750x1200-CTA_02.png',
+                taskIncompleteSrc: '/images/750x1200-CTA_01.png',
+                rewardApiEndpoint: '/task/9/complete',
             };
 
             // 更新按鈕狀態

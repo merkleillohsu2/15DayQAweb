@@ -1,0 +1,29 @@
+/* 扭蛋相關樣式 */
+.gacha-wrapper {
+    position: relative;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.Gacha-img,
+.Gacha-Container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.Gacha-Container {
+    position: absolute;
+    /* 絕對定位，疊加在圖片之上 */
+    top: 80%;
+    /* 緊貼圖片底部 */
+    left: 50%;
+    /* 水平居中對齊 */
+    transform: translateX(-50%);
+    /* 修正偏移，確保居中 */
+    width: 100%;
+    /* 行動區域寬度，根據需要調整 */
+}

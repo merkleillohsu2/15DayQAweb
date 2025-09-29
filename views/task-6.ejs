@@ -7,6 +7,7 @@
     <title>Mission 6</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-6.css">
+    <link rel="stylesheet" href="/stylesheets/gacha-wrapper.css">
     <script src="/scripts/common.js"></script>
     <script type="module" src="/scripts/bounce.js"></script>
 </head>
@@ -77,20 +78,13 @@
                     <button class="close-popup">關閉</button>
                 </div>
             </div>
-
-            <div id="popup" class="popup hidden">
-                <div class="popup-content">
-                    <p>更多訊息</p>
-                    <button class="close-popup">關閉</button>
-                </div>
-            </div>
             <div class="content-container  <% if (!isCompleted) { %> hidden <% } %>">
                 <img src="/images/Mission 6/M6_Task page_06.png" alt="任務圖片">
                 <div class="action-container">
                     <div class="checkbox-container">
                         <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% }
                             %>>
-                            <label for="taskCompletedCheckbox">我已完成【本日任務內容】</label>
+                            <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
                     </div>
                     <div>
                         <% if (status==='進行中' && !isCompleted) { %>
@@ -129,8 +123,6 @@
                             <img id="closeBouncePopup" class="close-popup" src="/images/Lucky-Draw/X.png" alt="關閉按鈕">
                         </div>
                     </div>
-
-
                     <!-- 獎勵訊息 -->
                     <div id="rewardMessage" class="hidden">
                         <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
@@ -139,9 +131,6 @@
                     <div id="freezeLayer" class="hidden"></div>
                     <img class="fixed-bottom" src="/images/D03/background.png" alt="背景圖片">
             </div>
-
-
-
 
             <script nonce="<%= nonce %>">
                 // 初始化 sessionStorage，存儲 ContactId 和 Query
