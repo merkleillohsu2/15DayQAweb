@@ -99,7 +99,7 @@ const handleDecryption = async (req, res) => {
     }
     // 獲取台灣時間，並轉換為 UTC 時間
     // const lastLoginTime = DateTime.now().setZone('Asia/Taipei').toISO();
-    const lastLoginTime = DateTime.now().setZone('UTC+8').toISO({ includeOffset: true });
+    const lastLoginTime = DateTime.now().setZone('Asia/Taipei').toISO({ includeOffset: true });
 
 
     console.log('[INFO] LastLoginTime to store (UTC):', lastLoginTime);
