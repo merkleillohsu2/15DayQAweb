@@ -29,7 +29,7 @@ async function executeQuery(query, inputs = {}) {
 // 統一日期與時間處理
 function getFormattedDateTime() {
   const today = new Date().toISOString().split('T')[0];
-  const taiwanTime = DateTime.now().setZone('Asia/Taipei').toFormat('HH:mm:ss');
+  const taiwanTime = DateTime.now().setZone('Asia/Taipei', { keepLocalTime: true }).toFormat('HH:mm:ss');
   return { today, taiwanTime };
 }
 

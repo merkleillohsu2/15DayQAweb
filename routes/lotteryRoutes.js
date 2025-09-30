@@ -67,7 +67,7 @@ router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
             return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
         }
 
-        const taiwanNow = DateTime.now().setZone('Asia/Taipei');
+        const taiwanNow = DateTime.now().setZone('Asia/Taipei', { keepLocalTime: true });
         const currentDate = taiwanNow.toISODate(); // yyyy-MM-dd
         console.log(`[INFO] 今日台灣時間: ${currentDate}`);
         console.log(`[INFO] 獲取 ContactId: ${userId}`);
