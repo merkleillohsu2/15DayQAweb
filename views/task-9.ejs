@@ -82,6 +82,7 @@
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
+
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {
             const imageMap = {
@@ -92,6 +93,13 @@
                 "img-10": ["img-11",],
                 "img-12": ["img-13"]
             };
+            Object.values(imageMap).flat().forEach(id => {
+                const img = document.getElementById(id);
+                if (img && img.src) {
+                    const preload = new Image();
+                    preload.src = img.src;
+                }
+            });
             const elements = {
                 popup: document.getElementById('popup'),
                 closePopupButton: document.querySelector('.close-popup'),
@@ -144,7 +152,7 @@
                                 elements.actionContainer.style.opacity = 1; // 恢復正常狀態
                             }
                             // 新增 navigateToParent 邏輯
-                            navigateToParent('day4' + img.id);
+                            navigateToParent('day9' + img.id);
                         }
                     });
                 });

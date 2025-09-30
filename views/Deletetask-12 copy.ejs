@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任務 12</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/task-12.css">
+    <script src="/scripts/common.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="task-title">任務 12：圖文任務</div>
+
+        <!-- 圖片 1 -->
+        <img src="/images/D12-1.png" alt="任務圖片">
+
+        <!-- 圖片 2 -->
+        <img id="image-2" src="/images/D12-2.png" alt="任務圖片">
+
+        <!-- 新增 "更多圖片" -->
+        <img class="read-more-img" src="/images/CTA-read more.png" alt="更多圖片">
+
+        <!-- 彈窗內容 -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>更多訊息</p>
+                <button class="close-popup">關閉</button>
+            </div>
+        </div>
+
+        <!-- 勾選框與按鈕，與 #image-2 對齊 -->
+        <div class="action-container">
+            <img class="arrow-img" src="/images/arrow.png" alt="箭頭圖片">
+            <div class="checkbox-container">
+                <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
+                <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
+            </div>
+            <div>
+                <!-- 按鈕圖片條件渲染 -->
+                <% if (status === '進行中' && !isCompleted) { %>
+                    <button class="button" id="complete-task-btn">
+                        <img src="/images/CTA- gain money.png" alt="按鈕圖片">
+                    </button>
+                    <% } else if (isCompleted) { %>
+                        <button class="button" id="complete-task-btn">
+                            <img src="/images/CTA-done.png" alt="按鈕圖片">
+                        </button>
+                        <% } else if (!isCompleted && task.TaskDate !==currentDate) { %>
+                            <!-- 非本日任務訊息 -->
+                            <div class="button" id="complete-task-btn">
+                                <img src="/images/750x1200-CTA_01_grey.png" alt="已完成按鈕">
+                            </div>
+                            <% } %>
+            </div>
+        </div>
+        <div id="rewardMessage" class="hidden">
+            <p>恭喜完成任務！</p>
+            <h3 id="rewardMessageh3"></h3>
+            <button id="returnToParentHome">返回首頁
+        </div>
+    </div>
+    <div id="freezeLayer" class="hidden"></div>
+
+    <script>// 獲取 URL 中的 query 參數
+        console.log('任務數據:', "<%= JSON.stringify(task) %>");
+        console.log('當前日期:', '<%= currentDate %>');
+        console.log('是否已完成:', "<%= isCompleted %>");
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        const query = getQueryParameter('query');
+        if (query && !sessionStorage.getItem('ContactId')) {
+            // 如果 sessionStorage 中不存在 ContactId，執行解密請求
+            // 從後端渲染的變量獲取數據
+            const contactId = '<%= contactId %>';
+            const query = '<%= query %>';
+
+            // 存儲到 sessionStorage
+            sessionStorage.setItem('ContactId', contactId);
+            sessionStorage.setItem('Query', query);
+            console.log('ContactId 和 Query 已存儲到 sessionStorage');
+        } else {
+            console.log('ContactId 已經存在於 sessionStorage');
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const readMoreImg = document.querySelector('.read-more-img');
+            const popup = document.getElementById('popup');
+            const closePopupButton = popup.querySelector('.close-popup');
+
+            // 返回首頁按鈕
+            document.getElementById('returnToParentHome').addEventListener('click', () => {
+                window.parent.postMessage('navigate-home', 'https://pmi--qa.sandbox.my.site.com/'); // 指定父頁域名
+            });
+
+            // 點擊圖片顯示 Popup
+            readMoreImg.addEventListener('click', () => {
+                popup.classList.remove('hidden'); // 顯示彈窗
+            });
+
+            // 點擊關閉按鈕隱藏 Popup
+            closePopupButton.addEventListener('click', () => {
+                popup.classList.add('hidden'); // 隱藏彈窗
+            });
+
+            // 點擊彈窗外部區域也可以關閉
+            popup.addEventListener('click', (event) => {
+                if (event.target === popup) {
+                    popup.classList.add('hidden'); // 隱藏彈窗
+                }
+            });
+
+
+
+
+
+            const checkbox = document.getElementById('taskCompletedCheckbox');
+            const button = document.getElementById('complete-task-btn');
+            const buttonImg = button.querySelector('img'); // 獲取按鈕內的圖片
+            const freezeLayer = document.getElementById('freezeLayer'); // 遮罩層
+            // 初始化按鈕的禁用狀態
+            button.disabled = true;
+            button.style.opacity = 0.5; // 按鈕半透明，表示不可用
+
+            // 監聽 checkbox 的勾選狀態
+            checkbox.addEventListener('change', () => {
+                updateButtonState();
+            });
+
+            // 檢查按鈕圖片和勾選框的狀態
+            function updateButtonState() {
+                const isCheckboxChecked = checkbox.checked;
+                const buttonImageSrc = buttonImg.getAttribute('src'); // 獲取圖片的路徑
+
+                // 檢查按鈕圖片是否為 /images/CTA-done.png
+                if (buttonImageSrc === '/images/CTA-done.png') {
+                    button.disabled = true; // 按鈕禁用
+                    button.style.opacity = 1; // 保持按鈕完全可見
+                } else if (isCheckboxChecked && buttonImageSrc === '/images/CTA- gain money.png') {
+                    button.disabled = false; // 啟用按鈕
+                    button.style.opacity = 1; // 按鈕恢復可見
+                } else {
+                    button.disabled = true; // 禁用按鈕
+                    button.style.opacity = 0.5; // 按鈕半透明
+                }
+            }
+
+            // 給按鈕添加點擊事件
+            button.addEventListener('click', () => {
+                if (!button.disabled) {
+                    const userId = sessionStorage.getItem('ContactId'); // 從 sessionStorage 中獲取 ContactId
+                    button.disabled = true; // 禁用按鈕
+                    // 切換按鈕圖片為 /images/CTA-done.png
+                    buttonImg.setAttribute('src', '/images/CTA-done.png');
+                    // 顯示遮罩層以凍結畫面
+                    freezeLayer.classList.add('active');
+
+                    // 發送任務完成請求
+                    fetch('/task/12/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            UserId: userId, // 傳送 UserId
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const rewardMessage = document.getElementById('rewardMessage');
+                            const rewardMessagecontent = document.getElementById('rewardMessageh3');
+                            rewardMessagecontent.textContent = `${data.message} 獲得 ${data.reward} 元的獎勵金。`;
+                            rewardMessage.classList.remove('hidden');
+                            // 隱藏遮罩層，解凍畫面
+                            freezeLayer.classList.remove('active');
+                        })
+                        .catch(error => {
+                            console.error('提交失敗:', error);
+                        });
+                }
+            });
+
+            // 初始化按鈕狀態
+            updateButtonState();
+        });
+
+    </script>
+</body>
+
+</html>
