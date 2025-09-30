@@ -18,7 +18,14 @@ function sendHeightToParent() {
 window.addEventListener('load', sendHeightToParent);
 
 // 如果子頁面內容發生改變（例如，新增動態內容）
-new ResizeObserver(() => sendHeightToParent()).observe(document.body);
+window.addEventListener('DOMContentLoaded', () => {
+  const body = document.body;
+  if (body instanceof Element) {
+    new ResizeObserver(() => sendHeightToParent()).observe(body);
+  } else {
+    console.error('document.body 不存在或不是 Element');
+  }
+});
 // 通用功能：向父窗口發送消息
 function navigateToParent(message) {
     const environment = window.location.host.includes('15daytestweb') ? 'sandbox' : 'production'; // 根據域名判斷環境
