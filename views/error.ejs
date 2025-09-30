@@ -9,5 +9,15 @@
 <body>
     <h1>發生錯誤</h1>
     <p><%= message %></p>
+    <% if (errorDetails) { %>
+  <div class="error-debug">
+    <p><strong>錯誤類型:</strong> <%= errorDetails.name %></p>
+    <p><strong>訊息:</strong> <%= errorDetails.message %></p>
+    <% if (errorDetails.stack) { %>
+      <pre><%= errorDetails.stack %></pre>
+    <% } %>
+  </div>
+<% } %>
+
 </body>
 </html>
