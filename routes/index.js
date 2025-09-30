@@ -83,7 +83,15 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
     }
   } catch (err) {
     console.error('Database error:', err.message);
-    res.status(500).send('Database error');
+    res.status(500).render('error', {
+      message: '載入任務時發生錯誤，請稍後再試或聯繫支援人員。',
+      errorDetails: {
+        name: err.name,
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : null
+      }
+    });
+
   }
 });
 
@@ -158,7 +166,15 @@ for (let day = 1; day <= 15; day++) {
 
     } catch (err) {
       console.error('[ERROR] Failed to load task:', err.message);
-      res.status(500).send('Database error');
+      res.status(500).render('error', {
+        message: '載入任務時發生錯誤，請稍後再試或聯繫支援人員。',
+        errorDetails: {
+          name: err.name,
+          message: err.message,
+          stack: process.env.NODE_ENV === 'development' ? err.stack : null
+        }
+      });
+
     }
   });
 
@@ -325,7 +341,15 @@ for (let day = 1; day <= 15; day++) {
       }
     } catch (err) {
       console.error(err); // 輸出錯誤信息到控制台
-      res.status(500).send({ error: 'Database error', message: err.message }); // 顯示詳細錯誤信息
+      res.status(500).render('error', {
+        message: '載入任務時發生錯誤，請稍後再試或聯繫支援人員。',
+        errorDetails: {
+          name: err.name,
+          message: err.message,
+          stack: process.env.NODE_ENV === 'development' ? err.stack : null
+        }
+      });
+
     }
   });
 }
@@ -547,7 +571,15 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
 
   } catch (err) {
     console.error('[ERROR] 任務列表載入失敗:', err.message);
-    res.status(500).send('Database error');
+    res.status(500).render('error', {
+      message: '載入任務時發生錯誤，請稍後再試或聯繫支援人員。',
+      errorDetails: {
+        name: err.name,
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : null
+      }
+    });
+
   }
 
 });
