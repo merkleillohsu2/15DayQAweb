@@ -6,7 +6,7 @@
     <title>任務總表</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/task-list.css">
-    <script src="/scripts/common.js"></script>
+    <script src="/scripts/common.js" ></script>
 </head>
 <body>
     <header>
@@ -56,15 +56,16 @@
                     const isFuture = today < new Date(task.StartDate);
 
                     // 計算倒序的 TaskID
-                     const reverseTaskId = maxTaskId - task.TaskID + 1;
+                    //const reverseTaskId = maxTaskId - task.TaskID + 1;
                 
                     // 動態設置按鈕圖片
                     // 判斷任務圖片：如果是今日任務、過去任務或未解鎖
                     const taskImage = task.IsCompleted || isPast
-                            ? `/images/Task-list/pasttask/CTA-past task_M${reverseTaskId}.png`
+                             ? `/images/Task-list/pasttask/CTA-past task_M${task.TaskID}.png`
                             : isToday
-                            ? `/images/Task-list/todaytask/CTA-today task_M${reverseTaskId}.png`
-                            : `/images/Task-list/futuretask/CTA-future task_M${reverseTaskId}.png`;
+                            ? `/images/Task-list/todaytask/CTA-today task_M${task.TaskID}.png`
+                            : `/images/Task-list/futuretask/CTA-future task_M${task.TaskID}.png`;
+
         
                     // 如果是未解鎖的任務，設置 disabled
                     const isLocked = isFuture; // 未來任務為未解鎖
