@@ -34,7 +34,8 @@ const handleDecryptionMiddleware = async (req, res, next) => {
         if (result.error) {
             console.error('解密失敗:', result.error);
             // 渲染一個錯誤頁面，而不是直接返回 400 錯誤
-            return res.render('error', { message: '無法處理解密數據，請重試' });
+            return res.render('error', { message: '無法處理解密數據，請重試' ,
+          errorDetails: null});
         }
 
         // 保存解密結果到 res.locals，供後續路由使用
@@ -64,7 +65,8 @@ router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
         const userId = req.session.ContactId;
         if (!userId) {
             console.error('[ERROR] 缺少有效的 ContactId');
-            return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
+            return res.render('error', { message: '無效的使用者資訊，請重新登入！' ,
+          errorDetails: null});
         }
 
         const taiwanNow = DateTime.now().setZone('Asia/Taipei', { keepLocalTime: true });

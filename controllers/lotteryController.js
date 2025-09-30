@@ -173,12 +173,14 @@ exports.performLottery = async (req, res) => {
     UPDATE ${PRIZES_TABLE}
     SET IsClaimed = 1,
         ClaimedByUserID = @userId,
-        ClaimedDate = SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00')
+        ClaimedDate = SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'),
+        TaskID = @taskId
     WHERE PrizeID = @prizeId;
   `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('prizeId', sql.Int, prizeId)
+        .input('taskId', sql.Int, taskId)
         .query(updatePrizeQuery);
 
       return res.json({

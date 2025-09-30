@@ -120,6 +120,13 @@ app.use((err, req, res, next) => {
     url: req.originalUrl,
     method: req.method,
   });
-  res.status(err.status || 500).render('error', { message: '伺服器發生錯誤，請稍後再試！' });
+  res.status(err.status || 500).render('error', {
+  message: '伺服器發生錯誤，請稍後再試！',
+  errorDetails: {
+    name: err.name,
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : null
+  }
+});
 });
 

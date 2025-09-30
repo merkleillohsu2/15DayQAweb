@@ -21,6 +21,14 @@ export function initBounce({
     }
     bounceIframe.setAttribute('src', bounceURL);
     bouncePopup.classList.remove('hidden');
+
+      // 禁用 lotteryImage 點擊
+  if (lotteryImage) {
+    lotteryImage.style.pointerEvents = 'none'; // 禁止點擊
+    lotteryImage.style.opacity = '0.5';        // 可選：視覺上淡化
+    lotteryImage.classList.add('disabled');    // 可選：加上樣式 class
+  }
+
   }
 
   function closeBounce() {

@@ -31,7 +31,8 @@ const handleDecryptionMiddleware = async (req, res, next) => {
     if (result.error) {
       console.error('解密失敗:', result.error);
       // 渲染一個錯誤頁面，而不是直接返回 400 錯誤
-      return res.render('error', { message: '無法處理解密數據，請重試' });
+      return res.render('error', { message: '無法處理解密數據，請重試',
+          errorDetails: null });
     }
 
     // 保存解密結果到 res.locals，供後續路由使用
@@ -111,10 +112,12 @@ for (let day = 1; day <= 15; day++) {
       const userChain = await getUserChain(pool, userId);
       console.log(`[INFO] 用戶 Chain: ${userChain}, 任務 Chain: ${task.Chain}`);
       if (!userChain) {
-        return res.render('error', { message: '用戶不存在，請重新登入後重試' });
+        return res.render('error', { message: '用戶不存在，請重新登入後重試' ,
+          errorDetails: null});
       }
       if (userChain !== task.Chain) {
-        return res.render('error', { message: '您無權訪問此任務，請聯繫支援人員' });
+        return res.render('error', { message: '您無權訪問此任務，請聯繫支援人員' ,
+          errorDetails: null});
       }
 
       // 判斷任務狀態
@@ -131,7 +134,10 @@ for (let day = 1; day <= 15; day++) {
       }
 
       if (status === '未開始') {
-        return res.render('error', { message: '任務尚未開始，請稍後再來！' });
+        return res.render('error', {
+          message: '任務尚未開始，請稍後再來！',
+          errorDetails: null
+        });
       }
       // 查詢任務完成狀態
       const isCompleted = await isTaskCompleted(pool, userId, day);
@@ -210,7 +216,8 @@ for (let day = 1; day <= 15; day++) {
       // 獲取 user 的資料
       const user = userResult.recordset[0];
       if (user.Chain !== task.Chain) {
-        return res.render('error', { message: '您無權訪問此任務' });
+        return res.render('error', { message: '您無權訪問此任務' ,
+          errorDetails: null});
       }
 
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
@@ -303,7 +310,7 @@ for (let day = 1; day <= 15; day++) {
         }
 
         // 特殊邏輯處理：day = 15 時檢查所有任務是否完成
-        if (day === 15) {
+        if (day === 10) {
           const allTasksQuery = `
             SELECT TaskID 
             FROM ${TASKS_TABLE} t
@@ -500,7 +507,8 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
     const chain = req.session.Chain;
     if (!userId) {
       console.error('[ERROR] 缺少有效的 ContactId');
-      return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
+      return res.render('error', { message: '無效的使用者資訊，請重新登入！' ,
+          errorDetails: null});
     }
 
     const pool = await sql.connect();
