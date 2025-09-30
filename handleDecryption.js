@@ -97,10 +97,11 @@ const handleDecryption = async (req, res) => {
       console.error('[ERROR] 數據庫連接失敗:', err.message);
       return { error: 'Database connection failed', details: err.message };
     }
-    // 獲取台灣時間
     // 獲取台灣時間，並轉換為 UTC 時間
-    const lastLoginTime = DateTime.now().setZone('Asia/Taipei').toISO();
-    console.log(lastLoginTime);
+    // const lastLoginTime = DateTime.now().setZone('Asia/Taipei').toISO();
+    const lastLoginTime = DateTime.now().setZone('UTC+8').toISO();
+
+    console.log('[INFO] LastLoginTime to store (UTC):', lastLoginTime);
 
     // 單一查詢：檢查用戶是否存在並獲取獎勵狀態
     const combinedQuery = `
