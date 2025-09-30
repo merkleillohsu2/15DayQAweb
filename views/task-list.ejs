@@ -21,7 +21,8 @@
                     } else if (user.rewards >= 100) {
                         rewardLevel = 100; // 100 以上對應獎勵 100
                     } else {
-                        rewardLevel = Math.ceil(user.rewards / 5) * 5; // 其他情況取最接近的 5% 值
+                        const rounded = Math.ceil(user.rewards / 5) * 5;
+                        rewardLevel = (rounded <= 5) ? 5 : rounded;
                     }
                     
                     // 設定圖片名稱
@@ -44,7 +45,7 @@
         <div class="task-list">
             <% 
                 tasks.sort((a, b) => a.TaskID - b.TaskID);
-        
+                const maxTaskId = Math.max(...tasks.map(t => t.TaskID));
                 tasks.forEach((task) => {
                     const startDate = new Date(task.StartDate).toISOString().slice(0, 10);
                     const endDate = new Date(task.EndDate).toISOString().slice(0, 10);
@@ -55,15 +56,15 @@
                     const isFuture = today < new Date(task.StartDate);
 
                     // 計算倒序的 TaskID
-                    const reverseTaskId = 16 - task.TaskID; // 假設任務總數為 15
+                     const reverseTaskId = maxTaskId - task.TaskID + 1;
                 
                     // 動態設置按鈕圖片
                     // 判斷任務圖片：如果是今日任務、過去任務或未解鎖
                     const taskImage = task.IsCompleted || isPast
-                            ? `/images/Task-list/Pass/CTA-過去_D${reverseTaskId}.gif`
+                            ? `/images/Task-list/pasttask/CTA-past task_M${reverseTaskId}.png`
                             : isToday
-                            ? `/images/Task-list/today/CTA-GO_D${reverseTaskId}.gif`
-                            : `/images/Task-list/unlock/CTA-未解鎖_D${reverseTaskId}.gif`;
+                            ? `/images/Task-list/todaytask/CTA-today task_M${reverseTaskId}.png`
+                            : `/images/Task-list/futuretask/CTA-future task_M${reverseTaskId}.png`;
         
                     // 如果是未解鎖的任務，設置 disabled
                     const isLocked = isFuture; // 未來任務為未解鎖

@@ -497,7 +497,7 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
   try {
     const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
     const userId = req.session.ContactId;
-
+    const chain = req.session.Chain;
     if (!userId) {
       console.error('[ERROR] 缺少有效的 ContactId');
       return res.render('error', { message: '無效的使用者資訊，請重新登入！' });
@@ -518,10 +518,12 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
       FROM ${TASKS_TABLE} t
       LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc
         ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+      WhERE t.Chain = @chain
       ORDER BY t.StartDate ASC
     `;
     const taskResult = await pool.request()
       .input('userId', sql.VarChar(36), userId)
+      .input('chain', sql.NVarChar(10), chain)
       .query(taskQuery);
 
     const today = new Date(currentDate);

@@ -85,7 +85,7 @@ const handleDecryption = async (req, res) => {
       return res.status(400).send('ContactId not found in decrypted data');
     }
     req.session.ContactId = userId;
-
+    req.session.Chain = chain; // 儲存 Chain 到 session
     console.log('[INFO] UserId to store:', userId);
     console.log('[INFO] PhoneNumber to store:', phoneNumber);
 
@@ -130,12 +130,15 @@ const handleDecryption = async (req, res) => {
       // 更新 LastLoginTime 和 PhoneNumber
       const updateQuery = `
       UPDATE ${USERS_TABLE}
-      SET LastLoginTime = @lastLoginTime, PhoneNumber = @phoneNumber , Chain = @chain , AccountName = @accountName
+      SET 
+        LastLoginTime = SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'),
+        PhoneNumber = @phoneNumber,
+        Chain = @chain,
+        AccountName = @accountName
       WHERE UserID = @userId;
     `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .input('phoneNumber', sql.NVarChar(15), phoneNumber)
         .input('chain', sql.NVarChar(10), chain)
         .input('accountName', sql.NVarChar(255), accountName)
@@ -144,15 +147,20 @@ const handleDecryption = async (req, res) => {
       console.log('[INFO] User 不存在，創建新記錄');
       // 插入新用戶
       const insertQuery = `
-        INSERT INTO ${USERS_TABLE} (UserID, UserName, PhoneNumber, Chain, LastLoginTime, tasksCompleted, rewards, AccountName)
-        VALUES (@userId, @userName, @phoneNumber, @chain, @lastLoginTime, '[]', 0, @accountName);
+        INSERT INTO ${USERS_TABLE} (
+          UserID, UserName, PhoneNumber, Chain,
+          LastLoginTime, tasksCompleted, rewards, AccountName
+        )
+        VALUES (
+          @userId, @userName, @phoneNumber, @chain,
+          SWITCHOFFSET(SYSDATETIMEOFFSET(), '+08:00'), '[]', 0, @accountName
+        );
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
         .input('userName', sql.NVarChar(255), userName)
         .input('phoneNumber', sql.NVarChar(15), phoneNumber)
         .input('chain', sql.NVarChar(10), chain)
-        .input('lastLoginTime', sql.DateTimeOffset, lastLoginTime)
         .input('accountName', sql.NVarChar(255), accountName)
         .query(insertQuery);
     }
