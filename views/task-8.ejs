@@ -15,7 +15,6 @@
 <body>
     <div class="container">
         <!-- 主圖片 -->
-
         <div>
             <!-- 彈窗內容 -->
             <div id="popup" class="popup hidden">
@@ -56,7 +55,6 @@
         </div>
 
 
-
         <!-- 扭蛋相關 -->
         <% if (isCompleted && remainingEntries> 0 && status === '進行中') { %>
             <div class="gacha-wrapper">
@@ -82,8 +80,17 @@
                     </div>
                     <!-- 凍結層 -->
                     <div id="freezeLayer" class="hidden"></div>
-            </div>
-    </div>
+           
+         
+ <img
+    src="/images/backgroundscorllcolor.jpg"
+    alt="背景裝飾"
+    style="max-width: 100%; margin: 20px auto 0; display: block;"
+  />
+       </div>
+
+
+
     <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');

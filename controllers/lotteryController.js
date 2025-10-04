@@ -145,7 +145,7 @@ exports.performLottery = async (req, res) => {
       `;
       await pool.request()
         .input('userId', sql.VarChar(36), userId)
-        .input('taskId', sql.NVarChar, taskIds)
+        .input('taskId', sql.Int, taskId)
         .query(insertLotteryEntryQuery);
 
       return res.json({ success: false, message: '很遺憾，您未中獎！' });

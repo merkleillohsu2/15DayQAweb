@@ -30,12 +30,12 @@
         <div class="action-container">
             <div class="checkbox-container">
                 <input type="checkbox" id="taskCompletedCheckbox" <% if (isCompleted) { %> checked disabled <% } %>>
-                <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
+                    <label for="taskCompletedCheckbox">我已完成【本次任務內容】</label>
             </div>
 
             <!-- 動態顯示按鈕 -->
             <div>
-                <% if (status === '進行中' && !isCompleted) { %>
+                <% if (status==='進行中' && !isCompleted) { %>
                     <button class="button" id="complete-task-btn">
                         <img src="/images/750x1200-CTA_01.png" alt="提交按鈕">
                     </button>
@@ -56,12 +56,14 @@
             <img class="close-button" src="/images/PopUp/X.png" alt="關閉獎勵提示按鈕">
             <img class="reward-img" src="/images/Mission 1/Pop-up appears​-1.png" alt="獎勵圖片">
         </div>
-    </div>
 
+    </div>
+    <img src="/images/backgroundscorllcolor.jpg" alt="Background Scroll Color"
+        style="display: flex; max-width: 100%; border-radius: 8px;" />
     <!-- 凍結層 -->
     <div id="freezeLayer" class="hidden"></div>
 
-     <script nonce="<%= nonce %>">
+    <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
 
