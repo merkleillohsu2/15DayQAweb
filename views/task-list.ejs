@@ -77,6 +77,11 @@
                     onclick="<%= isLocked ? '' : `redirectToTask('${task.TaskID}')` %>"
                 >
                     <img src="<%= taskImage %>" alt="任務圖片">
+                     <% if (task.ShowDrawReminder) { %>
+                        <div class="draw-reminder">
+                            加碼抽未完成
+                        </div>
+                        <% } %>
                 </button>
             <% }); %>
         </div>

@@ -104,3 +104,33 @@ button {
     width: 100%; /* 圖片寬度充滿按鈕 */
     height: auto; /* 保持圖片比例 */
 }
+.task-button {
+  position: relative;
+}
+
+.draw-reminder {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #00D2D3;
+  color: #fff;
+  font-weight: bold;
+  padding: 3px 14px;
+  border-radius: 24px;
+  font-size: 14px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: pulseGlow 1.5s infinite;
+  white-space: nowrap;
+}
+
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 6px rgba(0, 210, 211, 0.6); }
+  50% { box-shadow: 0 0 12px rgba(0, 210, 211, 1); }
+  100% { box-shadow: 0 0 6px rgba(0, 210, 211, 0.6); }
+}

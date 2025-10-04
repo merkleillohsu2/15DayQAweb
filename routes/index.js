@@ -31,8 +31,10 @@ const handleDecryptionMiddleware = async (req, res, next) => {
     if (result.error) {
       console.error('解密失敗:', result.error);
       // 渲染一個錯誤頁面，而不是直接返回 400 錯誤
-      return res.render('error', { message: '無法處理解密數據，請重試',
-          errorDetails: null });
+      return res.render('error', {
+        message: '無法處理解密數據，請重試',
+        errorDetails: null
+      });
     }
 
     // 保存解密結果到 res.locals，供後續路由使用
@@ -112,12 +114,16 @@ for (let day = 1; day <= 15; day++) {
       const userChain = await getUserChain(pool, userId);
       console.log(`[INFO] 用戶 Chain: ${userChain}, 任務 Chain: ${task.Chain}`);
       if (!userChain) {
-        return res.render('error', { message: '用戶不存在，請重新登入後重試' ,
-          errorDetails: null});
+        return res.render('error', {
+          message: '用戶不存在，請重新登入後重試',
+          errorDetails: null
+        });
       }
       if (userChain !== task.Chain) {
-        return res.render('error', { message: '您無權訪問此任務，請聯繫支援人員' ,
-          errorDetails: null});
+        return res.render('error', {
+          message: '您無權訪問此任務，請聯繫支援人員',
+          errorDetails: null
+        });
       }
 
       // 判斷任務狀態
@@ -216,8 +222,10 @@ for (let day = 1; day <= 15; day++) {
       // 獲取 user 的資料
       const user = userResult.recordset[0];
       if (user.Chain !== task.Chain) {
-        return res.render('error', { message: '您無權訪問此任務' ,
-          errorDetails: null});
+        return res.render('error', {
+          message: '您無權訪問此任務',
+          errorDetails: null
+        });
       }
 
       // 檢查 user.tasksCompleted 是否為有效的 JSON 字符串，否則初始化為空陣列
@@ -507,8 +515,10 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
     const chain = req.session.Chain;
     if (!userId) {
       console.error('[ERROR] 缺少有效的 ContactId');
-      return res.render('error', { message: '無效的使用者資訊，請重新登入！' ,
-          errorDetails: null});
+      return res.render('error', {
+        message: '無效的使用者資訊，請重新登入！',
+        errorDetails: null
+      });
     }
 
     const pool = await sql.connect();
@@ -518,16 +528,20 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
     // 1. 查詢任務資料 + 完成狀態
     const taskQuery = `
       SELECT 
-        t.TaskID,
-        t.TaskName,
-        t.StartDate,
-        t.EndDate,
-        ISNULL(utc.IsCompleted, 0) AS IsCompleted
-      FROM ${TASKS_TABLE} t
-      LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc
-        ON t.TaskID = utc.TaskID AND utc.UserID = @userId
-      WhERE t.Chain = @chain
-      ORDER BY t.StartDate ASC
+          t.TaskID,
+          t.TaskName,
+          t.StartDate,
+          t.EndDate,
+          t.LotteryRuleID,
+          ISNULL(utc.IsCompleted, 0) AS IsCompleted,
+          ISNULL(ule.DrawDate, NULL) AS DrawDate
+        FROM Tasks t
+        LEFT JOIN UserTaskCompletion utc 
+          ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+        LEFT JOIN UserLotteryEntries ule 
+          ON t.TaskID = ule.TaskID AND ule.UserID = @userId
+        WHERE t.Chain = @chain
+        ORDER BY t.StartDate ASC
     `;
     const taskResult = await pool.request()
       .input('userId', sql.VarChar(36), userId)
@@ -538,6 +552,12 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
     const tasks = taskResult.recordset.map(task => {
       const startDate = new Date(task.StartDate);
       const endDate = new Date(task.EndDate);
+      const isCompleted = task.IsCompleted === true || task.IsCompleted === 1;
+      const hasDrawn = !!task.DrawDate;
+      const isActive = today >= startDate && today <= endDate;
+      const hasLottery = task.LotteryRuleID !== null;
+
+
 
       const status = today < startDate
         ? '未開始'
@@ -546,15 +566,21 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
           : '進行中';
 
       const DaysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
+      const showDrawReminder = hasLottery && isCompleted && !hasDrawn && isActive;
+
+
 
       return {
         TaskID: task.TaskID,
         TaskName: task.TaskName,
         StartDate: startDate.toISOString().slice(0, 10),
         EndDate: endDate.toISOString().slice(0, 10),
-        IsCompleted: task.IsCompleted === true || task.IsCompleted === 1,
+        IsCompleted: isCompleted,
+        HasDrawn: hasDrawn,
+        IsActive: isActive,
         DaysLeft,
-        status
+        status,
+        ShowDrawReminder: showDrawReminder
       };
     });
 
@@ -593,5 +619,6 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
   }
 
 });
+
 
 module.exports = router;
