@@ -62,11 +62,13 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
     const pool = await sql.connect();
     const userId = req.session.ContactId;
     const chain = req.session.Chain;
+    console.log(`[INFO] 獲取 UserId: ${userId}, Chain: ${chain}`);
+
     // 查找今天正在進行的任務（StartDate <= currentDate <= EndDate）
     const query = `
-      SELECT TOP 1 t.*
+      SELECT TOP 1 t.*,utc.*
         FROM Tasks t
-        LEFT JOIN UserTaskCompletion_Prod utc
+        LEFT JOIN UserTaskCompletion utc
           ON t.TaskID = utc.TaskID AND utc.UserID = @userId
         WHERE @currentDate BETWEEN t.StartDate AND t.EndDate
           AND t.Chain = @chain
@@ -82,7 +84,7 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 
 
     const task = result.recordset[0];
-
+    console.log(`[INFO] 今日任務:`, task);
     if (task) {
       const queryParams = new URLSearchParams(req.query).toString();
       const redirectUrl = queryParams
