@@ -60,20 +60,25 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 
   try {
     const pool = await sql.connect();
-
+    const userId = req.session.ContactId;
+    const chain = req.session.Chain;
     // 查找今天正在進行的任務（StartDate <= currentDate <= EndDate）
     const query = `
-      SELECT TOP 1 *
-      FROM ${TASKS_TABLE}
-      WHERE @currentDate BETWEEN StartDate AND EndDate
-        AND Chain = @chain
-      ORDER BY StartDate ASC
+      SELECT TOP 1 t.*
+        FROM Tasks t
+        LEFT JOIN UserTaskCompletion_Prod utc
+          ON t.TaskID = utc.TaskID AND utc.UserID = @userId
+        WHERE @currentDate BETWEEN t.StartDate AND t.EndDate
+          AND t.Chain = @chain
+          AND ISNULL(utc.IsCompleted, 0) = 0
+        ORDER BY t.StartDate ASC
     `;
 
     const result = await pool.request()
-      .input('currentDate', sql.Date, currentDate)
-      .input('chain', sql.NVarChar(10), chain)
-      .query(query);
+        .input('currentDate', sql.Date, currentDate)
+        .input('chain', sql.NVarChar(10), chain)
+        .input('userId', sql.VarChar(36), userId)
+        .query(query);  
 
 
     const task = result.recordset[0];
