@@ -66,12 +66,15 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
       SELECT TOP 1 *
       FROM ${TASKS_TABLE}
       WHERE @currentDate BETWEEN StartDate AND EndDate
+        AND Chain = @chain
       ORDER BY StartDate ASC
     `;
 
     const result = await pool.request()
       .input('currentDate', sql.Date, currentDate)
+      .input('chain', sql.NVarChar(10), chain)
       .query(query);
+
 
     const task = result.recordset[0];
 
@@ -94,7 +97,6 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
         stack: process.env.NODE_ENV === 'development' ? err.stack : null
       }
     });
-
   }
 });
 
