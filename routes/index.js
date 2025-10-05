@@ -66,7 +66,7 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
 
     // 查找今天正在進行的任務（StartDate <= currentDate <= EndDate）
     const query = `
-      SELECT TOP 1 t.*,utc.*
+      SELECT TOP 1 t.*
         FROM Tasks t
         LEFT JOIN UserTaskCompletion utc
           ON t.TaskID = utc.TaskID AND utc.UserID = @userId
