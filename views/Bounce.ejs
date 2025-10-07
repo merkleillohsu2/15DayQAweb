@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="/stylesheets/bounce.css">
   <script src="/scripts/common.js"></script>
 </head>
+
 <body>
   <div class="container">
     <!-- 主圖 -->
@@ -16,9 +18,8 @@
 
       <!-- 單一抽獎按鈕 -->
       <div class="action-container">
-        <button class="button <%= eligibleTasks.length === 0 ? 'disabled' : '' %>" 
-                id="lotteryImage" 
-                <%= eligibleTasks.length === 0 ? 'disabled' : '' %>>
+        <button class="button <%= eligibleTasks.length === 0 ? 'disabled' : '' %>" id="lotteryImage"
+          <%=eligibleTasks.length===0 ? 'disabled' : '' %>>
           <img src="/images/Lucky-Draw/Lucky-Draw-CTA.png" alt="抽獎按鈕圖片">
         </button>
       </div>
@@ -65,7 +66,7 @@
       navigateToParent('Draw_start');
 
       const userId = sessionStorage.getItem('ContactId');
-      const eligibleTasks = <%- JSON.stringify(eligibleTasks) %>;
+      const eligibleTasks = <% - JSON.stringify(eligibleTasks) %>;
       const selectedTask = eligibleTasks[0]; // ✅ 只抽第一個任務
 
       if (!selectedTask) {
@@ -85,11 +86,33 @@
           lotteryImage.disabled = true;
           lotteryImage.classList.add('disabled');
 
-          if (data.success) {
-            popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');
+
+          if (selectedTask.taskId === 8) {
+            if (data.success) {
+              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-3.png');
+
+            } else {
+              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-4.png');
+            }
+            // ✅ 任務 8 點擊圖片導向 dummy-site
+            popupImage.onclick = () => {
+              navigateToParent('dummy-site');
+            };
+
+
           } else {
-            popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-2.png');
+            if (data.success) {
+              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');
+            } else {
+              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-2.png');
+            }
           }
+
+
+
+
+
+
           popup.classList.remove('hidden');
         })
         .catch(error => {
@@ -99,4 +122,5 @@
     });
   </script>
 </body>
+
 </html>
