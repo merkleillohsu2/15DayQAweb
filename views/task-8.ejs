@@ -93,6 +93,15 @@
     <script nonce="<%= nonce %>">
         // 初始化 sessionStorage
         initializeSessionStorage('<%= contactId %>');
+        window.addEventListener('message', (event) => {
+        // 安全性檢查：只接受來自你信任的來源
+        const message = event.data;
+
+        // ✅ 執行你原本的 navigateToParent
+                if (typeof message === 'string') {
+                navigateToParent(message);
+            }
+        });     
 
         // 定義 DOM 元素和常量
         document.addEventListener('DOMContentLoaded', () => {

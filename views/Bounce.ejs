@@ -94,7 +94,7 @@
             }
             // ✅ 任務 8 點擊圖片導向 dummy-site
             popupImage.addEventListener('click', () => {
-                    navigateToParent('dummy-site');
+                    window.parent.postMessage('dummy-site', '*');
                   });
 
           }  else   {
