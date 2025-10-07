@@ -93,10 +93,9 @@
               popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-4.png');
             }
             // ✅ 任務 8 點擊圖片導向 dummy-site
-            popupImage.onclick = () => {
-              navigateToParent('dummy-site');
-            };
-
+            popupImage.addEventListener('click', () => {
+                    navigateToParent('dummy-site');
+                  });
 
           }  else   {
                   if (data.success) {
