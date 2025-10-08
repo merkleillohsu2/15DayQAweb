@@ -16,8 +16,8 @@
         <!-- 圖片與行動區域 -->
         <div class="media-wrapper">
             <img src="/images/Mission 4/M4_Task page_01.jpg" alt="任務圖片">
-            <video class="video-container" controls controlsList="nodownload noremoteplayback" id="taskVideo"
-                poster="/images/task-7_videopreview.jpg">
+            <video class="video-container" controls controlsList="nodownload noremoteplayback noplaybackrate"
+                id="taskVideo" poster="/images/task-7_videopreview.jpg">
                 <source src="/images/Mission 4/M4_ILUMA video.mp4" type="video/mp4">
                 您的瀏覽器不支援 HTML5 影片標籤。
             </video>
@@ -72,9 +72,12 @@
         </div>-->
         <!-- 冷凍層 -->
         <div id="freezeLayer" class="hidden"></div>
-<img src="/images/backgroundscorllcolor.jpg" alt="Background Scroll Color"
-        style="display: flex; max-width: 100%; border-radius: 8px;" />
+        <img src="/images/backgroundscorllcolor.jpg" alt="Background Scroll Color"
+            style="display: flex; max-width: 100%; border-radius: 8px;" />
         <script nonce="<%= nonce %>">
+            const video = document.querySelector('video');
+            video.style.height = 'auto'; // 或者用 transform scaleY(0.99) 讓控制條不準確顯示
+
             // 初始化 sessionStorage
             initializeSessionStorage('<%= contactId %>');
 
