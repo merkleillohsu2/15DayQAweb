@@ -34,7 +34,7 @@
                 <img src="/images/Reward/<%= rewardImage %>" alt="獎勵圖片" class="reward-image">
                 <span class="reward-amount">
                     <img src="/images/Reward/coin_03.png" alt="金幣圖示" class="coin-icon">
-                    <%= user.rewards %> 元
+                    <%= typeof user.rewards !== 'undefined' && user.rewards !== null ? user.rewards : 0 %> 元
                 </span>
             </div>
             

@@ -342,7 +342,8 @@
                     updateButtonState();
                     initializeEvents();
                 });
-                window.addEventListener('load', () => {
+
+                setTimeout(() => {
                     const hasGachaChance = <%= isCompleted && remainingEntries > 0 && status === '進行中' ? 'true' : 'false' %>;
 
                     if (hasGachaChance === true || hasGachaChance === 'true') {
@@ -354,7 +355,10 @@
                         });
                         }
                     }
-                });
+
+
+                }, 2000); // 可依素材載入速度調整
+
             </script>
 </body>
 

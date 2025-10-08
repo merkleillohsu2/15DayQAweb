@@ -233,3 +233,13 @@ img {
     align-items: center;
     width: 100%; /* 確保與圖片同寬 */
 }
+
+.step-hint {
+  background-color: #000;        /* 黑色底 */
+  color: #fff;                   /* 白色字 */
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;                     /* 緊貼上下圖片 */
+}
