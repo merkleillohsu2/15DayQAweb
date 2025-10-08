@@ -138,6 +138,7 @@
 
                 // 定義 DOM 元素和常量
                 document.addEventListener('DOMContentLoaded', () => {
+                   
                     const elements = {
                         popup: document.getElementById('popup'),
                         closePopupButton: document.querySelector('.close-popup'),
@@ -321,6 +322,19 @@
                     // 初始化
                     updateButtonState();
                     initializeEvents();
+                });
+                window.addEventListener('load', () => {
+                    const hasGachaChance = <%= isCompleted && remainingEntries > 0 && status === '進行中' ? 'true' : 'false' %>;
+
+                    if (hasGachaChance === true || hasGachaChance === 'true') {
+                        const gachaSection = document.querySelector('.gacha-wrapper');
+                        if (gachaSection && !gachaSection.classList.contains('hidden')) {
+                        gachaSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        }
+                    }
                 });
             </script>
 </body>

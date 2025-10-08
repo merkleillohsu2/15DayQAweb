@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,14 @@
   <link rel="stylesheet" href="/stylesheets/bounce.css">
   <script src="/scripts/common.js"></script>
 </head>
+
 <body>
+  <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+  <div class="error-box">
+    <p><%= errorMessage %></p>
+  </div>
+<% } else { %>
+
   <div class="container">
     <!-- 主圖 -->
     <div class="image-wrapper">
@@ -16,9 +24,8 @@
 
       <!-- 單一抽獎按鈕 -->
       <div class="action-container">
-        <button class="button <%= eligibleTasks.length === 0 ? 'disabled' : '' %>" 
-                id="lotteryImage" 
-                <%= eligibleTasks.length === 0 ? 'disabled' : '' %>>
+        <button class="button <%= !selectedTask || selectedTask.remainingEntries === 0 ? 'disabled' : '' %>"
+          id="lotteryImage" <%=!selectedTask || selectedTask.remainingEntries===0 ? 'disabled' : '' %>>
           <img src="/images/Lucky-Draw/Lucky-Draw-CTA.png" alt="抽獎按鈕圖片">
         </button>
       </div>
@@ -33,85 +40,86 @@
     </div>
   </div>
   <div id="freezeLayer" class="hidden"></div>
+<% } %>
 
-  <script>
-    const freezeLayer = document.getElementById('freezeLayer');
-    const popup = document.getElementById('popup');
-    const popupImage = document.getElementById('popupImage');
-    const closePopup = document.getElementById('closePopup');
-    const lotteryImage = document.getElementById('lotteryImage');
+      <script>
+        const freezeLayer = document.getElementById('freezeLayer');
+        const popup = document.getElementById('popup');
+        const popupImage = document.getElementById('popupImage');
+        const closePopup = document.getElementById('closePopup');
+        const lotteryImage = document.getElementById('lotteryImage');
 
-    // 解密參數儲存
-    const query = new URLSearchParams(window.location.search).get('query');
-    if (query && !sessionStorage.getItem('ContactId')) {
-      sessionStorage.setItem('ContactId', '<%= contactId %>');
-      sessionStorage.setItem('Query', '<%= query %>');
-      console.log('ContactId 和 Query 已存儲到 sessionStorage');
-    }
+        // 解密參數儲存
+        const query = new URLSearchParams(window.location.search).get('query');
+        if (query && !sessionStorage.getItem('ContactId')) {
+          sessionStorage.setItem('ContactId', '<%= contactId %>');
+          sessionStorage.setItem('Query', '<%= query %>');
+          console.log('ContactId 和 Query 已存儲到 sessionStorage');
+        }
 
-    // 關閉彈窗
-    closePopup.addEventListener('click', () => {
-      popup.classList.add('hidden');
-    });
+        // 關閉彈窗
+        closePopup.addEventListener('click', () => {
+          popup.classList.add('hidden');
+        });
 
-    // 抽獎按鈕事件
-    lotteryImage?.addEventListener('click', () => {
-      if (lotteryImage.disabled) {
-        alert('目前無可抽的任務，請稍後再試！');
-        return;
-      }
+        // 抽獎按鈕事件
+        lotteryImage?.addEventListener('click', () => {
+          if (lotteryImage.disabled) {
+            alert('目前無可抽的任務，請稍後再試！');
+            return;
+          }
 
-      freezeLayer.classList.add('active');
-      navigateToParent('Draw_start');
+          freezeLayer.classList.add('active');
+          navigateToParent('Draw_start');
 
-      const userId = sessionStorage.getItem('ContactId');
-      const eligibleTasks = <%- JSON.stringify(eligibleTasks) %>;
-      const selectedTask = eligibleTasks[0]; // ✅ 只抽第一個任務
+          const userId = sessionStorage.getItem('ContactId');
+          const selectedTask = <%- JSON.stringify(selectedTask) %>;
 
-      if (!selectedTask) {
-        alert('目前無可抽的任務');
-        freezeLayer.classList.remove('active');
-        return;
-      }
+          if (!selectedTask) {
+            alert('目前無可抽的任務');
+            freezeLayer.classList.remove('active');
+            return;
+          }
 
-      fetch('/lottery/perform-lottery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, taskId: selectedTask.taskId })
-      })
-        .then(response => response.json())
-        .then(data => {
-          freezeLayer.classList.remove('active');
-          lotteryImage.disabled = true;
-          lotteryImage.classList.add('disabled');
+          fetch('/lottery/perform-lottery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, taskId: selectedTask.taskId })
+          })
+            .then(response => response.json())
+            .then(data => {
+              freezeLayer.classList.remove('active');
+              lotteryImage.disabled = true;
+              lotteryImage.classList.add('disabled');
 
-          if (selectedTask.taskId === 8) {
-            if (data.success) {
-              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-3.png');
+              if (selectedTask.taskId === 8) {
+                if (data.success) {
+                  popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-3.png');
 
-            } else {
-              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-4.png');
-            }
-            // ✅ 任務 8 點擊圖片導向 dummy-site
-            popupImage.addEventListener('click', () => {
-                    window.parent.postMessage('dummy-site', '*');
-                  });
+                } else {
+                  popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-4.png');
+                }
+                // ✅ 任務 8 點擊圖片導向 dummy-site
+                popupImage.addEventListener('click', () => {
+                  window.parent.postMessage('dummy-site', '*');
+                });
 
-          }  else   {
-                  if (data.success) {
-              popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');
+              } else {
+                if (data.success) {
+                  popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-1.png');
                 } else {
                   popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-2.png');
+                }
               }
-          }
-        
-          popup.classList.remove('hidden');
-        })
-        .catch(error => {
-          console.error('抽獎出錯:', error);
-          freezeLayer.classList.remove('active');
+
+              popup.classList.remove('hidden');
+            })
+            .catch(error => {
+              console.error('抽獎出錯:', error);
+              freezeLayer.classList.remove('active');
+            });
         });
-    });
-  </script>
+      </script>
 </body>
+
 </html>

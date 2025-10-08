@@ -13,7 +13,15 @@ export function initBounce({
   const closeBouncePopup = document.querySelector(closeSelector);
   const lotteryImage = document.querySelector(lotterySelector);
   const rewardImg = document.querySelector(rewardSelector);
-  const bounceURL = '/lottery/bounce' + window.location.search;
+  const taskId = getTaskIdFromPath();
+  const bounceURL = `/lottery/bounce${window.location.search}${taskId ? `&taskId=${taskId}` : ''}`;
+
+  function getTaskIdFromPath() {
+    const path = window.location.pathname; // e.g. "/task/10"
+    const segments = path.split('/');
+    const taskId = segments.includes('task') ? segments[segments.indexOf('task') + 1] : null;
+    return taskId;
+  }
 
   function openBounce() {
     if (typeof navigateToParent === 'function') {
@@ -22,12 +30,12 @@ export function initBounce({
     bounceIframe.setAttribute('src', bounceURL);
     bouncePopup.classList.remove('hidden');
 
-      // 禁用 lotteryImage 點擊
-  if (lotteryImage) {
-    lotteryImage.style.pointerEvents = 'none'; // 禁止點擊
-    lotteryImage.style.opacity = '0.5';        // 可選：視覺上淡化
-    lotteryImage.classList.add('disabled');    // 可選：加上樣式 class
-  }
+    // 禁用 lotteryImage 點擊
+    // if (lotteryImage) {
+    //   lotteryImage.style.pointerEvents = 'none'; // 禁止點擊
+    //   lotteryImage.style.opacity = '0.5';        // 可選：視覺上淡化
+    //   lotteryImage.classList.add('disabled');    // 可選：加上樣式 class
+    // }
 
   }
 

@@ -34,8 +34,10 @@ const handleDecryptionMiddleware = async (req, res, next) => {
         if (result.error) {
             console.error('解密失敗:', result.error);
             // 渲染一個錯誤頁面，而不是直接返回 400 錯誤
-            return res.render('error', { message: '無法處理解密數據，請重試' ,
-          errorDetails: null});
+            return res.render('error', {
+                message: '無法處理解密數據，請重試',
+                errorDetails: null
+            });
         }
 
         // 保存解密結果到 res.locals，供後續路由使用
@@ -63,10 +65,13 @@ router.get('/get-user-lottery-records', lotteryController.getUserLotteryRecords)
 router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
     try {
         const userId = req.session.ContactId;
+        const requestedTaskId = req.query.taskId ? parseInt(req.query.taskId, 10) : null;
         if (!userId) {
             console.error('[ERROR] 缺少有效的 ContactId');
-            return res.render('error', { message: '無效的使用者資訊，請重新登入！' ,
-          errorDetails: null});
+            return res.render('error', {
+                message: '無效的使用者資訊，請重新登入！',
+                errorDetails: null
+            });
         }
 
         const taiwanNow = DateTime.now().setZone('Asia/Taipei', { keepLocalTime: true });
@@ -117,6 +122,33 @@ router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
             endDate: DateTime.fromJSDate(row.EndDate).toISODate()
         }));
 
+        let selectedTask = null;
+
+        if (requestedTaskId) {
+            selectedTask = eligibleTasks.find(task => task.taskId === requestedTaskId);
+            console.log(`[INFO] 用戶請求的任務 ID: ${requestedTaskId}`);
+            console.log(`[INFO] 查找到的任務: ${selectedTask ? '存在' : '不存在或不符合資格'}`);
+            if (!selectedTask) {
+                console.warn(`[WARN] 任務 ${requestedTaskId} 不符合抽獎資格或不存在`);
+                return res.render('Bounce', {
+                    contactId: res.locals.contactId,
+                    query: res.locals.query,
+                    selectedTask: null,
+                    errorMessage: '此任務無抽獎資格或已完成抽獎。',
+                    errorDetails: null,
+                });
+            }
+        } else {
+            console.warn('[WARN] 未提供任務 ID，無法執行抽獎');
+            return res.render('Bounce', {
+                contactId: res.locals.contactId,
+                query: res.locals.query,
+                selectedTask: null,
+                errorMessage: '請透過正確任務入口進入抽獎頁面。',
+                errorDetails: null,
+            });
+        }
+
         if (eligibleTasks.length === 0) {
             console.log('[INFO] 無符合抽獎資格的任務，跳轉回任務頁');
             return res.redirect('/tasks');
@@ -147,7 +179,8 @@ router.get('/bounce', handleDecryptionMiddleware, async (req, res) => {
             query: res.locals.query,
             taskIds,
             remainingPrizes,
-            eligibleTasks
+            eligibleTasks,
+            selectedTask
         });
 
     } catch (err) {

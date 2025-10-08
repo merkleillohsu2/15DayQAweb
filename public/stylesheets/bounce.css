@@ -170,3 +170,15 @@ img {
     opacity: 1;
     transform: scale(1);
 }
+
+.error-box {
+  background-color: #ffecec;
+  border: 1px solid #ff5c5c;
+  color: #cc0000;
+  padding: 16px;
+  margin: 20px auto;
+  width: 80%;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 16px;
+}
