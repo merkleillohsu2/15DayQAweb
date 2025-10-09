@@ -62,7 +62,7 @@ const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 每 15 分鐘
-  max: 100, // 每個 IP 限制 100 次請求
+  max: 10000, // 每個 IP 限制 10000 次請求
   message: '過多請求，請稍後再試',
 });
 
