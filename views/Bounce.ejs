@@ -91,8 +91,14 @@
               freezeLayer.classList.remove('active');
               lotteryImage.disabled = true;
               lotteryImage.classList.add('disabled');
-
-              if (selectedTask.taskId === 8) {
+              window.parent.postMessage('drawcompleted', '*');
+              if (selectedTask.taskId === 10) {
+                if (data.success) {
+                  popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-3.png');
+                } else {
+                  popupImage.setAttribute('src', '/images/Lucky-Draw/未中獎popup.png');
+                }
+              } else if (selectedTask.taskId === 8) {
                 if (data.success) {
                   popupImage.setAttribute('src', '/images/Lucky-Draw/Lucky-Draw-3.png');
 

@@ -60,11 +60,7 @@ video::-moz-progressbar {
     display: none; /* 隱藏進度條（適用於 Firefox） */
 }
 
-video::-webkit-media-controls-timeline {
-    pointer-events: none;
-    opacity: 0;
-    height: 0;
-}
+
 /* 圖片與行動區域的父容器 */
 .media-wrapper {
     position: relative; /* 父容器設定為相對定位，為絕對定位的子元素提供參考 */

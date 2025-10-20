@@ -38,7 +38,24 @@ export function initBounce({
     // }
 
   }
+  function openBounceReward() {
+    if (typeof navigateToParent === 'function') {
+      navigateToParent(drawEvent);
+    }
+    bounceIframe.setAttribute('src', bounceURL);
+    bouncePopup.classList.remove('hidden');
+  }
+  window.addEventListener('message', (event) => {
+    if (event.data === 'drawcompleted') {
+      // 更新 rewardImg 圖片為已完成抽獎版本
+      if (rewardImg) {
+        rewardImg.setAttribute('src', '/images/點擊領取獎勵金popup-已完成抽獎.png');
 
+        // 移除點擊事件
+        rewardImg.replaceWith(rewardImg.cloneNode(true));
+      }
+    }
+  });
   function closeBounce() {
     bouncePopup.classList.add('hidden');
     bounceIframe.setAttribute('src', '');
@@ -49,7 +66,7 @@ export function initBounce({
   }
 
   if (rewardImg) {
-    rewardImg.addEventListener('click', openBounce);
+    rewardImg.addEventListener('click', openBounceReward);
   }
 
   if (closeBouncePopup) {
