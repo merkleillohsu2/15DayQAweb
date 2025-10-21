@@ -14,6 +14,9 @@ const USER_TASK_COMPLETION_TABLE = process.env.USER_TASK_COMPLETION_TABLE;
 const REWARDS_TABLE = process.env.REWARDS_TABLE;
 const USER_LOTTERY_ENTRIES_TABLE = process.env.USER_LOTTERY_ENTRIES_TABLE;
 const LOTTERY_RULES_TABLE = process.env.LOTTERY_RULES_TABLE;
+const CONFIGURATION_SETTINGS_TABLE = process.env.CONFIGURATION_SETTINGS_TABLE;
+
+
 // 獲取當前日期，格式化為 YYYY-MM-DD
 const getCurrentDate = () => {
   const now = new Date();
@@ -67,8 +70,8 @@ router.get('/task-today', handleDecryptionMiddleware, async (req, res) => {
     // 查找今天正在進行的任務（StartDate <= currentDate <= EndDate）
     const query = `
       SELECT TOP 1 t.*
-        FROM Tasks t
-        LEFT JOIN UserTaskCompletion utc
+        FROM ${TASKS_TABLE} t
+        LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc
           ON t.TaskID = utc.TaskID AND utc.UserID = @userId
         WHERE @currentDate BETWEEN t.StartDate AND t.EndDate
           AND t.Chain = @chain
@@ -463,7 +466,7 @@ async function updateUserRewards(pool, userId, tasksCompleted, rewards) {
 async function getSettingValue(pool, settingKey) {
   const query = `
     SELECT SettingValue
-    FROM ConfigurationSettings
+    FROM ${CONFIGURATION_SETTINGS_TABLE}
     WHERE SettingKey = @settingKey
   `;
   const result = await pool.request()
@@ -544,10 +547,10 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
           t.LotteryRuleID,
           ISNULL(utc.IsCompleted, 0) AS IsCompleted,
           ISNULL(ule.DrawDate, NULL) AS DrawDate
-        FROM Tasks t
-        LEFT JOIN UserTaskCompletion utc 
+        FROM ${TASKS_TABLE} t
+        LEFT JOIN ${USER_TASK_COMPLETION_TABLE} utc 
           ON t.TaskID = utc.TaskID AND utc.UserID = @userId
-        LEFT JOIN UserLotteryEntries ule 
+        LEFT JOIN  ${USER_LOTTERY_ENTRIES_TABLE} ule 
           ON t.TaskID = ule.TaskID AND ule.UserID = @userId
         WHERE t.Chain = @chain
         ORDER BY t.StartDate ASC
