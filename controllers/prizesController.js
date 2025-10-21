@@ -39,13 +39,15 @@ exports.getAllPrizes = async (req, res) => {
     console.log('Taiwan time:', taiwanNow.toFormat('yyyy-MM-dd HH:mm:ss'));
 
     // ✅ 找出本週三與下週三
-    const currentWednesday = taiwanNow.minus({ days: (taiwanNow.weekday + 4) % 7 }).startOf('day');
-    const nextWednesday = currentWednesday.plus({ days: 7 }).startOf('day');
+    //const currentWednesday = taiwanNow.minus({ days: (taiwanNow.weekday + 4) % 7 }).startOf('day');
+    //const nextWednesday = currentWednesday.plus({ days: 7 }).startOf('day');
+    const currentWednesday3PM = taiwanNow.minus({ days: (taiwanNow.weekday + 4) % 7 }).set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+    const nextWednesday3PM = currentWednesday3PM.plus({ days: 7 });
 
     // ✅ 過濾可顯示的獎項
     const visiblePrizes = result.recordset.filter(item => {
       const claimedDate = DateTime.fromJSDate(item.PrizeDate).setZone('Asia/Taipei');
-      return claimedDate < currentWednesday || claimedDate >= nextWednesday;
+      return claimedDate < currentWednesday3PM  || claimedDate >= nextWednesday3PM;
     });
 
     // ✅ 格式化資料
