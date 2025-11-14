@@ -580,7 +580,7 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
 
       const status = today <= startDate
         ? '未開始'
-        : today > endDate
+        : today >= endDate
           ? '已結束'
           : '進行中';
       console.log(`[INFO] 任務 ${task.TaskID} 狀態: ${status}, 完成: ${isCompleted}, 已抽獎: ${hasDrawn}, 是否有抽獎: ${hasLottery}`);
