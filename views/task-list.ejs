@@ -86,7 +86,18 @@
               //window.location.href = targetUrl;
           }
       </script>
-      
+      <script>
+        const today = "<%= currentDate.toISOString() %>";
+        console.log("📅 今日日期（後端傳入）:", today);
+      </script>
+      <script>
+  const tasks = <%- JSON.stringify(tasks) %>;
+  tasks.forEach(task => {
+    console.log(`📌 任務 ${task.TaskID} - ${task.TaskName}`);
+    console.log(`   ➤ 起始日: ${task.StartDate}, 結束日: ${task.EndDate}, 狀態: ${task.status}`);
+  });
+</script>
+
       
     </main>
 </body>

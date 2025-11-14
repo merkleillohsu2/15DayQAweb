@@ -522,7 +522,7 @@ router.get('/prize-info', (req, res) => {
 // 任務總表頁面
 router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
   try { 
-    const now = new Date();
+  const now = new Date();
   const taiwanOffset = 8 * 60; // 台灣時區 UTC+8 的分鐘數
   const localOffset = now.getTimezoneOffset(); // 當前時區的分鐘數
   const currentDate = new Date(now.getTime() + (taiwanOffset - localOffset) * 60 * 1000);
@@ -537,6 +537,12 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
     }
 
     const pool = await sql.connect();
+    function toDateOnly(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
 
 
     // 獲取任務數據，包括 TaskName
@@ -564,24 +570,26 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
       .query(taskQuery);
 
     const today = new Date(currentDate);
+    const todayDateOnly = toDateOnly(currentDate);
+
+    console.log(today)
     console.log(`[INFO] 今日日期: ${today.toISOString().slice(0,10)}`);
     const tasks = taskResult.recordset.map(task => {
-      const startDate = new Date(task.StartDate);
-      console.log(`[INFO] 處理任務 ${task.TaskID} - ${task.TaskName}: StartDate: ${startDate.toISOString().slice(0,10)}, EndDate: ${new Date(task.EndDate).toISOString().slice(0,10)}`);
-      const endDate = new Date(task.EndDate);
+      const startDate = toDateOnly(task.StartDate);
+      const endDate = toDateOnly(task.EndDate);
+
       console.log(`[INFO] 處理任務 ${task.TaskID} - ${task.TaskName}: StartDate: ${startDate.toISOString().slice(0,10)}, EndDate: ${endDate.toISOString().slice(0,10)}`);
       const isCompleted = task.IsCompleted === true || task.IsCompleted === 1;
       const hasDrawn = !!task.DrawDate;
       const isActive = today >= startDate && today <= endDate;
       const hasLottery = task.LotteryRuleID !== null;
 
-
-
-      const status = today <= startDate
+      const status = todayDateOnly < startDate
         ? '未開始'
-        : today >= endDate
+        : todayDateOnly > endDate
           ? '已結束'
           : '進行中';
+
       console.log(`[INFO] 任務 ${task.TaskID} 狀態: ${status}, 完成: ${isCompleted}, 已抽獎: ${hasDrawn}, 是否有抽獎: ${hasLottery}`);
       const DaysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
       const showDrawReminder = hasLottery && isCompleted && !hasDrawn && isActive;
