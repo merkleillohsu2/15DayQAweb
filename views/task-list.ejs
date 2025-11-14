@@ -86,7 +86,11 @@
               //window.location.href = targetUrl;
           }
       </script>
-      
+      <script>
+        const today = "<%= currentDate.toISOString() %>";
+        console.log("📅 今日日期（後端傳入）:", today);
+      </script>
+
       
     </main>
 </body>

@@ -564,6 +564,7 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
       .query(taskQuery);
 
     const today = new Date(currentDate);
+    console.log(today)
     console.log(`[INFO] 今日日期: ${today.toISOString().slice(0,10)}`);
     const tasks = taskResult.recordset.map(task => {
       const startDate = new Date(task.StartDate);
