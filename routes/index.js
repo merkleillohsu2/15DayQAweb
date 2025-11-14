@@ -522,7 +522,7 @@ router.get('/prize-info', (req, res) => {
 // 任務總表頁面
 router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
   try { 
-    const now = new Date();
+  const now = new Date();
   const taiwanOffset = 8 * 60; // 台灣時區 UTC+8 的分鐘數
   const localOffset = now.getTimezoneOffset(); // 當前時區的分鐘數
   const currentDate = new Date(now.getTime() + (taiwanOffset - localOffset) * 60 * 1000);
@@ -579,7 +579,7 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
 
       const status = today <= startDate
         ? '未開始'
-        : today >= endDate
+        : today > endDate
           ? '已結束'
           : '進行中';
       console.log(`[INFO] 任務 ${task.TaskID} 狀態: ${status}, 完成: ${isCompleted}, 已抽獎: ${hasDrawn}, 是否有抽獎: ${hasLottery}`);
