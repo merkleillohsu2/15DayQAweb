@@ -581,7 +581,7 @@ router.get('/task-list', handleDecryptionMiddleware, async (req, res) => {
       console.log(`[INFO] 處理任務 ${task.TaskID} - ${task.TaskName}: StartDate: ${startDate.toISOString().slice(0,10)}, EndDate: ${endDate.toISOString().slice(0,10)}`);
       const isCompleted = task.IsCompleted === true || task.IsCompleted === 1;
       const hasDrawn = !!task.DrawDate;
-      const isActive = today >= startDate && today <= endDate;
+      const isActive = todayDateOnly >= startDate && todayDateOnly <= endDate;
       const hasLottery = task.LotteryRuleID !== null;
 
       const status = todayDateOnly < startDate
