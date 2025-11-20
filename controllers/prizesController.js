@@ -46,8 +46,8 @@ exports.getAllPrizes = async (req, res) => {
 
     // ✅ 過濾可顯示的獎項
     const visiblePrizes = result.recordset.filter(item => {
-      const claimedDate = DateTime.fromJSDate(item.PrizeDate).setZone('Asia/Taipei');
-      return claimedDate < currentThursday3PM || claimedDate >= nextThursday3PM;
+      const claimedDate = DateTime.fromJSDate(item.PrizeDate);
+      return claimedDate < currentThursday3PM  || claimedDate >= nextThursday3PM;
     });
 
     // ✅ 格式化資料
