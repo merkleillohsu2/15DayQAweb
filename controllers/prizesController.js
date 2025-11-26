@@ -41,13 +41,28 @@ exports.getAllPrizes = async (req, res) => {
     // ✅ 本週四與下週四的下午 3 點
     //const currentWednesday = taiwanNow.minus({ days: (taiwanNow.weekday + 4) % 7 }).startOf('day');
     //const nextWednesday = currentWednesday.plus({ days: 7 }).startOf('day');
-    const currentThursday3PM = taiwanNow.minus({ days: (taiwanNow.weekday + 3) % 7 }).set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
-    const nextThursday3PM = currentThursday3PM.plus({ days: 7 });
+    // const currentThursday3PM = taiwanNow.minus({ days: (taiwanNow.weekday + 3) % 7 }).set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+    // const nextThursday3PM = currentThursday3PM.plus({ days: 7 });
+    // 找本週四下午 3 點
+    const thisThursday3PM = taiwanNow
+      .plus({ days: (4 - taiwanNow.weekday + 7) % 7 }) // 4 = Thursday
+      .set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+
+    // 找上週四下午 3 點
+    const lastThursday3PM = thisThursday3PM.minus({ days: 7 });
 
     // ✅ 過濾可顯示的獎項
     const visiblePrizes = result.recordset.filter(item => {
       const claimedDate = DateTime.fromJSDate(item.PrizeDate);
-      return claimedDate < currentThursday3PM  || claimedDate >= nextThursday3PM;
+      // return claimedDate < currentThursday3PM  || claimedDate >= nextThursday3PM;
+       if (taiwanNow < thisThursday3PM) {
+      // 還沒到本週四 3 點 → 只顯示上週四以前的結果
+        return claimedDate < lastThursday3PM;
+      } else {
+        // 已經過了本週四 3 點 → 顯示所有之前的結果
+        return claimedDate < taiwanNow;
+      }
+
     });
 
     // ✅ 格式化資料
